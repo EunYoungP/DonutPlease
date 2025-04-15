@@ -9,7 +9,7 @@ public class PlayerCamera : MonoBehaviour
     private Camera _mainCamera;
 
     private float distanceX = 0f;
-    private float distanceY = 20f;
+    private float distanceY = 15f;
     private float distanceZ = -10f;
     private float roatateX = 60f;
     private float roatateY = 0.0f;
