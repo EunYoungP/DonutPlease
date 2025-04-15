@@ -30,21 +30,26 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Player = GamePlayerComponent.GamePlayer;
+        CreateActors();
+
+        Player = new GamePlayerComponent();
         if (Player == null)
         {
             Debug.LogError("Player not found");
             return;
         }
 
-        GetGameManager.Initialize();
+        Initialize();
+    }
+
+    private void CreateActors()
+    {
+        // GameObject Setting
+        GameObject playerObject = Instantiate(_characterPrefab, _startPos, Quaternion.identity) as GameObject;
     }
 
     private void Initialize()
     {
-        // GameObject Setting
-        GameObject playerObject = Instantiate(_characterPrefab, _startPos, Quaternion.identity) as GameObject;
-
         Player.Initialize();
     }
 }

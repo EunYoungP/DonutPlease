@@ -6,34 +6,32 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class PlayerCamera : MonoBehaviour
 {
     private CharacterPlayer _player;
+    private Camera _mainCamera;
 
     private float distanceX = 0f;
-    private float distanceY = 11f;
-    private float distanceZ = -6f;
+    private float distanceY = 20f;
+    private float distanceZ = -10f;
+    private float roatateX = 60f;
+    private float roatateY = 0.0f;
 
     private Vector3 playerBeforePos;
-
-    public PlayerCamera(CharacterPlayer player)
-    {
-        _player = player;
-
-        Initialize();
-    }
 
     private void LateUpdate()
     {
         FollowPlayer();
     }
 
-    private void Initialize()
+    public void Initialize(CharacterPlayer player)
     {
-        Debug.LogError("Initialize Camera");
+        _player = player;
+        _mainCamera = Camera.main;
 
         if (_player != null)
             playerBeforePos = _player.transform.position;
 
         // 카메라 시작 위치 지정
-        transform.position = playerBeforePos + new Vector3(distanceX, distanceY, distanceZ);
+        _mainCamera.transform.position = playerBeforePos + new Vector3(distanceX, distanceY, distanceZ);
+        _mainCamera.transform.rotation = Quaternion.Euler( new Vector3(roatateX, roatateY, 0f));
     }
 
     private void FollowPlayer()
