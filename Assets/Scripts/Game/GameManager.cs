@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public Canvas _canvas;
     [SerializeField]
+    private Canvas _inGaemCanvas;
+    [SerializeField]
     private Vector3 _startPos;
     [SerializeField]
     private GameObject _characterPrefab;
