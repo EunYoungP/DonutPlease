@@ -8,11 +8,11 @@ public class PlayerCamera : MonoBehaviour
     private CharacterPlayer _player;
     private Camera _mainCamera;
 
-    private float distanceX = 0f;
-    private float distanceY = 15f;
-    private float distanceZ = -10f;
-    private float roatateX = 60f;
-    private float roatateY = 0.0f;
+    [SerializeField]
+    private Vector3 _offset;
+
+    public float RoatateX { get; private set; } =  45f;
+    public float RoatateY { get; private set; } = -45f;
 
     private Vector3 playerBeforePos;
 
@@ -29,9 +29,11 @@ public class PlayerCamera : MonoBehaviour
         if (_player != null)
             playerBeforePos = _player.transform.position;
 
-        // 카메라 시작 위치 지정
-        _mainCamera.transform.position = playerBeforePos + new Vector3(distanceX, distanceY, distanceZ);
-        _mainCamera.transform.rotation = Quaternion.Euler( new Vector3(roatateX, roatateY, 0f));
+        Quaternion rotation = Quaternion.Euler(RoatateX, RoatateY, 0f);
+        _mainCamera.transform.rotation = rotation;
+
+        Vector3 offset = rotation * _offset;
+        _mainCamera.transform.position = playerBeforePos + offset;
     }
 
     private void FollowPlayer()

@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class GamePlayerComponent
 {
-    public static GamePlayerComponent GamePlayer { get; private set; }
-
     [SerializeField]
     private CharacterPlayer _player;
     
@@ -14,8 +12,8 @@ public class GamePlayerComponent
         _player.Initialize();
     }
 
-    public void SetPlayer(CharacterPlayer player)
+    public CharacterPlayer GetPlayer()
     {
-        _player = player;
+        return _player;
     }
 }

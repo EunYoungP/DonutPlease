@@ -7,23 +7,27 @@ namespace DonutPlease.Game.Character
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private Animator _animator;
 
+        [SerializeField] private TrayController _trayController;
+
         private PlayerCamera _camera;
         private bl_Joystick _joystick;
 
+        private float _cameraRot = -45f;
         private float _moveSpeed = 1.2f;
         private float _rotateSpeed = 10f;
-        private Vector3 _startPos = new Vector3(0.0f, 0.0f, 0.0f);
 
         private bool _isMoving;
 
+        public PlayerStockComponent PlayerStock;
+
         public void Initialize()
         {
-            _joystick = GameManager.GetGameManager._canvas.GetComponentInChildren<bl_Joystick>();
-
-            transform.position = _startPos;
+            _joystick = GameManager.GetGameManager.JoyStick;
 
             _camera = Camera.main.GetComponent<PlayerCamera>();
             _camera.Initialize(this);
+
+            PlayerStock = new PlayerStockComponent();
         }
 
         private void Update()
@@ -31,7 +35,8 @@ namespace DonutPlease.Game.Character
             float v = _joystick.Vertical;
             float h = _joystick.Horizontal;
 
-            Vector3 dir = new Vector3(h, 0, v);
+            Quaternion cameraRot = Quaternion.Euler(0, _cameraRot, 0);
+            Vector3 dir = cameraRot * new Vector3(h, 0, v);
 
             _isMoving = dir != Vector3.zero;
             if (_isMoving)
@@ -49,7 +54,7 @@ namespace DonutPlease.Game.Character
 
         private void Move(Vector3 dir)
         {
-            Vector3 moveOffset = dir * _moveSpeed * Time.deltaTime;
+            Vector3 moveOffset = dir * _moveSpeed *  Time.deltaTime;
             _rigidbody.MovePosition(_rigidbody.position + moveOffset);
         }
 

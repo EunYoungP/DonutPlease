@@ -1,8 +1,23 @@
 using DonutPlease.Game.Character;
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+
+    [Serializable]
+    public class UIRoot
+    {
+        public GameObject Root;
+    }
+
+    [Serializable]
+    public class UICommon : UIRoot
+    {
+    }
+
     private static GameManager _gameManager;
     public static GameManager GetGameManager
     {
@@ -20,20 +35,27 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField]
-    public Canvas _canvas;
+    public UIRoot _uiRoot;
+
     [SerializeField]
-    private Canvas _inGaemCanvas;
+    public Canvas _canvas;
+
     [SerializeField]
     private Vector3 _startPos;
+
     [SerializeField]
     private GameObject _characterPrefab;
 
+    [SerializeField] 
+    public LocalMapSystem LocalMap;
+
+    private InteractionSystem Intercation;
+    private StoreSystem StoreSystem;
     private GamePlayerComponent Player;
+    public  bl_Joystick JoyStick;
 
     private void Awake()
     {
-        CreateActors();
-
         Player = new GamePlayerComponent();
         if (Player == null)
         {
@@ -41,17 +63,37 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        Intercation = new InteractionSystem();
+        if (Intercation == null)
+        {
+            Debug.LogError("InteractionSystem not found");
+            return;
+        }
+
+        StoreSystem = new StoreSystem();
+        if (StoreSystem == null)
+        {
+            Debug.LogError("StoreSystem not found");
+            return;
+        }
+
+        JoyStick = _canvas.GetComponentInChildren<bl_Joystick>();
+
+        CreateActors();
+
         Initialize();
     }
 
     private void CreateActors()
     {
-        // GameObject Setting
         GameObject playerObject = Instantiate(_characterPrefab, _startPos, Quaternion.identity) as GameObject;
     }
 
     private void Initialize()
     {
         Player.Initialize();
+        LocalMap.Initialize();
+        Intercation.Initialize();
+        StoreSystem.Initialize();
     }
 }
