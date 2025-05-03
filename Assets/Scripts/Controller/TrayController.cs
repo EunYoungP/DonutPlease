@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class TrayController : MonoBehaviour
 {
     [SerializeField] private Vector2 _shakeRange = new Vector2(0.8f, 0.4f);
-    [SerializeField] private float _itemHeight = 0.5f;
+    [SerializeField] private float _itemHeight = 0.2f;
     [SerializeField] private float _bandFactor = 0.1f;
 
     private HashSet<Transform> _reserved = new HashSet<Transform>();
@@ -48,7 +48,7 @@ public class TrayController : MonoBehaviour
             _items[i].rotation = Quaternion.Lerp(_items[i].rotation, _items[i - 1].rotation, rate);
 
             if (dir != Vector3.zero)
-                _items[i].rotation *= Quaternion.Euler(-i, _bandFactor * rate, 0);
+                _items[i].rotation *= Quaternion.Euler(0, _bandFactor * rate, i);
         }
     }
 
@@ -64,9 +64,13 @@ public class TrayController : MonoBehaviour
                 _reserved.Remove(child);
                 _items.Add(child);
             });
+
+        child.SetParent(transform);
+
+        CheckTrayActivation();
     }
 
-    public void RemoveFromTray(Transform child)
+    public void PutDownFromTray(Transform child)
     {
         if (_items.Contains(child))
         {
@@ -77,5 +81,12 @@ public class TrayController : MonoBehaviour
                     Destroy(child.gameObject);
                 });
         }
+
+        CheckTrayActivation();
+    }
+
+    private void CheckTrayActivation()
+    {
+        this.gameObject.SetActive(_items.Count > 0);
     }
 }

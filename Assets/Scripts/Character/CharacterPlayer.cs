@@ -1,4 +1,5 @@
 using UnityEngine;
+using UniRx;
 
 namespace DonutPlease.Game.Character
 {
@@ -28,6 +29,16 @@ namespace DonutPlease.Game.Character
             _camera.Initialize(this);
 
             PlayerStock = new PlayerStockComponent();
+
+            FluxSystem.ActionStream
+                .Subscribe(data =>
+                {
+                    if (data is OnPlyaerGetDonut getDonut)
+                    {
+                        AddToTray(getDonut.donut.transform);
+                    }
+                })
+                .AddTo(this);
         }
 
         private void Update()
@@ -52,6 +63,21 @@ namespace DonutPlease.Game.Character
             Rotate(dir);
         }
 
+        #region Tray
+
+        public void AddToTray(Transform child)
+        {
+            _trayController.AddToTray(child);
+        }
+
+        public void RemoveFromTray(Transform child)
+        {
+            _trayController.PutDownFromTray(child);
+        }
+
+        #endregion
+
+        #region Movement
         private void Move(Vector3 dir)
         {
             Vector3 moveOffset = dir * _moveSpeed *  Time.deltaTime;
@@ -67,6 +93,8 @@ namespace DonutPlease.Game.Character
             Quaternion targetRotation = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
         }
+
+        #endregion
 
         #region Animation
 

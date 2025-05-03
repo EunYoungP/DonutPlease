@@ -28,8 +28,6 @@ public class Machine : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("OnTriggerEnter");
-
             if (CurBurger > 0)
             {
                 _isGettingDonut = true;
@@ -47,8 +45,6 @@ public class Machine : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("OnTriggerExit");
-
             StartCoroutine(CoMakeDonut());
         }
     }
@@ -70,7 +66,10 @@ public class Machine : MonoBehaviour
         }
 
         GameObject burger = _donutPile.RemoveFromPile();
-        Destroy(burger);
+        FluxSystem.Dispatch(new OnPlyaerGetDonut(burger));
+        
+        //Destroy(burger);
+
 
         Debug.Log("µµ≥” ªË¡¶");
 

@@ -21,6 +21,7 @@ public class Counter : MonoBehaviour
         FluxSystem.ColliderActionStream.Subscribe(data =>
         {
             OnTriggerAction(data.Item1, data.Item2);
+
         }).AddTo(this);
     }
 

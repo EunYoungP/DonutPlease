@@ -70,7 +70,7 @@ public class UIInteraction : MonoBehaviour
 
         foreach (var intercationData in _interactionDatas)
         {
-            FluxSystem.Dispatch(intercationData,  new OnTriggerEnterInteractionUI(intercationData.InteractionType));
+            FluxSystem.Dispatch(new OnTriggerEnterInteractionUI(intercationData.InteractionId, intercationData.InteractionType));
         }
 
         Destroy(gameObject);

@@ -31,31 +31,33 @@ public class InteractionSystem
         FluxSystem.ActionStream
             .Subscribe(data =>
             {
-                ActiveInteraction(data.Item1, data.Item2);
+                ActiveInteraction(data);
 
             }).AddTo(disposable);
     }
 
-    private void ActiveInteraction(IntercationData intercationData, object action)
+    private void ActiveInteraction(object action)
     {
         if (action is OnTriggerEnterInteractionUI uiInteraction)
         {
+            int interactionId = uiInteraction.interactionId;
             InteractionType interactionType = uiInteraction.interactionType;
+
             if (interactionType == InteractionType.Open)
             {
-                OpenStore(intercationData.InteractionId);
+                OpenStore(interactionId);
             }
             else if (interactionType == InteractionType.CreateTable)
             {
-                CreateTable(intercationData.InteractionId);
+                CreateTable(interactionId);
             }
             else if (interactionType == InteractionType.CreateMachine)
             {
-                CreateMachine(intercationData.InteractionId);
+                CreateMachine(interactionId);
             }
             else if (interactionType == InteractionType.CreateInteractionUI)
             {
-                CreateInteractionUI(intercationData.InteractionId);
+                CreateInteractionUI(interactionId);
             }
         }
     }
