@@ -1,17 +1,21 @@
 using UnityEngine;
+using UniRx;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 public class PlayerStockComponent 
 {
     // Donut
-    public int DonutCount { get; private set; }
+    public Stack<GameObject> Donuts { get; private set; } = new Stack<GameObject>();
+    public int DonutCount => Donuts.Count;
 
-    public void AddDonut(int count)
+    public void AddDonut(GameObject donut)
     {
-        DonutCount += count;
+        Donuts.Push(donut);
     }
 
-    public void RemoveDonut(int count)
+    public GameObject RemoveDonut()
     {
-        DonutCount -= count;
+        return Donuts.Pop();
     }
 }

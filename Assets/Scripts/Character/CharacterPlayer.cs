@@ -5,6 +5,8 @@ namespace DonutPlease.Game.Character
 {
     public class CharacterPlayer : CharacterBase
     {
+        GameManager _gameManager;
+
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private Animator _animator;
 
@@ -23,22 +25,32 @@ namespace DonutPlease.Game.Character
 
         public void Initialize()
         {
+            _gameManager = GameManager.GetGameManager;
             _joystick = GameManager.GetGameManager.JoyStick;
 
             _camera = Camera.main.GetComponent<PlayerCamera>();
             _camera.Initialize(this);
 
-            PlayerStock = new PlayerStockComponent();
+            FluxSystem.ActionStream
+            .Subscribe(data =>
+            {
+                if (data is OnGetDonut getDonut)
+                {
+                    AddToTray(getDonut.donut.transform);
+                }
+            })
+            .AddTo(this);
 
             FluxSystem.ActionStream
-                .Subscribe(data =>
+            .Subscribe(data =>
+            {
+                if (data is OnPutDownDonut putDownDonut)
                 {
-                    if (data is OnPlyaerGetDonut getDonut)
-                    {
-                        AddToTray(getDonut.donut.transform);
-                    }
-                })
-                .AddTo(this);
+                    if (putDownDonut.character is CharacterPlayer player)
+                        RemoveFromTray();
+                }
+            })
+            .AddTo(this);
         }
 
         private void Update()
@@ -67,12 +79,14 @@ namespace DonutPlease.Game.Character
 
         public void AddToTray(Transform child)
         {
-            _trayController.AddToTray(child);
+            _gameManager.Player.Stock.AddDonut(child.gameObject);
+            _trayController.PlayAddToTray(child);
         }
 
-        public void RemoveFromTray(Transform child)
+        public void RemoveFromTray()
         {
-            _trayController.PutDownFromTray(child);
+            var donut = _gameManager.Player.Stock.RemoveDonut();
+            _trayController.PlayPutDownFromTray(donut.transform);
         }
 
         #endregion

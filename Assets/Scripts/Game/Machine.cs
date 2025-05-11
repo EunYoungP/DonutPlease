@@ -1,3 +1,4 @@
+using DonutPlease.Game.Character;
 using System.Collections;
 using UniRx;
 using Unity.VisualScripting;
@@ -19,6 +20,8 @@ public class Machine : MonoBehaviour
 
     private bool _isGettingDonut;
 
+    private CharacterBase _enterCharcater;
+
     private void OnEnable()
     {
         StartCoroutine(CoMakeDonut());
@@ -31,6 +34,7 @@ public class Machine : MonoBehaviour
             if (CurBurger > 0)
             {
                 _isGettingDonut = true;
+                _enterCharcater = other.GetComponent<CharacterBase>();
 
                 StartCoroutine(CoGetDonut());
             }
@@ -65,14 +69,9 @@ public class Machine : MonoBehaviour
             yield return null;
         }
 
-        GameObject burger = _donutPile.RemoveFromPile();
-        FluxSystem.Dispatch(new OnPlyaerGetDonut(burger));
+        GameObject donut = _donutPile.RemoveFromPile();
+        FluxSystem.Dispatch(new OnGetDonut(donut, _enterCharcater));
         
-        //Destroy(burger);
-
-
-        Debug.Log("µµ≥” ªË¡¶");
-
         StartCoroutine(CoGetDonut());
     }
 

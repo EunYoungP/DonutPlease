@@ -52,7 +52,7 @@ public class TrayController : MonoBehaviour
         }
     }
 
-    public void AddToTray(Transform child)
+    public void PlayAddToTray(Transform child)
     {
         _reserved.Add(child);
 
@@ -70,7 +70,7 @@ public class TrayController : MonoBehaviour
         CheckTrayActivation();
     }
 
-    public void PutDownFromTray(Transform child)
+    public void PlayPutDownFromTray(Transform child)
     {
         if (_items.Contains(child))
         {

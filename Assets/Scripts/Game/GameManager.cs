@@ -4,9 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class GameManager : MonoBehaviour
 {
-
     [Serializable]
     public class UIRoot
     {
@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
 
     private InteractionSystem Intercation;
     private StoreSystem StoreSystem;
-    private GamePlayerComponent Player;
+    public GamePlayerComponent Player { get; private set; }
     public  bl_Joystick JoyStick;
 
     private void Awake()

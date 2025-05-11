@@ -4,7 +4,8 @@ using UnityEngine;
 public enum EColliderIdentifier : int
 {
     None,
-    Donut,
+    GetDonut,
+    TakeDonut,
     Cash,
     CasherPlace
 }
@@ -17,9 +18,17 @@ public class ColliderIdentifier : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            ColliderIdentifier colliderIdentifier = other.GetComponent<ColliderIdentifier>();
             CharacterBase characterBase = other.GetComponent<CharacterBase>();
-            FluxSystem.DispatchColliderEvent(characterBase, eColliderIdentifier);
+            FluxSystem.DispatchColliderEnterEvent(characterBase, eColliderIdentifier);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            CharacterBase characterBase = other.GetComponent<CharacterBase>();
+            FluxSystem.DispatchColliderExitEvent(characterBase, eColliderIdentifier);
         }
     }
 }
