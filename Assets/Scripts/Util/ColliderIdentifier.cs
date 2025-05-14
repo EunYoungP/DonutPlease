@@ -20,6 +20,8 @@ public class ColliderIdentifier : MonoBehaviour
         {
             CharacterBase characterBase = other.GetComponent<CharacterBase>();
             FluxSystem.DispatchColliderEnterEvent(characterBase, eColliderIdentifier);
+
+            Debug.Log("Player Entered Collider");
         }
     }
 
@@ -29,6 +31,8 @@ public class ColliderIdentifier : MonoBehaviour
         {
             CharacterBase characterBase = other.GetComponent<CharacterBase>();
             FluxSystem.DispatchColliderExitEvent(characterBase, eColliderIdentifier);
+
+            Debug.Log("Player Exited Collider");
         }
     }
 }

@@ -30,7 +30,8 @@ public class PileBase : MonoBehaviour
 
     public void AddToPile(GameObject go)
     {
-        go.transform.position = GetPositionAt(_objects.Count - 1);
+        go.transform.position = GetPositionAt(_objects.Count);
+        go.transform.parent = transform;
 
         _objects.Push(go);
     }

@@ -58,7 +58,7 @@ public class Counter : MonoBehaviour
     {
         switch (identifier)
         {
-            case EColliderIdentifier.GetDonut:
+            case EColliderIdentifier.TakeDonut:
                 StopGetDonut();
                 break;
             case EColliderIdentifier.Cash:

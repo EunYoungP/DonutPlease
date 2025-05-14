@@ -70,15 +70,16 @@ public class TrayController : MonoBehaviour
         CheckTrayActivation();
     }
 
-    public void PlayPutDownFromTray(Transform child)
+    public void PlayPutDownFromTray(Transform child, PileBase dest)
     {
         if (_items.Contains(child))
         {
             _items.Remove(child);
-            child.DOJump(transform.position, 5, 1, 0.3f)
+            child.DOJump(dest.GetPositionAt(dest.ObjectCount), 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
-                    Destroy(child.gameObject);
+                    dest.AddToPile(child.gameObject);
+                    child.transform.rotation = Quaternion.identity;
                 });
         }
 

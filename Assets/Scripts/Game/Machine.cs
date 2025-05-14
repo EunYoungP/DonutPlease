@@ -21,10 +21,17 @@ public class Machine : MonoBehaviour
     private bool _isGettingDonut;
 
     private CharacterBase _enterCharcater;
+    private Coroutine _curCoroutine;
+
 
     private void OnEnable()
     {
-        StartCoroutine(CoMakeDonut());
+        _curCoroutine = StartCoroutine(CoMakeDonut());
+    }
+
+    private void OnDestroy()
+    {
+        ResetCoroutine();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -36,7 +43,7 @@ public class Machine : MonoBehaviour
                 _isGettingDonut = true;
                 _enterCharcater = other.GetComponent<CharacterBase>();
 
-                StartCoroutine(CoGetDonut());
+                StartCoroutine(CoLoopGetFromPileCoroutine());
             }
             else
             {
@@ -49,11 +56,23 @@ public class Machine : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            StartCoroutine(CoMakeDonut());
+            ResetCoroutine();
+
+            _curCoroutine = StartCoroutine(CoMakeDonut());
         }
     }
 
-    private IEnumerator CoGetDonut()
+    private IEnumerator CoLoopGetFromPileCoroutine()
+    {
+        while (_isGettingDonut)
+        {
+            _curCoroutine = StartCoroutine(CoGetFromPile());
+            yield return _curCoroutine;
+        }
+        yield return null;
+    }
+
+    private IEnumerator CoGetFromPile()
     {
         if (_donutPile.IsEmpty)
         {
@@ -71,23 +90,20 @@ public class Machine : MonoBehaviour
 
         GameObject donut = _donutPile.RemoveFromPile();
         FluxSystem.Dispatch(new OnGetDonut(donut, _enterCharcater));
-        
-        StartCoroutine(CoGetDonut());
     }
 
     private IEnumerator CoMakeDonut()
     {
-        float elapsedTime = 0f;
+        if (_isGettingDonut)
+            yield break;
 
+        float elapsedTime = 0f;
         while (elapsedTime < _makeInterval)
         {
             elapsedTime += Time.deltaTime;
 
             yield return null;
         }
-
-        if (_isGettingDonut)
-            yield break;
 
         GameObject go = Instantiate(_prefab, transform.position, Quaternion.identity);
         _donutPile.AddToPile(go);
@@ -96,5 +112,13 @@ public class Machine : MonoBehaviour
 
         if (!_donutPile.IsFull)
             StartCoroutine(CoMakeDonut());
+    }
+
+    private void ResetCoroutine()
+    {
+        _isGettingDonut = false;
+
+        if (_curCoroutine != null)
+            StopCoroutine(_curCoroutine);
     }
 }

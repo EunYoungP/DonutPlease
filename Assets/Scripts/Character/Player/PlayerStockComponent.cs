@@ -16,6 +16,12 @@ public class PlayerStockComponent
 
     public GameObject RemoveDonut()
     {
+        if (Donuts.Count == 0)
+        {
+            Debug.LogWarning("No donuts to remove.");
+            return null;
+        }
+
         return Donuts.Pop();
     }
 }

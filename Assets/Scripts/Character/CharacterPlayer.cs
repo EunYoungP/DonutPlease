@@ -1,5 +1,6 @@
 using UnityEngine;
 using UniRx;
+using UnityEngine.TextCore.Text;
 
 namespace DonutPlease.Game.Character
 {
@@ -20,8 +21,6 @@ namespace DonutPlease.Game.Character
         private float _rotateSpeed = 10f;
 
         private bool _isMoving;
-
-        public PlayerStockComponent PlayerStock;
 
         public void Initialize()
         {
@@ -46,8 +45,7 @@ namespace DonutPlease.Game.Character
             {
                 if (data is OnPutDownDonut putDownDonut)
                 {
-                    if (putDownDonut.character is CharacterPlayer player)
-                        RemoveFromTray();
+                    RemoveFromTray(putDownDonut.character, putDownDonut.pile);
                 }
             })
             .AddTo(this);
@@ -83,10 +81,13 @@ namespace DonutPlease.Game.Character
             _trayController.PlayAddToTray(child);
         }
 
-        public void RemoveFromTray()
+        public void RemoveFromTray(CharacterBase character, PileBase pile)
         {
-            var donut = _gameManager.Player.Stock.RemoveDonut();
-            _trayController.PlayPutDownFromTray(donut.transform);
+            if (character is CharacterPlayer player)
+            {
+                var donut = _gameManager.Player.Stock.RemoveDonut();
+                _trayController.PlayPutDownFromTray(donut.transform, pile);
+            }
         }
 
         #endregion
