@@ -1,0 +1,87 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+
+public class CharacterCustomerController : MonoBehaviour
+{
+    public enum ECustomerState
+    { 
+        In,
+        Waiting,
+        EatDonut,
+        Out,
+    }
+
+    [SerializeField] private Animator _animator;
+    [SerializeField] private NavMeshAgent _agent;
+
+    public bool IsMoving => CheckMoving();
+
+    public ECustomerState State { get; private set; } = ECustomerState.In;
+
+
+    private void Update()
+    {
+        if (IsMoving)
+        {
+            Walk();
+        }
+        else
+        {
+            Idle();
+        }
+    }
+
+    public void ChangeState(ECustomerState state)
+    {
+        switch (state)
+        {
+            case ECustomerState.In:
+                State = ECustomerState.In;
+                break;
+            case ECustomerState.Waiting:
+                State = ECustomerState.Waiting;
+                break;
+            case ECustomerState.EatDonut:
+                State = ECustomerState.EatDonut;
+                break;
+            case ECustomerState.Out:
+                State = ECustomerState.Out;
+                break;
+        }
+    }
+
+    #region Movement
+
+    public void MoveTo(Transform dest)
+    {
+        _agent.SetDestination(dest.position);
+    }
+
+    private bool CheckMoving()
+    {
+        bool isMoving = !_agent.pathPending 
+            && _agent.remainingDistance > _agent.stoppingDistance
+            && _agent.velocity.magnitude > 0.1f;
+
+        return isMoving;
+    }
+
+    #endregion
+
+    #region Animation
+
+    private void Walk()
+    {
+        _animator.Play(PlayerAnimationNames.Walk);
+    }
+
+    private void Idle()
+    {
+        _animator.Play(PlayerAnimationNames.Idle);
+    }
+
+    #endregion
+}
