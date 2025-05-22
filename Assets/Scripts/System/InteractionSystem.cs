@@ -20,14 +20,10 @@ public class InteractionSystem
     [SerializeField]
     private Transform InteractionRoot;
 
-    private GameManager _gameManager;
-
     private readonly CompositeDisposable disposable = new();
 
     public  void Initialize()
     {
-        _gameManager = GameManager.GetGameManager;
-
         FluxSystem.ActionStream
             .Subscribe(data =>
             {
@@ -45,15 +41,15 @@ public class InteractionSystem
 
             if (interactionType == InteractionType.Open)
             {
-                OpenStore(interactionId);
+                CreateProp(interactionId, interactionType);
             }
             else if (interactionType == InteractionType.CreateTable)
             {
-                CreateTable(interactionId);
+                CreateProp(interactionId, interactionType);
             }
             else if (interactionType == InteractionType.CreateMachine)
             {
-                CreateMachine(interactionId);
+                CreateProp(interactionId, interactionType);
             }
             else if (interactionType == InteractionType.CreateInteractionUI)
             {
@@ -62,19 +58,9 @@ public class InteractionSystem
         }
     }
 
-    private void OpenStore(int id)
+    private void CreateProp(int id, InteractionType type)
     {
-        GameManager.GetGameManager.LocalMap.CreateProp(id);
-    }
-
-    private void CreateTable(int id)
-    {
-        GameManager.GetGameManager.LocalMap.CreateProp(id);
-    }
-
-    private void CreateMachine(int id)
-    {
-        GameManager.GetGameManager.LocalMap.CreateProp(id);
+        GameManager.GetGameManager.LocalMap.CreateProp(id, type);
     }
 
     private void CreateInteractionUI(int id)

@@ -6,6 +6,7 @@ using UnityEngine;
 public struct InteractionProp
 {
     public int Id;
+    public int StoreId;
     public Vector3 Pos;
     public Vector3 Rot;
     public GameObject Prefab;
@@ -36,12 +37,43 @@ public class LocalMapSystem : MonoBehaviour
                 return prop;
             }
         }
-
         return default;
     }
 
-    // 생성 Id에 맞는 저장된 위치에 오브젝트 생성
-    public void CreateProp(int id)
+    // 프랍 생성은 무조건 여기에서 실행.
+    public void CreateProp(int id, InteractionType type)
+    {
+        var propObj = CreateProp(id);
+
+        InteractionProp prop = GetProp(id);
+
+        Store store = GameManager.GetGameManager.Store.GetStore(prop.StoreId);
+
+        switch (type)
+        {
+            case InteractionType.Open:
+                break;
+            case InteractionType.CreateTable:
+                Table table = propObj.GetComponent<Table>();
+                store.AddTable(table);
+                break;
+            case InteractionType.CreateMachine:
+                Machine machine = propObj.GetComponent<Machine>();
+                store.AddMachine(machine);
+                break;
+            case InteractionType.CreateCounter:
+                Counter counter = propObj.GetComponent<Counter>();
+                store.AddMainCouter(counter);
+                break;
+            case InteractionType.CreateDriveThru:
+                break;
+            case InteractionType.HireStaff:
+                break;
+        }
+        
+    }
+
+    private GameObject CreateProp(int id)
     {
         InteractionProp prop = GetProp(id);
 
@@ -53,6 +85,8 @@ public class LocalMapSystem : MonoBehaviour
 
         propRoot.transform.localPosition = prop.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(prop.Rot);
+
+        return propObj;
     }
 
     public void CreateInteractionUI(int id)

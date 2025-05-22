@@ -3,6 +3,8 @@ using DonutPlease.Game.Character;
 using System.Collections.Generic;
 using UniRx;
 using System.Collections;
+using Unity.VisualScripting;
+using DG.Tweening;
 
 public class Counter : MonoBehaviour
 {
@@ -15,13 +17,18 @@ public class Counter : MonoBehaviour
     [SerializeField]
     private Collider _casherPlaceCollider;
 
-    private Queue<CharacterCustomer> _customers = new();
-    private Queue<CharacterCustomer> _customersInLine = new();
-    private int _inLineCustomerMax = 10;
+    [Header("Customer")]
+    [SerializeField] GameObject Customer;
 
-    //Line
     [SerializeField]
     private Transform _lineStartTransform;
+
+    [SerializeField]
+    private Transform _customerPoint;
+
+    private List<CharacterCustomer> _customers = new();
+    private List<CharacterCustomer> _customersInLine = new();
+    private int _inLineCustomerMax = 5;
 
     public int CustomerCount => _customers.Count;
     public int InLineCustomerCount => _customersInLine.Count;
@@ -39,46 +46,125 @@ public class Counter : MonoBehaviour
             OnTriggerExitAction(data.Item1, data.Item2);
 
         }).AddTo(this);
+
+        StartCoroutine(CoAddCustomer());
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 
     #region customer
 
+    private IEnumerator CoAddCustomer()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (_inLineCustomerMax > InLineCustomerCount)
+            {
+                AddCustomer();
+                Debug.Log("은영 1. 손님 생성");
+
+                var customer = _customers[CustomerCount - 1];
+
+                StartCoroutine(CoCustomerDo(customer));
+
+                yield return new WaitForSeconds(10f);
+            }
+            yield return null;
+        }
+    }
+
     private IEnumerator CoCustomerDo(CharacterCustomer customer)
     {
-        // 손님 생성하는 코드 후 실행
-        AddCustomer(customer);
-
         while (true)
         {
-            // 가게 안으로 들어와서 줄서기
-            AddCustomerInLine(customer);
-            customer.Controller.MoveTo(GetLinePos());
+            if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.None))
+            {
+                customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.In);
 
-            // 이동중
-            yield return new WaitUntil(() => customer.Controller.IsMoving);
+                // 가게 안으로 들어와서 줄서기
+                AddCustomerInLine(customer);
 
-            // 대기
-            customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Waiting);
+                Debug.Log("은영 2. 줄까지 이동 실행");
+                customer.Controller.MoveTo(GetLinePos());
+
+                // 이동중
+                Debug.Log("은영 3. 줄까지 이동중");
+                yield return new WaitUntil(() => !customer.Controller.IsMoving);
+
+                // 대기 상태로 변경
+                Debug.Log("은영 4. 대기 상태로 변경");
+                customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Waiting);
+            }
 
             // 도넛 받을 차례인지 검사? 대기?
-            if (CanGetDonut())
+            Debug.Log("은영 5. 도넛 차례 검사");
+            if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Waiting))
             {
-                // 줄에서 나가기
-                RemoveCustomerInLine();
+                if (CanGetDonut())
+                {
+                    customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.EatDonut);
 
-                // 도넛 받기
+                    // 줄에서 나가기
+                    RemoveCustomerInLine();
 
-                // 자리로 이동
-                //customer.Controller.MoveTo(빈 자리)
+                    Debug.Log("은영 6. 도넛 받기");
+                    // 도넛 받기
+                    _donutPile.GetDonutFromPile(1);
 
-                // 도넛 줄 갱신
-                UpdateCustomerLine();
+                    yield return new WaitForSeconds(1f);
 
-                // 도착까지 대기
+                    Debug.Log("은영 6-1. 도넛 받기 대기");
+                    yield return new WaitUntil(() => !_donutPile.IsWorkingAI);
 
-                // 도착 후 먹기
+                    // 자리로 이동
+                    Transform emptySeatPos = GameManager.GetGameManager.Store.GetStore(1).GetEmptyTableSeat(out var table);
+                    Debug.Log($"은영 7. 자리로 이동 실행");
+                    customer.Controller.MoveTo(emptySeatPos);
 
-                // 먹은 후 나가기
+                    // 도넛 줄 갱신
+                    Debug.Log("은영 8. 나머지 손님 줄 갱신 실행");
+                    UpdateCustomerLine();
+
+                    // 도착까지 대기
+                    Debug.Log("은영 9. 도착까지 대기");
+                    yield return new WaitUntil(() => !customer.Controller.IsMoving);
+
+                    // 도착 후 
+                    // - 앉기
+
+                    // - 먹기
+                    Debug.Log("은영 10. 먹는동안 5초 대기");
+                    yield return new WaitForSeconds(10f);
+
+                    // 먹은 후 나가기
+                    // - 쓰레기 생성
+                    Debug.Log("은영 11. 쓰레기 생성");
+                    table.MakeTrash();
+
+                    customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Out);
+                }
+
+                if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Out))
+                { 
+                    // - 나가기
+                    Debug.Log("은영 12. 문 밖으로 이동실행");
+                    customer.Controller.MoveTo(_customerPoint);
+
+                    Debug.Log("은영 13. 문 밖으로 이동중");
+                    yield return new WaitUntil(() => !customer.Controller.IsMoving);
+
+                    Debug.Log("은영 14. 손님 삭제");
+                    RemoveCustomer();
+
+                    yield break;
+                }
+
+                yield return null;
             }
         }
     }
@@ -95,17 +181,23 @@ public class Counter : MonoBehaviour
     private Transform GetLinePos()
     {
         Transform lineTransform = _lineStartTransform;
-        lineTransform.position += new Vector3(0, 0, InLineCustomerCount - 1);
+        lineTransform.position += new Vector3(InLineCustomerCount + 1, 0, 0 );
         return lineTransform;
     }
 
     private bool CanGetDonut()
     {
         // 도넛이 있는지 검사
+        if (_donutPile.IsEmpty)
+            return false;
 
         // 빈 자리가 있는지 검사
+        if (!GameManager.GetGameManager.Store.GetStore(1).CheckHaveEmptySeat())
+        {
+            return false;
+        }
 
-        return false;
+        return true;
     }
 
     // 손님 생성 전 체크
@@ -114,24 +206,30 @@ public class Counter : MonoBehaviour
         return InLineCustomerCount < _inLineCustomerMax;
     }
 
-    private void AddCustomer(CharacterCustomer customer)
+    private void AddCustomer()
     {
-        _customers.Enqueue(customer);
+        GameObject customerObj = Instantiate(Customer, _customerPoint.position, Quaternion.identity);
+        CharacterCustomer customer = customerObj.GetComponent<CharacterCustomer>();
+
+        _customers.Add(customer);
     }
 
-    private bool RemoveCustomer()
+    private void RemoveCustomer()
     {
-        return (_customers.TryDequeue(out CharacterCustomer result));
+        var customer = _customers[0];
+        _customers.Remove(customer);
+        Destroy(customer.gameObject);
     }
 
     private void AddCustomerInLine(CharacterCustomer customer)
     {
-        _customersInLine.Enqueue(customer);
+        _customersInLine.Add(customer);
     }
 
     private bool RemoveCustomerInLine()
     {
-        return (_customersInLine.TryDequeue(out CharacterCustomer result));
+        var customer = _customersInLine[0];
+        return _customersInLine.Remove(customer);
     }
 
 

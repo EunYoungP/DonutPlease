@@ -50,7 +50,8 @@ public class GameManager : MonoBehaviour
     public LocalMapSystem LocalMap;
 
     private InteractionSystem Intercation;
-    private StoreSystem StoreSystem;
+    public StoreSystem Store;
+
     public GamePlayerComponent Player { get; private set; }
     public  bl_Joystick JoyStick;
 
@@ -70,8 +71,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        StoreSystem = new StoreSystem();
-        if (StoreSystem == null)
+        Store = new StoreSystem();
+        if (Store == null)
         {
             Debug.LogError("StoreSystem not found");
             return;
@@ -94,6 +95,6 @@ public class GameManager : MonoBehaviour
         Player.Initialize();
         LocalMap.Initialize();
         Intercation.Initialize();
-        StoreSystem.Initialize();
+        Store.Initialize();
     }
 }

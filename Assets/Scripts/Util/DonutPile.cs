@@ -16,6 +16,7 @@ public class DonutPile : PileBase
     public float GettingInterval { get; private set; } = 0.2f;
     public bool IsGettingDonut { get; private set; } = false;
     public bool IsTakingDonut { get; private set; } = false;
+    public bool IsWorkingAI { get; private set; } = false;
 
     private void OnDestroy()
     {
@@ -32,7 +33,6 @@ public class DonutPile : PileBase
 
         StartCoroutine(CoLoopEnterGetCoroutine());
     }
-
 
     public void OnTriggerEnterTakeDonut(CharacterBase character)
     {
@@ -52,6 +52,13 @@ public class DonutPile : PileBase
         ResetCoroutine();
     }
 
+    public void GetDonutFromPile(int count)
+    {
+        IsWorkingAI = true;
+
+        StartCoroutine(CoGetFromPileByCount(count));
+    }
+
     private void ResetCoroutine()
     {
         IsGettingDonut = false;
@@ -65,6 +72,8 @@ public class DonutPile : PileBase
     {
         while (IsGettingDonut)
         {
+            yield return new WaitUntil(() => !IsWorkingAI);
+
             _curCoroutine = StartCoroutine(CoGetFromPile());
             yield return _curCoroutine;
         }
@@ -75,10 +84,24 @@ public class DonutPile : PileBase
     {
         while (IsTakingDonut)
         {
+            yield return new WaitUntil(() => !IsWorkingAI);
+
             _curCoroutine = StartCoroutine(CoMoveToPile());
             yield return _curCoroutine;
         }
         yield return null;
+    }
+
+    private IEnumerator CoGetFromPileByCount(int count)
+    {
+        int getDonutCount = 0;
+        while (IsWorkingAI && getDonutCount < count)
+        {
+            yield return StartCoroutine(CoGetFromPile());
+            getDonutCount++;
+        }
+
+        IsWorkingAI = false;
     }
 
     // µµ³Ó ÆÄÀÏ¿¡¼­ µµ³Ó »©°¡±â
@@ -117,8 +140,10 @@ public class DonutPile : PileBase
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ¹Ýº¹ÇØ¼­ ¸¸µé±â
-    private IEnumerator CoMakeDonut()
+    private IEnumerator CoLoopMakeDonut()
     {
+        yield return new WaitUntil(() => !IsWorkingAI);
+
         float elapsedTime = 0f;
 
         while (elapsedTime < MakingInterval)
@@ -135,7 +160,7 @@ public class DonutPile : PileBase
         AddToPile(go);
 
         if (!IsFull)
-            StartCoroutine(CoMakeDonut());
+            StartCoroutine(CoLoopMakeDonut());
     }
 
     private bool CheckCharacterDonutExist()

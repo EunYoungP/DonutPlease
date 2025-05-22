@@ -8,6 +8,7 @@ public class CharacterCustomerController : MonoBehaviour
 {
     public enum ECustomerState
     { 
+        None,
         In,
         Waiting,
         EatDonut,
@@ -19,7 +20,7 @@ public class CharacterCustomerController : MonoBehaviour
 
     public bool IsMoving => CheckMoving();
 
-    public ECustomerState State { get; private set; } = ECustomerState.In;
+    public ECustomerState State { get; private set; } = ECustomerState.None;
 
 
     private void Update()
@@ -53,6 +54,11 @@ public class CharacterCustomerController : MonoBehaviour
         }
     }
 
+    public bool CheckState(ECustomerState state)
+    {
+        return State == state;
+    }
+
     #region Movement
 
     public void MoveTo(Transform dest)
@@ -62,11 +68,17 @@ public class CharacterCustomerController : MonoBehaviour
 
     private bool CheckMoving()
     {
-        bool isMoving = !_agent.pathPending 
-            && _agent.remainingDistance > _agent.stoppingDistance
-            && _agent.velocity.magnitude > 0.1f;
+        if (_agent.pathPending)
+            return true;
 
-        return isMoving;
+        if (_agent.hasPath == false)
+            return false;
+
+        if (_agent.remainingDistance <= _agent.stoppingDistance
+                      && _agent.velocity.magnitude < 0.1f)
+            return false;
+
+        return true;
     }
 
     #endregion

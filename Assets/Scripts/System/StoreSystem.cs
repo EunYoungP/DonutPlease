@@ -4,20 +4,33 @@ using UnityEngine;
 
 public class StoreSystem
 {
-    private static List<Machine> _donutMachines = new();
+    private static Dictionary<int, Store> _stores = new();
 
     public void Initialize()
     {
-        
+        // 1 Store »ý¼º
+        AddOrUpdateStore(1, new Store());
     }
 
-    public void AddMachine(Machine machine)
+    public void AddOrUpdateStore(int storeId, Store store)
     {
-        if (machine == null)
+        _stores[storeId] = store;
+    }
+
+    public Store GetStore(int storeId)
+    {
+        if (_stores.TryGetValue(storeId, out Store store))
         {
-            Debug.LogError("Machine is null");
-            return;
+            // Store found
+            Debug.Log($"Store found: {store}");
+            return store;
         }
-        _donutMachines.Add(machine);
+        else
+        {
+            // Store not found
+            Debug.LogError($"Store with ID {storeId} not found.");
+        }
+
+        return null;
     }
 }
