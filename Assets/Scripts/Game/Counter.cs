@@ -101,10 +101,9 @@ public class Counter : MonoBehaviour
                 customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Waiting);
             }
 
-            // 도넛 받을 차례인지 검사? 대기?
-            Debug.Log("은영 5. 도넛 차례 검사");
             if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Waiting))
             {
+                Debug.Log("은영 5. 도넛 차례 검사");
                 if (CanGetDonut())
                 {
                     customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.EatDonut);
@@ -149,25 +148,25 @@ public class Counter : MonoBehaviour
 
                     customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Out);
                 }
-
-                if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Out))
-                { 
-                    // - 나가기
-                    Debug.Log("은영 12. 문 밖으로 이동실행");
-                    customer.Controller.MoveTo(_customerPoint.position);
-
-                    Debug.Log("은영 13. 문 밖으로 이동중");
-                    yield return new WaitUntil(() => !customer.Controller.IsMoving);
-
-                    Debug.Log("은영 14. 손님 삭제");
-                    RemoveCustomer();
-
-                    yield break;
-                }
-
-                yield return null;
             }
-        }
+
+            if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Out))
+            { 
+                // - 나가기
+                Debug.Log("은영 12. 문 밖으로 이동실행");
+                customer.Controller.MoveTo(_customerPoint.position);
+
+                Debug.Log("은영 13. 문 밖으로 이동중");
+                yield return new WaitUntil(() => !customer.Controller.IsMoving);
+
+                Debug.Log("은영 14. 손님 삭제");
+                RemoveCustomer();
+
+                yield break;
+            }
+            
+            yield return null;
+          }
     }
 
     private void UpdateCustomerLine()
