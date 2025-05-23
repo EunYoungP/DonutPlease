@@ -47,14 +47,14 @@ public class Table : MonoBehaviour
         return false;
     }
 
-    public bool GetEmptySeatPos(out Transform seatPosition)
+    public bool GetEmptySeatPos(out Vector3 seatPosition)
     {
-        seatPosition = null;
+        seatPosition = Vector3.zero;
         for(int i = 0; i < _seatList.Count; i++)
         {
             var seat = _seatList[i];
             int haveCustomer = seat.Key;
-            Transform seatPos = seat.Value;
+            Vector3 seatPos = seat.Value.position;
 
             if (haveCustomer == 0)
             {

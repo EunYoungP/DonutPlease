@@ -61,9 +61,9 @@ public class CharacterCustomerController : MonoBehaviour
 
     #region Movement
 
-    public void MoveTo(Transform dest)
+    public void MoveTo(Vector3 dest)
     {
-        _agent.SetDestination(dest.position);
+        _agent.SetDestination(dest);
     }
 
     private bool CheckMoving()

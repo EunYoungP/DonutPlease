@@ -28,7 +28,7 @@ public class Counter : MonoBehaviour
 
     private List<CharacterCustomer> _customers = new();
     private List<CharacterCustomer> _customersInLine = new();
-    private int _inLineCustomerMax = 5;
+    private int _inLineCustomerMax = 1;
 
     public int CustomerCount => _customers.Count;
     public int InLineCustomerCount => _customersInLine.Count;
@@ -90,7 +90,7 @@ public class Counter : MonoBehaviour
                 AddCustomerInLine(customer);
 
                 Debug.Log("은영 2. 줄까지 이동 실행");
-                customer.Controller.MoveTo(GetLinePos());
+                customer.Controller.MoveTo(GetLinePos(customer));
 
                 // 이동중
                 Debug.Log("은영 3. 줄까지 이동중");
@@ -122,8 +122,9 @@ public class Counter : MonoBehaviour
                     yield return new WaitUntil(() => !_donutPile.IsWorkingAI);
 
                     // 자리로 이동
-                    Transform emptySeatPos = GameManager.GetGameManager.Store.GetStore(1).GetEmptyTableSeat(out var table);
+                    Vector3 emptySeatPos = GameManager.GetGameManager.Store.GetStore(1).GetEmptyTableSeat(out var table);
                     Debug.Log($"은영 7. 자리로 이동 실행");
+                    Debug.Log($"은영 7. POS X : {emptySeatPos.x}, Y : {emptySeatPos.y} Z : {emptySeatPos.z}");
                     customer.Controller.MoveTo(emptySeatPos);
 
                     // 도넛 줄 갱신
@@ -153,7 +154,7 @@ public class Counter : MonoBehaviour
                 { 
                     // - 나가기
                     Debug.Log("은영 12. 문 밖으로 이동실행");
-                    customer.Controller.MoveTo(_customerPoint);
+                    customer.Controller.MoveTo(_customerPoint.position);
 
                     Debug.Log("은영 13. 문 밖으로 이동중");
                     yield return new WaitUntil(() => !customer.Controller.IsMoving);
@@ -174,15 +175,17 @@ public class Counter : MonoBehaviour
         foreach (var customer in _customersInLine)
         {
             // 대기 중인 손님이 줄을 서는 코드
-            customer.Controller.MoveTo(GetLinePos());
+            customer.Controller.MoveTo(GetLinePos(customer));
         }
     }
 
-    private Transform GetLinePos()
+    private Vector3 GetLinePos(CharacterCustomer customer)
     {
-        Transform lineTransform = _lineStartTransform;
-        lineTransform.position += new Vector3(InLineCustomerCount + 1, 0, 0 );
-        return lineTransform;
+        int index = _customersInLine.IndexOf(customer);
+
+        Vector3 lineStartPos = _lineStartTransform.position;
+        lineStartPos += new Vector3(index * 1.2f, 0, 0 );
+        return lineStartPos;
     }
 
     private bool CanGetDonut()

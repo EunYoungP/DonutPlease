@@ -34,16 +34,13 @@ public class Store
     {
         foreach (var table in _tables)
         {
-            if (table.GetEmptySeatPos(out var seatPos))
-            {
-                if (table.CheckHaveEmptySeat())
-                    return true;
-            }
+            if (table.CheckHaveEmptySeat())
+                return true;
         }
         return false;
     }
 
-    public Transform GetEmptyTableSeat(out Table targetTable)
+    public Vector3 GetEmptyTableSeat(out Table targetTable)
     {
         targetTable = null;
 
@@ -55,6 +52,6 @@ public class Store
                 return seatPos;
             }
         }
-        return null;
+        return Vector3.zero;
     }
 }
