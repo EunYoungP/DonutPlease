@@ -9,11 +9,18 @@ namespace DonutPlease.Game.Character
 
         public CharacterCustomerController Controller => _controller;
 
+        public CharacterStockComponent Stock { get; private set; }
+
+        private void Awake()
+        {
+            Stock = new CharacterStockComponent();
+        }
+
         #region Tray
 
-        protected override void AddToTray(Transform child)
+        protected override void AddToTray(CharacterBase customer, Transform child)
         {
-            GameMng.Player.Stock.AddDonut(child.gameObject);
+            Stock.AddDonut(child.gameObject);
             _trayController.PlayAddToTray(child);
         }
 
@@ -21,7 +28,7 @@ namespace DonutPlease.Game.Character
         {
             if (character is CharacterPlayer player)
             {
-                var donut = GameMng.Player.Stock.RemoveDonut();
+                var donut = Stock.RemoveDonut();
                 _trayController.PlayPutDownFromTray(donut.transform, pile);
             }
         }

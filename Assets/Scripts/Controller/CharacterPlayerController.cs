@@ -7,7 +7,6 @@ public class CharacterPlayerController : MonoBehaviour
 
     private bl_Joystick _joystick;
     
-
     private float _cameraRot = -45f;
     private float _moveSpeed = 1.2f;
     private float _rotateSpeed = 10f;

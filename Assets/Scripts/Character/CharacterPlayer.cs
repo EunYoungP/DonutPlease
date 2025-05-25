@@ -6,12 +6,12 @@ namespace DonutPlease.Game.Character
 {
     public class CharacterPlayer : CharacterBase
     {
-        [SerializeField] private CharacterCustomerController _controller;
+        [SerializeField] private CharacterPlayerController _controller;
         [SerializeField] private TrayController _trayController;
 
         private PlayerCamera _camera;
 
-        public CharacterCustomerController Controller => _controller;
+        public CharacterPlayerController Controller => _controller;
 
         public void Initialize()
         {
@@ -21,7 +21,7 @@ namespace DonutPlease.Game.Character
 
         #region Tray
 
-        protected override void AddToTray(Transform child)
+        protected override void AddToTray(CharacterBase player, Transform child)
         {
             GameMng.Player.Stock.AddDonut(child.gameObject);
             _trayController.PlayAddToTray(child);

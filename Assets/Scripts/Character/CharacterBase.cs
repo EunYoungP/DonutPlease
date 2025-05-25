@@ -38,15 +38,15 @@ namespace DonutPlease.Game.Character
                 {
                     if (getDonut.character is CharacterPlayer player)
                     {
-                        player.AddToTray(getDonut.donut.transform);
+                        player.AddToTray(player, getDonut.donut.transform);
                     }
                     else if (getDonut.character is CharacterCustomer customer)
                     {
-                        customer.AddToTray(getDonut.donut.transform);
+                        customer.AddToTray(customer, getDonut.donut.transform);
                     }
                     else if (getDonut.character is CharacterWorker worker)
                     {
-                        worker.AddToTray(getDonut.donut.transform);
+                        worker.AddToTray(worker, getDonut.donut.transform);
                     }
                 }
             })
@@ -57,13 +57,24 @@ namespace DonutPlease.Game.Character
             {
                 if (data is OnPutDownDonut putDownDonut)
                 {
-                    RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                    if (putDownDonut.character is CharacterPlayer player)
+                    {
+                        player.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                    }
+                    else if (putDownDonut.character is CharacterCustomer customer)
+                    {
+                        customer.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                    }
+                    else if (putDownDonut.character is CharacterWorker worker)
+                    {
+                        worker.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                    }
                 }
             })
             .AddTo(this);
         }
 
-        protected virtual void AddToTray(Transform child)
+        protected virtual void AddToTray(CharacterBase character, Transform child)
         {
         }
 

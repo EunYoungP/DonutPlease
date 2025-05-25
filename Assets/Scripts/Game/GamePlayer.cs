@@ -2,18 +2,18 @@ using DonutPlease.Game.Character;
 using UnityEngine;
 
 
-public class GamePlayerComponent
+public class GamePlayer
 {
     [SerializeField] private CharacterPlayer _player;
 
-    public PlayerStockComponent Stock { get; private set; }
+    public CharacterStockComponent Stock { get; private set; }
     
     public void Initialize()
     {
         _player = GameObject.FindAnyObjectByType<CharacterPlayer>();
         _player.Initialize();
 
-        Stock = new PlayerStockComponent();
+        Stock = new CharacterStockComponent();
     }
 
     public CharacterPlayer GetPlayer()

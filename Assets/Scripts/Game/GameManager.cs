@@ -52,12 +52,12 @@ public class GameManager : MonoBehaviour
     private InteractionSystem Intercation;
     public StoreSystem Store;
 
-    public GamePlayerComponent Player { get; private set; }
+    public GamePlayer Player { get; private set; }
     public  bl_Joystick JoyStick;
 
     private void Awake()
     {
-        Player = new GamePlayerComponent();
+        Player = new GamePlayer();
         if (Player == null)
         {
             Debug.LogError("Player not found");

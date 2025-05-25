@@ -3,7 +3,7 @@ using UniRx;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-public class PlayerStockComponent 
+public class CharacterStockComponent 
 {
     // Donut
     public Stack<GameObject> Donuts { get; private set; } = new Stack<GameObject>();

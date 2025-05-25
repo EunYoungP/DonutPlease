@@ -113,7 +113,7 @@ public class Counter : MonoBehaviour
 
                     Debug.Log("은영 6. 도넛 받기");
                     // 도넛 받기
-                    _donutPile.GetDonutFromPile(1);
+                    _donutPile.GetDonutFromPile(customer, 1);
 
                     yield return new WaitForSeconds(1f);
 
@@ -137,11 +137,16 @@ public class Counter : MonoBehaviour
                     // 도착 후 
                     // - 앉기
 
+                    // - 도넛 내려놓기
+                    _donutPile.MoveDonutToPile(customer, 1);
+
                     // - 먹기
                     Debug.Log("은영 10. 먹는동안 5초 대기");
                     yield return new WaitForSeconds(10f);
 
                     // 먹은 후 나가기
+                    // - 손님 도넛 삭제
+
                     // - 쓰레기 생성
                     Debug.Log("은영 11. 쓰레기 생성");
                     table.MakeTrash();

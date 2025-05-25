@@ -63,11 +63,10 @@ public class TrayController : MonoBehaviour
             {
                 _reserved.Remove(child);
                 _items.Add(child);
+
+                child.SetParent(transform);
+                CheckTrayActivation();
             });
-
-        child.SetParent(transform);
-
-        CheckTrayActivation();
     }
 
     public void PlayPutDownFromTray(Transform child, PileBase dest)

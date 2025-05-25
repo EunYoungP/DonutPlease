@@ -12,8 +12,9 @@ public class DonutPile : PileBase
 
     private CharacterBase _enterCharcater;
 
-    public float MakingInterval { get; private set; } = 0.2f;
-    public float GettingInterval { get; private set; } = 0.2f;
+    private float _makingInterval = 0.2f;
+    private float _gettingInterval = 0.2f;
+
     public bool IsGettingDonut { get; private set; } = false;
     public bool IsTakingDonut { get; private set; } = false;
     public bool IsWorkingAI { get; private set; } = false;
@@ -52,11 +53,18 @@ public class DonutPile : PileBase
         ResetCoroutine();
     }
 
-    public void GetDonutFromPile(int count)
+    public void GetDonutFromPile(CharacterBase character, int count)
     {
         IsWorkingAI = true;
 
-        StartCoroutine(CoGetFromPileByCount(count));
+        StartCoroutine(CoGetFromPileByCount(character, count));
+    }
+
+    public void MoveDonutToPile(CharacterBase character, int count)
+    {
+        IsWorkingAI = true;
+
+        StartCoroutine(CoMoveToPileByCount(character, count));
     }
 
     private void ResetCoroutine()
@@ -74,7 +82,7 @@ public class DonutPile : PileBase
         {
             yield return new WaitUntil(() => !IsWorkingAI);
 
-            _curCoroutine = StartCoroutine(CoGetFromPile());
+            _curCoroutine = StartCoroutine(CoGetFromPile(_enterCharcater));
             yield return _curCoroutine;
         }
         yield return null;
@@ -86,18 +94,30 @@ public class DonutPile : PileBase
         {
             yield return new WaitUntil(() => !IsWorkingAI);
 
-            _curCoroutine = StartCoroutine(CoMoveToPile());
+            _curCoroutine = StartCoroutine(CoMoveToPile(_enterCharcater));
             yield return _curCoroutine;
         }
         yield return null;
     }
 
-    private IEnumerator CoGetFromPileByCount(int count)
+    private IEnumerator CoGetFromPileByCount(CharacterBase character, int count)
     {
         int getDonutCount = 0;
         while (IsWorkingAI && getDonutCount < count)
         {
-            yield return StartCoroutine(CoGetFromPile());
+            yield return StartCoroutine(CoGetFromPile(character));
+            getDonutCount++;
+        }
+
+        IsWorkingAI = false;
+    }
+
+    private IEnumerator CoMoveToPileByCount(CharacterBase character, int count)
+    {
+        int getDonutCount = 0;
+        while (IsWorkingAI && getDonutCount < count)
+        {
+            yield return StartCoroutine(CoMoveToPile(character));
             getDonutCount++;
         }
 
@@ -105,13 +125,13 @@ public class DonutPile : PileBase
     }
 
     // µµ³Ó ÆÄÀÏ¿¡¼­ µµ³Ó »©°¡±â
-    private IEnumerator CoGetFromPile()
+    private IEnumerator CoGetFromPile(CharacterBase character)
     {
         if (!CheckPileDonutExist())
             yield break;
 
         float elapsedTime = 0f;
-        while (elapsedTime < GettingInterval)
+        while (elapsedTime < _gettingInterval)
         {
             elapsedTime += Time.deltaTime;
 
@@ -119,24 +139,24 @@ public class DonutPile : PileBase
         }
 
         GameObject donut = RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetDonut(donut, _enterCharcater));
+        FluxSystem.Dispatch(new OnGetDonut(donut, character));
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ½×±â
-    private IEnumerator CoMoveToPile()
+    private IEnumerator CoMoveToPile(CharacterBase character)
     {
-        if (!CheckCharacterDonutExist())
+        if (!CheckCharacterDonutExist(character))
             yield break;
 
         float elapsedTime = 0f;
-        while (elapsedTime < GettingInterval)
+        while (elapsedTime < _gettingInterval)
         {
             elapsedTime += Time.deltaTime;
 
             yield return null;
         }
 
-        FluxSystem.Dispatch(new OnPutDownDonut(_enterCharcater, this));
+        FluxSystem.Dispatch(new OnPutDownDonut(character, this));
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ¹Ýº¹ÇØ¼­ ¸¸µé±â
@@ -146,7 +166,7 @@ public class DonutPile : PileBase
 
         float elapsedTime = 0f;
 
-        while (elapsedTime < MakingInterval)
+        while (elapsedTime < _makingInterval)
         {
             elapsedTime += Time.deltaTime;
 
@@ -163,15 +183,19 @@ public class DonutPile : PileBase
             StartCoroutine(CoLoopMakeDonut());
     }
 
-    private bool CheckCharacterDonutExist()
+    private bool CheckCharacterDonutExist(CharacterBase character)
     {
-        if (_enterCharcater is CharacterPlayer player)
+        if (character is CharacterPlayer player)
         {
             return GameManager.GetGameManager.Player.Stock.DonutCount > 0;
         }
-        else if (_enterCharcater is CharacterCustomer customer)
+        else if (character is CharacterWorker worker)
         {
-
+            return worker.Stock.DonutCount > 0;
+        }
+        else if (character is CharacterCustomer customer)
+        {
+            return customer.Stock.DonutCount > 0;
         }
 
         return false;
