@@ -8,7 +8,7 @@ public class CharacterWorkerController : CharacterBase
 {
     public enum EWorkerState
     {
-        MakeDonut,
+        CarryDonut,
         Cashier,
         ClearTrash,
     }
@@ -18,7 +18,7 @@ public class CharacterWorkerController : CharacterBase
 
     public bool IsMoving => CheckMoving();
 
-    public EWorkerState State { get; private set; } = EWorkerState.MakeDonut;
+    public EWorkerState State { get; private set; } = EWorkerState.CarryDonut;
 
     private void Update()
     {
@@ -36,8 +36,8 @@ public class CharacterWorkerController : CharacterBase
     {
         switch (state)
         {
-            case EWorkerState.MakeDonut:
-                State = EWorkerState.MakeDonut;
+            case EWorkerState.CarryDonut:
+                State = EWorkerState.CarryDonut;
                 break;
             case EWorkerState.Cashier:
                 State = EWorkerState.Cashier;
@@ -48,7 +48,7 @@ public class CharacterWorkerController : CharacterBase
         }
     }
 
-    // 임시 위치
+    // 임시 위치8
     private IEnumerator CoWorkerDo()
     {
         // 시작은 도넛 만들기 

@@ -6,7 +6,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using DG.Tweening;
 
-public class Counter : MonoBehaviour
+public class Counter : PropBase
 {
     [SerializeField]
     private DonutPile _donutPile;
@@ -15,34 +15,43 @@ public class Counter : MonoBehaviour
     private PileBase _moneyPile;
 
     [SerializeField]
-    private Collider _casherPlaceCollider;
+    private Transform _donutPileFrontPos;
+
+    [SerializeField]
+    private Transform _casherPlace;
 
     [Header("Customer")]
     [SerializeField] GameObject Customer;
-
-    [SerializeField]
-    private Transform _lineStartTransform;
-
-    [SerializeField]
-    private Transform _customerPoint;
+    [SerializeField] private Transform _lineStartTransform;
+    [SerializeField] private Transform _customerPoint;
 
     private List<CharacterCustomer> _customers = new();
     private List<CharacterCustomer> _customersInLine = new();
     private int _inLineCustomerMax = 1;
 
+    private CharacterBase _cashier = null;
+
+    public int DonutCount => _donutPile.ObjectCount;
     public int CustomerCount => _customers.Count;
     public int InLineCustomerCount => _customersInLine.Count;
+    public bool HaveCashier => _cashier != null;
+
+    public Transform DonutPileFrontPosition => _donutPileFrontPos;
 
     private void OnEnable()
     {
         FluxSystem.ColliderEnterActionStream.Subscribe(data =>
         {
+            SetCashier(data.Item1);
+
             OnTriggerEnterAction(data.Item1, data.Item2);
 
         }).AddTo(this);
 
         FluxSystem.ColliderExitActionStream.Subscribe(data =>
         {
+            SetCashier(null);
+
             OnTriggerExitAction(data.Item1, data.Item2);
 
         }).AddTo(this);
@@ -82,10 +91,8 @@ public class Counter : MonoBehaviour
     {
         while (true)
         {
-            if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.None))
+            if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.In))
             {
-                customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.In);
-
                 // 가게 안으로 들어와서 줄서기
                 AddCustomerInLine(customer);
 
@@ -113,7 +120,7 @@ public class Counter : MonoBehaviour
 
                     Debug.Log("은영 6. 도넛 받기");
                     // 도넛 받기
-                    _donutPile.GetDonutFromPile(customer, 1);
+                    _donutPile.GetDonutFromPileByCount(customer, 1);
 
                     yield return new WaitForSeconds(1f);
 
@@ -304,4 +311,10 @@ public class Counter : MonoBehaviour
     }
 
     #endregion
+
+    // workerAI 일 분배시에도 캐셔 설정 필요
+    public void SetCashier(CharacterBase cashier)
+    {
+        _cashier = cashier;
+    }
 }

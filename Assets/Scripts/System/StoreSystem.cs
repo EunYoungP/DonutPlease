@@ -2,19 +2,23 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoreSystem
+public class StoreSystem : MonoBehaviour
 {
     private static Dictionary<int, Store> _stores = new();
 
     public void Initialize()
     {
         // 1 Store »ý¼º
-        AddOrUpdateStore(1, new Store());
+        AddOrUpdateStore(1);
     }
 
-    public void AddOrUpdateStore(int storeId, Store store)
+    public void AddOrUpdateStore(int storeId)
     {
-        _stores[storeId] = store;
+        GameObject go = new GameObject($"Store_{storeId}");
+        Store store = go.AddComponent<Store>();
+
+        if (_stores.TryAdd(storeId, store))
+            _stores[storeId] = store;
     }
 
     public Store GetStore(int storeId)

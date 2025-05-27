@@ -20,7 +20,7 @@ public class CharacterCustomerController : MonoBehaviour
 
     public bool IsMoving => CheckMoving();
 
-    public ECustomerState State { get; private set; } = ECustomerState.None;
+    public ECustomerState State { get; private set; } = ECustomerState.In;
 
 
     private void Update()

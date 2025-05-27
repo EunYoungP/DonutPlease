@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Table : MonoBehaviour
+public class Table : PropBase
 {
     [SerializeField] private List<Transform> _seatPositions;
 
@@ -29,6 +29,11 @@ public class Table : MonoBehaviour
     public void ClearTable()
     {
         _trash.SetActive(false);
+    }
+
+    public bool CheckHaveTrash()
+    {
+        return _trash.activeSelf;
     }
 
     public bool CheckHaveEmptySeat()

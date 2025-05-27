@@ -16,7 +16,7 @@ public class TrayController : MonoBehaviour
     private bl_Joystick _joystick;
     private float _cameraRot;
 
-    private int TotalItemCount => _items.Count;
+    public int TotalItemCount => _items.Count;
 
     private void Awake()
     {

@@ -5,12 +5,10 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public class Machine : MonoBehaviour
+public class Machine : PropBase
 {
-    private int CurBurger => _donutPile.ObjectCount;
-
     [SerializeField]
-    private PileBase _donutPile;
+    private DonutPile _donutPile;
 
     [SerializeField]
     private GameObject _prefab;
@@ -23,10 +21,12 @@ public class Machine : MonoBehaviour
     private CharacterBase _enterCharcater;
     private Coroutine _curCoroutine;
 
+    public DonutPile DonutPile => _donutPile;
+    public int DonutCount => _donutPile.ObjectCount;
 
     private void OnEnable()
     {
-        _curCoroutine = StartCoroutine(CoMakeDonut());
+        _curCoroutine = StartCoroutine(_donutPile.CoLoopMakeDonut());
     }
 
     private void OnDestroy()
@@ -38,12 +38,13 @@ public class Machine : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (CurBurger > 0)
+            if (DonutCount > 0)
             {
+                ResetCoroutine();
                 _isGettingDonut = true;
                 _enterCharcater = other.GetComponent<CharacterBase>();
 
-                StartCoroutine(CoLoopGetFromPileCoroutine());
+                StartCoroutine(CoLoopGetDonutFromPile());
             }
             else
             {
@@ -58,21 +59,21 @@ public class Machine : MonoBehaviour
         {
             ResetCoroutine();
 
-            _curCoroutine = StartCoroutine(CoMakeDonut());
+            _curCoroutine = StartCoroutine(_donutPile.CoLoopMakeDonut());
         }
     }
 
-    private IEnumerator CoLoopGetFromPileCoroutine()
+    private IEnumerator CoLoopGetDonutFromPile()
     {
         while (_isGettingDonut)
         {
-            _curCoroutine = StartCoroutine(CoGetFromPile());
+            _curCoroutine = StartCoroutine(CoGetDonutFromPile());
             yield return _curCoroutine;
         }
         yield return null;
     }
 
-    private IEnumerator CoGetFromPile()
+    private IEnumerator CoGetDonutFromPile()
     {
         if (_donutPile.IsEmpty)
         {
@@ -97,21 +98,7 @@ public class Machine : MonoBehaviour
         if (_isGettingDonut)
             yield break;
 
-        float elapsedTime = 0f;
-        while (elapsedTime < _makeInterval)
-        {
-            elapsedTime += Time.deltaTime;
-
-            yield return null;
-        }
-
-        GameObject go = Instantiate(_prefab, transform.position, Quaternion.identity);
-        _donutPile.AddToPile(go);
-
-        Debug.Log("µµ³Ó ¸¸µé±â");
-
-        if (!_donutPile.IsFull)
-            StartCoroutine(CoMakeDonut());
+        yield return null;
     }
 
     private void ResetCoroutine()

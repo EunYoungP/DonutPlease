@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class DonutPile : PileBase
 {
@@ -26,6 +27,23 @@ public class DonutPile : PileBase
 
     public void OnTriggerEnterGetDonut(CharacterBase character)
     {
+        LoopGetDonutFromPile(character);
+    }
+
+    public void OnTriggerEnterTakeDonut(CharacterBase character)
+    {
+        LoopMoveDonutToPile(character);
+    }
+
+    public void OnTriggerExitGetDonut()
+    {
+        _enterCharcater = null;
+
+        ResetCoroutine();
+    }
+
+    public void LoopGetDonutFromPile(CharacterBase character)
+    {
         _enterCharcater = character;
 
         ResetCoroutine();
@@ -35,7 +53,7 @@ public class DonutPile : PileBase
         StartCoroutine(CoLoopEnterGetCoroutine());
     }
 
-    public void OnTriggerEnterTakeDonut(CharacterBase character)
+    public void LoopMoveDonutToPile(CharacterBase character)
     {
         _enterCharcater = character;
 
@@ -46,14 +64,7 @@ public class DonutPile : PileBase
         StartCoroutine(CoLoopEnterTakeCoroutine());
     }
 
-    public void OnTriggerExitGetDonut()
-    {
-        _enterCharcater = null;
-
-        ResetCoroutine();
-    }
-
-    public void GetDonutFromPile(CharacterBase character, int count)
+    public void GetDonutFromPileByCount(CharacterBase character, int count)
     {
         IsWorkingAI = true;
 
@@ -67,14 +78,6 @@ public class DonutPile : PileBase
         StartCoroutine(CoMoveToPileByCount(character, count));
     }
 
-    private void ResetCoroutine()
-    {
-        IsGettingDonut = false;
-        IsTakingDonut = false;
-
-        if (_curCoroutine != null)
-            StopCoroutine(_curCoroutine);
-    }
 
     private IEnumerator CoLoopEnterGetCoroutine()
     {
@@ -100,7 +103,7 @@ public class DonutPile : PileBase
         yield return null;
     }
 
-    private IEnumerator CoGetFromPileByCount(CharacterBase character, int count)
+    public IEnumerator CoGetFromPileByCount(CharacterBase character, int count)
     {
         int getDonutCount = 0;
         while (IsWorkingAI && getDonutCount < count)
@@ -160,13 +163,13 @@ public class DonutPile : PileBase
     }
 
     // 도넛 파일에 도넛 반복해서 만들기
-    private IEnumerator CoLoopMakeDonut()
+    public IEnumerator CoLoopMakeDonut()
     {
         yield return new WaitUntil(() => !IsWorkingAI);
 
         float elapsedTime = 0f;
 
-        while (elapsedTime < _makingInterval)
+         while (elapsedTime < _makingInterval)
         {
             elapsedTime += Time.deltaTime;
 
@@ -199,6 +202,15 @@ public class DonutPile : PileBase
         }
 
         return false;
+    }
+
+    private void ResetCoroutine()
+    {
+        IsGettingDonut = false;
+        IsTakingDonut = false;
+
+        if (_curCoroutine != null)
+            StopCoroutine(_curCoroutine);
     }
 
     private bool CheckPileDonutExist()
