@@ -1,5 +1,6 @@
 using DonutPlease.Game.Character;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace DonutPlease.Game.Character
 {
@@ -19,15 +20,18 @@ namespace DonutPlease.Game.Character
 
         #region Tray
 
-        protected override void AddToTray(CharacterBase worker, Transform child)
+        protected override void AddToTray(CharacterBase character, Transform child)
         {
-            Stock.AddDonut(child.gameObject);
-            _trayController.PlayAddToTray(child);
+            if (character is CharacterWorker worker)
+            {
+                Stock.AddDonut(child.gameObject);
+                _trayController.SetCharacter(worker).PlayAddToTray(child);
+            }
         }
 
         protected override void RemoveFromTray(CharacterBase character, PileBase pile)
         {
-            if (character is CharacterPlayer player)
+            if (character is CharacterWorker worker)
             {
                 var donut = Stock.RemoveDonut();
                 _trayController.PlayPutDownFromTray(donut.transform, pile);
@@ -36,6 +40,20 @@ namespace DonutPlease.Game.Character
 
         #endregion
 
+        public void PickUpTrash(Transform child)
+        {
+            Stock.AddTrash(child.gameObject);
+            _trayController.SetCharacter(this).PlayAddToTray(child);
+        }
+
+        public void DropTrash(CharacterBase character, TrashCan trashCan)
+        {
+            if (character is CharacterWorker worker)
+            {
+                var donut = Stock.RemoveDonut();
+                _trayController.PlayPutDownFromTray(donut.transform, trashCan);
+            }
+        }
     }
 }
 

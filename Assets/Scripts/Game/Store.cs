@@ -39,21 +39,26 @@ public class Store : MonoBehaviour
     public List<Machine> Machines => _machines;
     public List<Table> Tables => _tables;
 
-    //Jobs
+    //Jobs : 정확히 Job을 표현하는 컨테이너인지 판단해볼 필요.
     private Dictionary<EJob, List<PropBase>> _jobs = new();
 
     #region Worker
 
-    private void TestWorker()
+    private void OnEnable()
     {
-
+        // 워커 생성 테스트
+        TestWorker();
     }
 
-    private void CreateWorker(CharacterWorker worker)
+    private void TestWorker()
+    {
+        CreateWorker();
+    }
+
+    private void CreateWorker()
     {
         // 워커 생성
-        GameObject workerObj = Instantiate(WorkerPrefab, WorkerStartPos.position, Quaternion.identity);
-        worker = workerObj.GetComponent<CharacterWorker>();
+        var worker = GameManager.GetGameManager.Store.CreateWorker();
         worker.transform.SetParent(transform);
 
         AddWorker(worker);
@@ -64,69 +69,101 @@ public class Store : MonoBehaviour
 
     private IEnumerator CoWorkerDo(CharacterWorker worker)
     {
-        // 도넛 운반 가능한지 검사
-        if (ShouldDoCarryDonut(out Machine targetMachine))
+        // test
+        Counter testCounter = GameManager.GetGameManager.Store.Counter;
+        TrashCan trashCan = GameManager.GetGameManager.Store.TrashCan;
+
+        while (true)
         {
-            DonutPile donutPile = targetMachine.DonutPile;
+            // 도넛 운반 가능한지 검사
+            //if (ShouldDoCarryDonut(out Machine targetMachine))
+            //{
+            //    DonutPile machineDonutPile = targetMachine.DonutPile;
+            //    DonutPile counterDonutPile = testCounter.DonutPile;
 
-            // 1. Job 등록
-            AddJob(EJob.CarryDonut, null);
+            //    // 1. Job 등록
+            //    AddJob(EJob.CarryDonut, targetMachine);
 
-            // 2. 작업할 도넛 머신으로 이동
-            worker.Controller.MoveTo(targetMachine.transform);
+            //    // 2. 작업할 도넛 머신으로 이동
+            //    worker.Controller.MoveTo(targetMachine.DonutPileFrontPosition);
 
-            // 2-1. 이동 대기
-            yield return new WaitUntil(() => !worker.Controller.IsMoving);
+            //    // 2-1. 이동 대기
+            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-            // 3. 이동 중 도넛이 없어지면 이동 취소
+            //    // 3. 이동 중 도넛이 없어지면 이동 취소
 
 
-            // 4. 머신 -> 도넛 가져오기
-            donutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
+            //    // 4. 머신 -> 도넛 가져오기
+            //    machineDonutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
 
-            // 4-1. 도넛 받기 대기
-            yield return new WaitUntil(() => !donutPile.IsWorkingAI);
+            //    // 4-1. 도넛 받기 대기
+            //    yield return new WaitUntil(() => !machineDonutPile.IsWorkingAI);
 
-            // 5. 카운터로 이동
-            worker.Controller.MoveTo(MainCounter.DonutPileFrontPosition);
+            //    // 5. 카운터로 이동
+            //    worker.Controller.MoveTo(testCounter.DonutPileFrontPosition);
 
-            // 5-1. 이동 대기
-            yield return new WaitUntil(() => !worker.Controller.IsMoving);
+            //    // 5-1. 이동 대기
+            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-            // 6. 카운터에 도넛 놓기
-            donutPile.LoopMoveDonutToPile(worker);
+            //    // 6. 카운터에 도넛 놓기
+            //    counterDonutPile.LoopMoveDonutToPile(worker);
 
-            //RemoveJob
+            //    // 6-1. 도넛 놓기 대기
+            //    yield return new WaitUntil(() => !counterDonutPile.IsWorkingAI);
+
+            //    //RemoveJob
+            //    RemoveJob(EJob.CarryDonut, targetMachine);
+            //}
+
+            // 캐셔 업무 존재하는지 검사
+            //if (ShouldDoMainCounterCashierJob(out Counter targetCounter))
+            //{
+            //    // 1. Job 등록
+            //    AddJob(EJob.Cashier, targetCounter);
+
+            //    // 2. 작업할 카운터로 이동
+            //    worker.Controller.MoveTo(targetCounter.CasherPlace);
+
+            //    // 2-1. 이동 대기
+            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
+
+            //    // 3. 캐셔 동작
+            //    targetCounter.SetCashier(worker);
+
+            //    // 손님/햄버거가 없다면 작업 취소
+            //    yield return new WaitUntil(() => !ShouldDoMainCounterCashierJob(out Counter targetCounter));
+
+            //    //RemoveJob
+            //    RemoveJob(EJob.Cashier, targetCounter);
+            //}
+
+            // 테이블 청소 업무 존재하는지 검사
+            if (ShouldDoClearTrash(out Table targetTable))
+            {
+                // 1. Job 등록
+                AddJob(EJob.ClearTrash, targetTable);
+
+                // 2. 작업할 테이블로 이동
+                worker.Controller.MoveTo(targetTable.TrashFrontPos);
+
+                // 2-1. 이동 대기
+                yield return new WaitUntil(() => !worker.Controller.IsMoving);
+
+                // 3. 테이블 쓰레기 줍기
+                //worker.PickUpTrash(targetTable.trash)
+
+                // 3-1. 쓰레기 삭제
+                targetTable.ClearTable();
+
+                // 4. 쓰레기통으로 이동
+                worker.Controller.MoveTo(trashCan.TrashCanFrontPos);
+
+                // 5. 쓰레기통에 쓰레기 버리기
+
+                //RemoveJob
+            }
+            yield return null;
         }
-
-        // 캐셔 업무 존재하는지 검사
-        if (ShouldDoMainCounterCashierJob(out Counter targetCounter))
-        {
-            // 1. Job 등록
-            AddJob(EJob.Cashier, null);
-
-            // 2. 작업할 카운터로 이동
-            // 3. 캐셔 동작
-
-            // 손님/햄버거가 없다면 작업 취소
-            //RemoveJob
-        }
-
-        // 테이블 청소 업무 존재하는지 검사
-        if (ShouldDoClearTrash(out Table targetTable))
-        {
-            // 1. Job 등록
-            AddJob(EJob.ClearTrash, null);
-
-            // 2. 작업할 테이블로 이동
-            // 3. 테이블 쓰레기 줍기
-            // 4. 쓰레기통으로 이동
-            // 5. 쓰레기통에 쓰레기 버리기
-
-            //RemoveJob
-        }
-
-        yield return null;
     }
 
     private bool ShouldDoCarryDonut(out Machine targetMachine)
@@ -134,6 +171,11 @@ public class Store : MonoBehaviour
         targetMachine = null;
 
         var jobs = GetJobs(EJob.CarryDonut);
+        if (jobs == null)
+            return false;
+
+        //if (MainCounter == null)
+        //    return false;
 
         // 도넛이 존재하는 머신이 있는지 검사
         foreach (var job in jobs)
@@ -152,41 +194,64 @@ public class Store : MonoBehaviour
 
     private bool ShouldDoMainCounterCashierJob(out Counter targetCounter)
     {
-        var jobs = GetJobs(EJob.CarryDonut);
+        targetCounter = null;
+
+        //var jobs = GetJobs(EJob.Cashier);
+        //if (jobs == null)
+        //    return false;
 
         // 캐셔 작업이 존재하는지 확인
-        foreach (var job in jobs)
+        //foreach (var job in jobs)
+        //{
+        //    if (job is Counter counter)
+        //    {
+        //        if (!counter.HaveCashier)
+        //        {
+        //            targetCounter = counter;
+        //            return true; // 캐셔가 없는 카운터가 존재할 경우
+        //        }
+        //    }
+        //}
+
+        if (!GameManager.GetGameManager.Store.Counter.HaveCashier)
         {
-            if (job is Counter counter)
-            {
-                if (!counter.HaveCashier)
-                {
-                    targetCounter = counter;
-                    return true; // 캐셔가 없는 카운터가 존재할 경우
-                }
-            }
+            var counter = GameManager.GetGameManager.Store.Counter;
+            // 도넛이 없을 경우
+            if (counter.DonutCount == 0)
+                return false;
+
+            // 줄 선 손님이 없을 경우
+            if (counter.InLineCustomerCount == 0)
+                return false;
+
+            targetCounter = counter;
+            return true; // 캐셔가 없는 카운터가 존재할 경우
         }
-        targetCounter = null;
         return false;
     }
 
     private bool ShouldDoClearTrash(out Table targetTable)
     {
+        targetTable = null;
+
         var jobs = GetJobs(EJob.ClearTrash);
+        if (jobs == null)
+            return false;
+
+        // 트레이가 비어있거나, 쓰레기인지 확인
 
         // 테이블 청소 작업이 있는지 확인
         foreach (var job in jobs)
         {
             if (job is Table table)
             {
-                if (!table.CheckHaveTrash())
+                if (table.CheckHaveTrash())
                 {
                     targetTable = table;
                     return true; // 테이블 작업이 있는 경우
                 }
             }
         }
-        targetTable = null;
         return false;
     }
 
@@ -209,7 +274,8 @@ public class Store : MonoBehaviour
 
     private List<PropBase> GetJobs(EJob eJob)
     {
-        return _jobs[eJob];
+        _jobs.TryGetValue(eJob, out var jobList);
+        return jobList;
     }
 
     private void AddWorker(CharacterWorker worker)

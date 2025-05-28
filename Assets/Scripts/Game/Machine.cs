@@ -13,6 +13,9 @@ public class Machine : PropBase
     [SerializeField]
     private GameObject _prefab;
 
+    [SerializeField]
+    private Transform _donutPileFrontPos;
+
     private float _makeInterval = 0.2f;
     private float _getInterval = 0.2f;
 
@@ -23,6 +26,7 @@ public class Machine : PropBase
 
     public DonutPile DonutPile => _donutPile;
     public int DonutCount => _donutPile.ObjectCount;
+    public Transform DonutPileFrontPosition => _donutPileFrontPos;
 
     private void OnEnable()
     {

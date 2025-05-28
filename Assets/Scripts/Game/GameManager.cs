@@ -71,7 +71,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Store = new StoreSystem();
         if (Store == null)
         {
             Debug.LogError("StoreSystem not found");

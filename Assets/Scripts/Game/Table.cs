@@ -10,8 +10,11 @@ public class Table : PropBase
     [SerializeField] private List<Transform> _seatPositions;
 
     [SerializeField] private GameObject _trash;
+    [SerializeField] private Transform _trashFrontPosition;
 
     private List<KeyValuePair<int, Transform>> _seatList = new(); //0:empty seat, 1:not empty seat
+
+    public Transform TrashFrontPos => _trashFrontPosition;
 
     private void Awake()
     {

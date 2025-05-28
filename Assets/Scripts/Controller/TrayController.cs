@@ -1,8 +1,16 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+
+enum ETrayItem
+{
+    Donut,
+    Trash,
+}
 
 public class TrayController : MonoBehaviour
 {
@@ -12,6 +20,10 @@ public class TrayController : MonoBehaviour
 
     private HashSet<Transform> _reserved = new HashSet<Transform>();
     private List<Transform> _items = new List<Transform>();
+
+    private CharacterBase _character;
+    private float characterV;
+    private float characterH;
 
     private bl_Joystick _joystick;
     private float _cameraRot;
@@ -29,13 +41,38 @@ public class TrayController : MonoBehaviour
         TiltItem();
     }
 
+    public TrayController SetCharacter(CharacterBase character)
+    {
+        if (_character == null)
+            _character = character;
+        return this;
+    }
+
+    private void SetDirection()
+    {
+        if (_character is CharacterPlayer player)
+        {
+            characterV = _joystick.Vertical;
+            characterH = _joystick.Horizontal;
+        }
+        else if (_character is CharacterCustomer customer)
+        {
+            characterV = customer.Controller.GetVelocity().z;
+            characterH = customer.Controller.GetVelocity().x;
+        }
+        else if (_character is CharacterWorker worker)
+        {
+            characterV = worker.Controller.GetVelocity().z;
+            characterH = worker.Controller.GetVelocity().x;
+        }
+    }
+
     private void TiltItem()
     {
-        float v = _joystick.Vertical;
-        float h = _joystick.Horizontal;
+        SetDirection();
 
         Quaternion cameraRot = Quaternion.Euler(0, _cameraRot, 0);
-        Vector3 dir = cameraRot * new Vector3(h, 0, v);
+        Vector3 dir = cameraRot * new Vector3(characterH, 0, characterV);
 
         _items[0].position = transform.position;
         _items[0].rotation = transform.rotation;
@@ -54,6 +91,8 @@ public class TrayController : MonoBehaviour
 
     public void PlayAddToTray(Transform child)
     {
+        // 아이템 동일 타입 체크필요
+
         _reserved.Add(child);
 
         Vector3 dest = transform.position + Vector3.up * TotalItemCount * _itemHeight;
@@ -79,6 +118,23 @@ public class TrayController : MonoBehaviour
                 {
                     dest.AddToPile(child.gameObject);
                     child.transform.rotation = Quaternion.identity;
+                });
+        }
+
+        CheckTrayActivation();
+    }
+
+    public void PlayPutDownFromTray(Transform trash, TrashCan dest)
+    {
+        // 아이템 동일 타입 체크필요
+
+        if (_items.Contains(trash))
+        {
+            _items.Remove(trash);
+            trash.DOJump(dest.TrashCanFrontPos.position, 5, 1, 0.3f)
+                .OnComplete(() =>
+                {
+                    Destroy(trash);
                 });
         }
 

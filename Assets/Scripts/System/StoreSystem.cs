@@ -1,18 +1,33 @@
+using DonutPlease.Game.Character;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class StoreSystem : MonoBehaviour
 {
+    [SerializeField] private GameObject WorkerPrefab;
+    [SerializeField] private Vector3 WorkerStartPos;
+
+    // for test
+    [SerializeField] public Counter Counter;
+    [SerializeField] public TrashCan TrashCan;
+
     private static Dictionary<int, Store> _stores = new();
 
     public void Initialize()
     {
         // 1 Store 积己
-        AddOrUpdateStore(1);
+        AddStore(1);
     }
 
-    public void AddOrUpdateStore(int storeId)
+    public CharacterWorker CreateWorker()
+    {
+        // 况目 积己
+        GameObject workerObj = Instantiate(WorkerPrefab, WorkerStartPos, Quaternion.identity);
+        return workerObj.GetComponent<CharacterWorker>();
+    }
+
+    public void AddStore(int storeId)
     {
         GameObject go = new GameObject($"Store_{storeId}");
         Store store = go.AddComponent<Store>();

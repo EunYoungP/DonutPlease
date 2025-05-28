@@ -35,8 +35,10 @@ public class Counter : PropBase
     public int CustomerCount => _customers.Count;
     public int InLineCustomerCount => _customersInLine.Count;
     public bool HaveCashier => _cashier != null;
+    public DonutPile DonutPile => _donutPile;
 
     public Transform DonutPileFrontPosition => _donutPileFrontPos;
+    public Transform CasherPlace => _casherPlace;
 
     private void OnEnable()
     {
@@ -203,6 +205,9 @@ public class Counter : PropBase
     {
         // 도넛이 있는지 검사
         if (_donutPile.IsEmpty)
+            return false;
+
+        if (!HaveCashier)
             return false;
 
         // 빈 자리가 있는지 검사

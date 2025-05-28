@@ -21,12 +21,12 @@ namespace DonutPlease.Game.Character
         protected override void AddToTray(CharacterBase customer, Transform child)
         {
             Stock.AddDonut(child.gameObject);
-            _trayController.PlayAddToTray(child);
+            _trayController.SetCharacter(customer).PlayAddToTray(child);
         }
 
         protected override void RemoveFromTray(CharacterBase character, PileBase pile)
         {
-            if (character is CharacterPlayer player)
+            if (character is CharacterCustomer customer)
             {
                 var donut = Stock.RemoveDonut();
                 _trayController.PlayPutDownFromTray(donut.transform, pile);

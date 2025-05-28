@@ -81,6 +81,11 @@ public class CharacterCustomerController : MonoBehaviour
         return true;
     }
 
+    public Vector3 GetVelocity()
+    {
+        return _agent.velocity.normalized;
+    }
+
     #endregion
 
     #region Animation

@@ -9,6 +9,9 @@ public class CharacterStockComponent
     public Stack<GameObject> Donuts { get; private set; } = new Stack<GameObject>();
     public int DonutCount => Donuts.Count;
 
+    // Trash
+    public Stack<GameObject> Trash { get; private set; } = new Stack<GameObject>();
+
     public void AddDonut(GameObject donut)
     {
         Donuts.Push(donut);
@@ -23,5 +26,21 @@ public class CharacterStockComponent
         }
 
         return Donuts.Pop();
+    }
+
+    public void AddTrash(GameObject trash)
+    {
+        Trash.Push(trash);
+    }
+
+    public GameObject RemoveTrash()
+    {
+        if (Trash.Count == 0)
+        {
+            Debug.LogWarning("No trash to remove.");
+            return null;
+        }
+
+        return Trash.Pop();
     }
 }
