@@ -124,17 +124,17 @@ public class TrayController : MonoBehaviour
         CheckTrayActivation();
     }
 
-    public void PlayPutDownFromTray(Transform trash, TrashCan dest)
+    public void PlayPutDownFromTray(Transform trash, Transform dest)
     {
         // 아이템 동일 타입 체크필요
 
         if (_items.Contains(trash))
         {
             _items.Remove(trash);
-            trash.DOJump(dest.TrashCanFrontPos.position, 5, 1, 0.3f)
+            trash.DOJump(dest.position, 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
-                    Destroy(trash);
+                    Destroy(trash.gameObject);
                 });
         }
 

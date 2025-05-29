@@ -76,66 +76,66 @@ public class Store : MonoBehaviour
         while (true)
         {
             // 도넛 운반 가능한지 검사
-            //if (ShouldDoCarryDonut(out Machine targetMachine))
-            //{
-            //    DonutPile machineDonutPile = targetMachine.DonutPile;
-            //    DonutPile counterDonutPile = testCounter.DonutPile;
+            if (ShouldDoCarryDonut(out Machine targetMachine))
+            {
+                DonutPile machineDonutPile = targetMachine.DonutPile;
+                DonutPile counterDonutPile = testCounter.DonutPile;
 
-            //    // 1. Job 등록
-            //    AddJob(EJob.CarryDonut, targetMachine);
+                // 1. Job 등록
+                AddJob(EJob.CarryDonut, targetMachine);
 
-            //    // 2. 작업할 도넛 머신으로 이동
-            //    worker.Controller.MoveTo(targetMachine.DonutPileFrontPosition);
+                // 2. 작업할 도넛 머신으로 이동
+                worker.Controller.MoveTo(targetMachine.DonutPileFrontPosition);
 
-            //    // 2-1. 이동 대기
-            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
+                // 2-1. 이동 대기
+                yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-            //    // 3. 이동 중 도넛이 없어지면 이동 취소
+                // 3. 이동 중 도넛이 없어지면 이동 취소
 
 
-            //    // 4. 머신 -> 도넛 가져오기
-            //    machineDonutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
+                // 4. 머신 -> 도넛 가져오기
+                machineDonutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
 
-            //    // 4-1. 도넛 받기 대기
-            //    yield return new WaitUntil(() => !machineDonutPile.IsWorkingAI);
+                // 4-1. 도넛 받기 대기
+                yield return new WaitUntil(() => !machineDonutPile.IsWorkingAI);
 
-            //    // 5. 카운터로 이동
-            //    worker.Controller.MoveTo(testCounter.DonutPileFrontPosition);
+                // 5. 카운터로 이동
+                worker.Controller.MoveTo(testCounter.DonutPileFrontPosition);
 
-            //    // 5-1. 이동 대기
-            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
+                // 5-1. 이동 대기
+                yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-            //    // 6. 카운터에 도넛 놓기
-            //    counterDonutPile.LoopMoveDonutToPile(worker);
+                // 6. 카운터에 도넛 놓기
+                counterDonutPile.LoopMoveDonutToPile(worker);
 
-            //    // 6-1. 도넛 놓기 대기
-            //    yield return new WaitUntil(() => !counterDonutPile.IsWorkingAI);
+                // 6-1. 도넛 놓기 대기
+                yield return new WaitUntil(() => !counterDonutPile.IsWorkingAI);
 
-            //    //RemoveJob
-            //    RemoveJob(EJob.CarryDonut, targetMachine);
-            //}
+                //RemoveJob
+                RemoveJob(EJob.CarryDonut, targetMachine);
+            }
 
             // 캐셔 업무 존재하는지 검사
-            //if (ShouldDoMainCounterCashierJob(out Counter targetCounter))
-            //{
-            //    // 1. Job 등록
-            //    AddJob(EJob.Cashier, targetCounter);
+            if (ShouldDoMainCounterCashierJob(out Counter targetCounter))
+            {
+                // 1. Job 등록
+                AddJob(EJob.Cashier, targetCounter);
 
-            //    // 2. 작업할 카운터로 이동
-            //    worker.Controller.MoveTo(targetCounter.CasherPlace);
+                // 2. 작업할 카운터로 이동
+                worker.Controller.MoveTo(targetCounter.CasherPlace);
 
-            //    // 2-1. 이동 대기
-            //    yield return new WaitUntil(() => !worker.Controller.IsMoving);
+                // 2-1. 이동 대기
+                yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-            //    // 3. 캐셔 동작
-            //    targetCounter.SetCashier(worker);
+                // 3. 캐셔 동작
+                targetCounter.SetCashier(worker);
 
-            //    // 손님/햄버거가 없다면 작업 취소
-            //    yield return new WaitUntil(() => !ShouldDoMainCounterCashierJob(out Counter targetCounter));
+                // 손님/햄버거가 없다면 작업 취소
+                yield return new WaitUntil(() => !ShouldDoMainCounterCashierJob(out Counter targetCounter));
 
-            //    //RemoveJob
-            //    RemoveJob(EJob.Cashier, targetCounter);
-            //}
+                //RemoveJob
+                RemoveJob(EJob.Cashier, targetCounter);
+            }
 
             // 테이블 청소 업무 존재하는지 검사
             if (ShouldDoClearTrash(out Table targetTable))
@@ -149,16 +149,20 @@ public class Store : MonoBehaviour
                 // 2-1. 이동 대기
                 yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-                // 3. 테이블 쓰레기 줍기
-                //worker.PickUpTrash(targetTable.trash)
+                // 3. 쓰레기 삭제
+                targetTable.ClearTable(out var trash);
 
-                // 3-1. 쓰레기 삭제
-                targetTable.ClearTable();
+                // 3. 테이블 쓰레기 줍기
+                worker.PickUpTrash(trash.transform);
 
                 // 4. 쓰레기통으로 이동
                 worker.Controller.MoveTo(trashCan.TrashCanFrontPos);
 
+                // 4-1. 이동 대기
+                yield return new WaitUntil(() => !worker.Controller.IsMoving);
+
                 // 5. 쓰레기통에 쓰레기 버리기
+                worker.DropTrash(trashCan.TrashDropPos);
 
                 //RemoveJob
             }
@@ -311,15 +315,17 @@ public class Store : MonoBehaviour
         return false;
     }
 
-    public Vector3 GetEmptyTableSeat(out Table targetTable)
+    public Vector3 GetEmptyTableSeat(out Table targetTable, out int seatIndex)
     {
         targetTable = null;
+        seatIndex = -1;
 
         foreach (var table in _tables)
         {
-            if (table.GetEmptySeatPos(out var seatPos))
+            if (table.GetEmptySeatPos(out var seatPos, out var index))
             {
                 targetTable = table;
+                seatIndex = index;
                 return seatPos;
             }
         }

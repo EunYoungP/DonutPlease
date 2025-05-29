@@ -130,9 +130,10 @@ public class Counter : PropBase
                     yield return new WaitUntil(() => !_donutPile.IsWorkingAI);
 
                     // 자리로 이동
-                    Vector3 emptySeatPos = GameManager.GetGameManager.Store.GetStore(1).GetEmptyTableSeat(out var table);
+                    var store = GameManager.GetGameManager.Store.GetStore(1);
+                    Vector3 emptySeatPos = store.GetEmptyTableSeat(out var table, out var seatIndex);
+
                     Debug.Log($"은영 7. 자리로 이동 실행");
-                    Debug.Log($"은영 7. POS X : {emptySeatPos.x}, Y : {emptySeatPos.y} Z : {emptySeatPos.z}");
                     customer.Controller.MoveTo(emptySeatPos);
 
                     // 도넛 줄 갱신
@@ -158,7 +159,10 @@ public class Counter : PropBase
 
                     // - 쓰레기 생성
                     Debug.Log("은영 11. 쓰레기 생성");
-                    table.MakeTrash();
+                    table.MakeTrash(seatIndex);
+
+                    // 자리 상태 업데이트
+                    table.UpdateSeatEmptyState(seatIndex);
 
                     customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.Out);
                 }

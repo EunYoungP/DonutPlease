@@ -46,13 +46,10 @@ namespace DonutPlease.Game.Character
             _trayController.SetCharacter(this).PlayAddToTray(child);
         }
 
-        public void DropTrash(CharacterBase character, TrashCan trashCan)
+        public void DropTrash(Transform trashDropPos)
         {
-            if (character is CharacterWorker worker)
-            {
-                var donut = Stock.RemoveDonut();
-                _trayController.PlayPutDownFromTray(donut.transform, trashCan);
-            }
+            var trash = Stock.RemoveTrash();
+            _trayController.PlayPutDownFromTray(trash.transform, trashDropPos);
         }
     }
 }

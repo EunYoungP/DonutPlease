@@ -7,47 +7,68 @@ using UnityEngine;
 
 public class Table : PropBase
 {
+    public struct Seat
+    {
+        public bool haveCustomer;
+        public Transform seatPos;
+        public Transform trashPos;
+        public DonutPile donutPile;
+    }
+
+    [SerializeField] private GameObject _trashPrefab;
+    [SerializeField] List<Transform> _trashPosition;
     [SerializeField] private List<Transform> _seatPositions;
+    [SerializeField] private List<DonutPile> _donutPiles;
 
-    [SerializeField] private GameObject _trash;
     [SerializeField] private Transform _trashFrontPosition;
+    
+    private Stack<GameObject> _trash = new();
 
-    private List<KeyValuePair<int, Transform>> _seatList = new(); //0:empty seat, 1:not empty seat
+    private List<Seat> _seats = new List<Seat>();
 
     public Transform TrashFrontPos => _trashFrontPosition;
 
     private void Awake()
     {
-        foreach (var seatPos in _seatPositions)
+        for(int i = 0; i < _trashPosition.Count; i++)
         {
-            _seatList.Add(new KeyValuePair<int, Transform>(0, seatPos));
+            _seats.Add(new Seat
+            {
+                haveCustomer = false,
+                seatPos = _seatPositions[i],
+                trashPos = _trashPosition[i],
+                donutPile = _donutPiles[i]
+            });
         }
     }
 
-    public void MakeTrash()
+    public void MakeTrash(int seatIndex)
     {
-        _trash.SetActive(true);
+        var seat = _seats[seatIndex];
+
+        GameObject go = Instantiate(_trashPrefab, seat.trashPos.position, Quaternion.identity, seat.trashPos);
+        AddTrash(go);
     }
 
-    public void ClearTable()
+    public void ClearTable(out GameObject trash)
     {
-        _trash.SetActive(false);
+        RemoveTrash(out var popTrash);
+        trash = popTrash;
     }
 
     public bool CheckHaveTrash()
     {
-        return _trash.activeSelf;
+        return _trash.Count > 0;
     }
 
     public bool CheckHaveEmptySeat()
     {
-        for (int i = 0; i < _seatList.Count; i++)
+        for (int i = 0; i < _seats.Count; i++)
         {
-            var seat = _seatList[i];
-            int haveCustomer = seat.Key;
-            Transform seatPos = seat.Value;
+            var seat = _seats[i];
 
-            if (haveCustomer == 0)
+            bool haveCustomer = seat.haveCustomer;
+            if (haveCustomer == false)
             {
                 return true;
             }
@@ -55,27 +76,44 @@ public class Table : PropBase
         return false;
     }
 
-    public bool GetEmptySeatPos(out Vector3 seatPosition)
+    public bool GetEmptySeatPos(out Vector3 seatPosition, out int seatIndex)
     {
         seatPosition = Vector3.zero;
-        for(int i = 0; i < _seatList.Count; i++)
-        {
-            var seat = _seatList[i];
-            int haveCustomer = seat.Key;
-            Vector3 seatPos = seat.Value.position;
+        seatIndex = -1;
 
-            if (haveCustomer == 0)
+        for (int i = 0; i < _seats.Count; i++)
+        {
+            var seat = _seats[i];
+            bool haveCustomer = seat.haveCustomer;
+            Transform seatPos = seat.seatPos;
+
+            if (haveCustomer == false)
             {
-                seatPosition = seatPos;
-                UpdateSeatEmptyState(i, 1);
+                seatPosition = seatPos.position;
+                seatIndex = i;
+                UpdateSeatEmptyState(i);
                 return true;
             }
         }
         return false;
     }
 
-    private void UpdateSeatEmptyState(int seatIndex, int value)
+    public void UpdateSeatEmptyState(int seatIndex)
     {
-        _seatList[seatIndex] = new KeyValuePair<int, Transform>(value, _seatList[seatIndex].Value);
+        var s = _seats[seatIndex];
+        s.haveCustomer = !_seats[seatIndex].haveCustomer;
+        _seats[seatIndex] = s;
+    }
+
+
+    private void AddTrash(GameObject trash)
+    {
+        _trash.Push(trash);
+    }
+
+    private void RemoveTrash(out GameObject trash)
+    {
+        _trash.TryPop(out GameObject popTrash);
+        trash = popTrash;
     }
 }
