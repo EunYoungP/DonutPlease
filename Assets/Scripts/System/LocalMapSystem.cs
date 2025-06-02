@@ -100,6 +100,8 @@ public class LocalMapSystem : MonoBehaviour
         propObj.transform.SetParent(propRoot.transform);
 
         UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
+
+
         //uIInteraction .AddData(id + 1)
 
         propRoot.transform.localPosition = prop.Pos;

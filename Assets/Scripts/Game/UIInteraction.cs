@@ -5,12 +5,16 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DonutEditor;
 
 [Serializable]
-public struct IntercationData
+public class IntercationData
 {
     public int InteractionId;
     public InteractionType InteractionType;
+
+    [ShowEnum("InteractionType", InteractionType.CreateInteractionUI)]
+    public InteractionType CreatePropByUI;
 }
 
 public class UIInteraction : MonoBehaviour
