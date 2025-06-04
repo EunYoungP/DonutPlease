@@ -9,7 +9,6 @@ public class StoreSystem : MonoBehaviour
     [SerializeField] private Vector3 WorkerStartPos;
 
     // for test
-    [SerializeField] public Counter Counter;
     [SerializeField] public TrashCan TrashCan;
 
     private static Dictionary<int, Store> _stores = new();
@@ -30,10 +29,13 @@ public class StoreSystem : MonoBehaviour
     public void AddStore(int storeId)
     {
         GameObject go = new GameObject($"Store_{storeId}");
+        go.transform.SetParent(GameManager.GetGameManager.Store.transform);
         Store store = go.AddComponent<Store>();
 
         if (_stores.TryAdd(storeId, store))
             _stores[storeId] = store;
+
+        store.Initialize();
     }
 
     public Store GetStore(int storeId)

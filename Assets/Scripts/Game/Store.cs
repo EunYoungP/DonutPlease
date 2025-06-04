@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static GameManager;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public enum EJob
@@ -35,6 +36,8 @@ public class Store : MonoBehaviour
 
     private List<CharacterWorker> _workers = new List<CharacterWorker>();
 
+    private TrashCan _trashCan;
+
     public Counter MainCounter => _mainCounter;
     public List<Machine> Machines => _machines;
     public List<Table> Tables => _tables;
@@ -42,13 +45,19 @@ public class Store : MonoBehaviour
     //Jobs : 정확히 Job을 표현하는 컨테이너인지 판단해볼 필요.
     private Dictionary<EJob, List<PropBase>> _jobs = new();
 
-    #region Worker
-
     private void OnEnable()
     {
         // 워커 생성 테스트
         TestWorker();
     }
+
+    public void Initialize()
+    {
+        TrashCan localMapTrashCan = GameManager.GetGameManager.LocalMap.Map.GetComponentInChildren<TrashCan>();
+        AddTrashCan(localMapTrashCan);
+    }
+
+    #region Worker
 
     private void TestWorker()
     {
@@ -70,7 +79,6 @@ public class Store : MonoBehaviour
     private IEnumerator CoWorkerDo(CharacterWorker worker)
     {
         // test
-        Counter testCounter = GameManager.GetGameManager.Store.Counter;
         TrashCan trashCan = GameManager.GetGameManager.Store.TrashCan;
 
         while (true)
@@ -79,7 +87,7 @@ public class Store : MonoBehaviour
             if (ShouldDoCarryDonut(out Machine targetMachine))
             {
                 DonutPile machineDonutPile = targetMachine.DonutPile;
-                DonutPile counterDonutPile = testCounter.DonutPile;
+                DonutPile counterDonutPile = _mainCounter.DonutPile;
 
                 // 1. Job 등록
                 AddJob(EJob.CarryDonut, targetMachine);
@@ -100,7 +108,7 @@ public class Store : MonoBehaviour
                 yield return new WaitUntil(() => !machineDonutPile.IsWorkingAI);
 
                 // 5. 카운터로 이동
-                worker.Controller.MoveTo(testCounter.DonutPileFrontPosition);
+                worker.Controller.MoveTo(_mainCounter.DonutPileFrontPosition);
 
                 // 5-1. 이동 대기
                 yield return new WaitUntil(() => !worker.Controller.IsMoving);
@@ -178,8 +186,8 @@ public class Store : MonoBehaviour
         if (jobs == null)
             return false;
 
-        //if (MainCounter == null)
-        //    return false;
+        if (MainCounter == null)
+            return false;
 
         // 도넛이 존재하는 머신이 있는지 검사
         foreach (var job in jobs)
@@ -200,6 +208,9 @@ public class Store : MonoBehaviour
     {
         targetCounter = null;
 
+        if (MainCounter == null)
+            return false;
+
         //var jobs = GetJobs(EJob.Cashier);
         //if (jobs == null)
         //    return false;
@@ -217,18 +228,17 @@ public class Store : MonoBehaviour
         //    }
         //}
 
-        if (!GameManager.GetGameManager.Store.Counter.HaveCashier)
+        if (!_mainCounter.HaveCashier)
         {
-            var counter = GameManager.GetGameManager.Store.Counter;
             // 도넛이 없을 경우
-            if (counter.DonutCount == 0)
+            if (_mainCounter.DonutCount == 0)
                 return false;
 
             // 줄 선 손님이 없을 경우
-            if (counter.InLineCustomerCount == 0)
+            if (_mainCounter.InLineCustomerCount == 0)
                 return false;
 
-            targetCounter = counter;
+            targetCounter = _mainCounter;
             return true; // 캐셔가 없는 카운터가 존재할 경우
         }
         return false;
@@ -303,6 +313,14 @@ public class Store : MonoBehaviour
     {
         _tables.Add(table);
         AddJob(EJob.ClearTrash, table);
+    }
+
+    public void AddTrashCan(TrashCan trashCan)
+    {
+        if (_trashCan == null)
+        {
+            _trashCan = trashCan;
+        }
     }
 
     public bool CheckHaveEmptySeat()

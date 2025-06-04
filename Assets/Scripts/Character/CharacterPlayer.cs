@@ -13,8 +13,12 @@ namespace DonutPlease.Game.Character
 
         public CharacterPlayerController Controller => _controller;
 
+        public CharacterStockComponent Stock { get; private set; }
+
         public void Initialize()
         {
+            Stock = new CharacterStockComponent();
+
             _camera = Camera.main.GetComponent<PlayerCamera>();
             _camera.Initialize(this);
         }
@@ -23,7 +27,8 @@ namespace DonutPlease.Game.Character
 
         protected override void AddToTray(CharacterBase player, Transform child)
         {
-            GameMng.Player.Stock.AddDonut(child.gameObject);
+            Stock.AddDonut(child.gameObject);
+
             _trayController.PlayAddToTray(child);
         }
 
@@ -31,9 +36,21 @@ namespace DonutPlease.Game.Character
         {
             if (character is CharacterPlayer player)
             {
-                var donut = GameMng.Player.Stock.RemoveDonut();
+                var donut = Stock.RemoveDonut();
                 _trayController.PlayPutDownFromTray(donut.transform, pile);
             }
+        }
+
+        public void PickUpTrash(Transform child)
+        {
+            Stock.AddTrash(child.gameObject);
+            _trayController.SetCharacter(this).PlayAddToTray(child);
+        }
+
+        public void DropTrash(Transform trashDropPos)
+        {
+            var trash = Stock.RemoveTrash();
+            _trayController.PlayPutDownFromTray(trash.transform, trashDropPos);
         }
 
         #endregion

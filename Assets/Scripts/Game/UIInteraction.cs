@@ -14,7 +14,7 @@ public class IntercationData
     public InteractionType InteractionType;
 
     [ShowEnum("InteractionType", InteractionType.CreateInteractionUI)]
-    public InteractionType CreatePropByUI;
+    public int NextInteractionId;
 }
 
 public class UIInteraction : MonoBehaviour
@@ -74,7 +74,7 @@ public class UIInteraction : MonoBehaviour
 
         foreach (var intercationData in _interactionDatas)
         {
-            FluxSystem.Dispatch(new OnTriggerEnterInteractionUI(intercationData.InteractionId, intercationData.InteractionType));
+            FluxSystem.Dispatch(new OnTriggerEnterInteractionUI(intercationData.InteractionId, intercationData.InteractionType, intercationData.NextInteractionId));
         }
 
         Destroy(gameObject);

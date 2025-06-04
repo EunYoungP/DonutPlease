@@ -13,6 +13,7 @@ public enum InteractionType
     CreateInteractionUI,
     HireStaff,
     CreateDriveThru,
+    TrashCan,
 }
 
 public class InteractionSystem
@@ -38,8 +39,13 @@ public class InteractionSystem
         {
             int interactionId = uiInteraction.interactionId;
             InteractionType interactionType = uiInteraction.interactionType;
+            int nextInteractionId = uiInteraction.nextInerationId;
 
             if (interactionType == InteractionType.Open)
+            {
+                CreateProp(interactionId, interactionType);
+            }
+            else if (interactionType == InteractionType.CreateCounter)
             {
                 CreateProp(interactionId, interactionType);
             }
@@ -53,7 +59,7 @@ public class InteractionSystem
             }
             else if (interactionType == InteractionType.CreateInteractionUI)
             {
-                CreateInteractionUI(interactionId);
+                CreateInteractionUI(interactionId, nextInteractionId);
             }
         }
     }
@@ -63,8 +69,8 @@ public class InteractionSystem
         GameManager.GetGameManager.LocalMap.CreateProp(id, type);
     }
 
-    private void CreateInteractionUI(int id)
+    private void CreateInteractionUI(int id, int nextInterationId)
     {
-        GameManager.GetGameManager.LocalMap.CreateInteractionUI(id);
+        GameManager.GetGameManager.LocalMap.CreateInteractionUI(id, nextInterationId);
     }
 }

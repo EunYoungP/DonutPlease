@@ -38,8 +38,6 @@ namespace DonutPlease.Game.Character
             }
         }
 
-        #endregion
-
         public void PickUpTrash(Transform child)
         {
             Stock.AddTrash(child.gameObject);
@@ -51,6 +49,8 @@ namespace DonutPlease.Game.Character
             var trash = Stock.RemoveTrash();
             _trayController.PlayPutDownFromTray(trash.transform, trashDropPos);
         }
+
+        #endregion
     }
 }
 

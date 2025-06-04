@@ -190,7 +190,7 @@ public class DonutPile : PileBase
     {
         if (character is CharacterPlayer player)
         {
-            return GameManager.GetGameManager.Player.Stock.DonutCount > 0;
+            return GameManager.GetGameManager.Player.Character.Stock.DonutCount > 0;
         }
         else if (character is CharacterWorker worker)
         {

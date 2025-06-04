@@ -4,20 +4,13 @@ using UnityEngine;
 
 public class GamePlayer
 {
-    [SerializeField] private CharacterPlayer _player;
+    [SerializeField] private CharacterPlayer _character;
 
-    public CharacterStockComponent Stock { get; private set; }
-    
+    public CharacterPlayer Character => _character;
+
     public void Initialize()
     {
-        _player = GameObject.FindAnyObjectByType<CharacterPlayer>();
-        _player.Initialize();
-
-        Stock = new CharacterStockComponent();
-    }
-
-    public CharacterPlayer GetPlayer()
-    {
-        return _player;
+        _character = GameObject.FindAnyObjectByType<CharacterPlayer>();
+        _character.Initialize();
     }
 }

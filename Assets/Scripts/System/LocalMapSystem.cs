@@ -9,7 +9,7 @@ public struct InteractionProp
     public int StoreId;
     public Vector3 Pos;
     public Vector3 Rot;
-    public GameObject Prefab;
+    public InteractionType Type;
 }
 
 public class LocalMapSystem : MonoBehaviour
@@ -20,21 +20,25 @@ public class LocalMapSystem : MonoBehaviour
     [SerializeField]
     private Transform _uIRoot;
 
-    // 퀘스트 시스템 등으로 변경해야함.
     [SerializeField]
-    public List<InteractionProp> _props;
+    private GameObject _map;
+
+    [SerializeField]
+    public List<InteractionProp> _interactionPropDatas;
+
+    public GameObject Map => _map;
 
     public void Initialize()
     {
     }
 
-    private InteractionProp GetProp(int id)
+    private InteractionProp GetPropData(int id)
     {
-        foreach (var prop in _props)
+        foreach (var propData in _interactionPropDatas)
         {
-            if (prop.Id == id)
+            if (propData.Id == id)
             {
-                return prop;
+                return propData;
             }
         }
         return default;
@@ -45,7 +49,7 @@ public class LocalMapSystem : MonoBehaviour
     {
         var propObj = CreateProp(id);
 
-        InteractionProp prop = GetProp(id);
+        InteractionProp prop = GetPropData(id);
 
         Store store = GameManager.GetGameManager.Store.GetStore(prop.StoreId);
 
@@ -75,12 +79,13 @@ public class LocalMapSystem : MonoBehaviour
 
     private GameObject CreateProp(int id)
     {
-        InteractionProp prop = GetProp(id);
+        InteractionProp prop = GetPropData(id);
 
         GameObject propRoot = new GameObject("propPos");
         propRoot.transform.SetParent(_root.transform);
 
-        GameObject propObj = Instantiate(prop.Prefab, Vector3.zero, Quaternion.identity);
+        GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(prop.Type);
+        GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
 
         propRoot.transform.localPosition = prop.Pos;
@@ -89,23 +94,24 @@ public class LocalMapSystem : MonoBehaviour
         return propObj;
     }
 
-    public void CreateInteractionUI(int id)
+    public void CreateInteractionUI(int id, int nextInterationId)
     {
-        InteractionProp prop = GetProp(id);
+        InteractionProp propData = GetPropData(id);
+        InteractionProp nextPropData = GetPropData(nextInterationId);
 
         GameObject propRoot = new GameObject($"UIInteraction_{id}");
         propRoot.transform.SetParent(_uIRoot.transform);
 
-        GameObject propObj = Instantiate(prop.Prefab, Vector3.zero, Quaternion.identity);
+        GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
+        GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
 
         UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
 
+        uIInteraction.AddData(nextInterationId, nextPropData.Type);
 
-        //uIInteraction .AddData(id + 1)
-
-        propRoot.transform.localPosition = prop.Pos;
-        propRoot.transform.localRotation = Quaternion.Euler(prop.Rot);
+        propRoot.transform.localPosition = propData.Pos;
+        propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
 }
 

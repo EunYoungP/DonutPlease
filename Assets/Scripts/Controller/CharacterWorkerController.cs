@@ -16,7 +16,6 @@ public class CharacterWorkerController : CharacterBase
     [SerializeField] private Animator _animator;
     [SerializeField] private NavMeshAgent _agent;
 
-
     public bool IsMoving => CheckMoving();
 
     public EWorkerState State { get; private set; } = EWorkerState.CarryDonut;

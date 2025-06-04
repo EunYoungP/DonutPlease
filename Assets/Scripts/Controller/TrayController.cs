@@ -6,11 +6,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-enum ETrayItem
-{
-    Donut,
-    Trash,
-}
 
 public class TrayController : MonoBehaviour
 {
@@ -18,8 +13,8 @@ public class TrayController : MonoBehaviour
     [SerializeField] private float _itemHeight = 0.2f;
     [SerializeField] private float _bandFactor = 0.1f;
 
-    private HashSet<Transform> _reserved = new HashSet<Transform>();
-    private List<Transform> _items = new List<Transform>();
+    private HashSet<Item> _reserved = new HashSet<Item>();
+    private List<Item> _items = new List<Item>();
 
     private CharacterBase _character;
     private float characterV;
@@ -74,34 +69,43 @@ public class TrayController : MonoBehaviour
         Quaternion cameraRot = Quaternion.Euler(0, _cameraRot, 0);
         Vector3 dir = cameraRot * new Vector3(characterH, 0, characterV);
 
-        _items[0].position = transform.position;
-        _items[0].rotation = transform.rotation;
+        _items[0].transform.position = transform.position;
+        _items[0].transform.rotation = transform.rotation;
 
         for (int i = 1; i < _items.Count; i++)
         {
             float rate = Mathf.Lerp(_shakeRange.x, _shakeRange.y, i / (float)_items.Count);
 
-            _items[i].position = Vector3.Lerp(_items[i].position, _items[i - 1].position + (_items[i - 1].up * _itemHeight), rate);
-            _items[i].rotation = Quaternion.Lerp(_items[i].rotation, _items[i - 1].rotation, rate);
+            _items[i].transform.position = Vector3.Lerp(_items[i].transform.position, _items[i - 1].transform.position + (_items[i - 1].transform.up * _itemHeight), rate);
+            _items[i].transform.rotation = Quaternion.Lerp(_items[i].transform.rotation, _items[i - 1].transform.rotation, rate);
 
             if (dir != Vector3.zero)
-                _items[i].rotation *= Quaternion.Euler(0, _bandFactor * rate, i);
+                _items[i].transform.rotation *= Quaternion.Euler(0, _bandFactor * rate, i);
         }
     }
 
     public void PlayAddToTray(Transform child)
     {
-        // 아이템 동일 타입 체크필요
+        Item item = child.GetComponent<Item>();
+        if (item == null)
+        {
+            Debug.LogError("Item component is missing on the child object.");
+            return;
+        }
 
-        _reserved.Add(child);
+        // 아이템 동일 타입 체크필요
+        if (!CanGetItemType(item.ItemType))
+            return;
+
+        _reserved.Add(item);
 
         Vector3 dest = transform.position + Vector3.up * TotalItemCount * _itemHeight;
 
         child.DOJump(dest, 5, 1, 0.3f)
             .OnComplete(() =>
             {
-                _reserved.Remove(child);
-                _items.Add(child);
+                _reserved.Remove(item);
+                _items.Add(item);
 
                 child.SetParent(transform);
                 CheckTrayActivation();
@@ -110,9 +114,16 @@ public class TrayController : MonoBehaviour
 
     public void PlayPutDownFromTray(Transform child, PileBase dest)
     {
-        if (_items.Contains(child))
+        Item item = child.GetComponent<Item>();
+        if (item == null)
         {
-            _items.Remove(child);
+            Debug.LogError("Item component is missing on the child object.");
+            return;
+        }
+
+        if (_items.Contains(item))
+        {
+            _items.Remove(item);
             child.DOJump(dest.GetPositionAt(dest.ObjectCount), 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
@@ -127,10 +138,20 @@ public class TrayController : MonoBehaviour
     public void PlayPutDownFromTray(Transform trash, Transform dest)
     {
         // 아이템 동일 타입 체크필요
-
-        if (_items.Contains(trash))
+        Item item = trash.GetComponent<Item>();
+        if (item == null)
         {
-            _items.Remove(trash);
+            Debug.LogError("Item component is missing on the child object.");
+            return;
+        }
+
+        // 아이템 동일 타입 체크필요
+        if (!CanGetItemType(item.ItemType))
+            return;
+
+        if (_items.Contains(item))
+        {
+            _items.Remove(item);
             trash.DOJump(dest.position, 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
@@ -144,5 +165,16 @@ public class TrayController : MonoBehaviour
     private void CheckTrayActivation()
     {
         this.gameObject.SetActive(_items.Count > 0);
+    }
+
+    private bool CanGetItemType(EItemType itemType)
+    {
+        if (_items.Count == 0)
+            return true;
+
+        if (_items[0].ItemType == itemType)
+            return true;
+
+        return false;
     }
 }

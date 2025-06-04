@@ -51,6 +51,8 @@ public class GameManager : MonoBehaviour
 
     private InteractionSystem Intercation;
     public StoreSystem Store;
+    public ResourceSystem Resource;
+
 
     public GamePlayer Player { get; private set; }
     public  bl_Joystick JoyStick;
@@ -95,5 +97,6 @@ public class GameManager : MonoBehaviour
         LocalMap.Initialize();
         Intercation.Initialize();
         Store.Initialize();
+        Resource.Initialize();
     }
 }
