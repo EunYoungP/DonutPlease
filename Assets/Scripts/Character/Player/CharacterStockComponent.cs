@@ -2,45 +2,61 @@ using UnityEngine;
 using UniRx;
 using NUnit.Framework;
 using System.Collections.Generic;
+using static UnityEditor.Progress;
 
 public class CharacterStockComponent 
 {
-    // Donut
-    public Stack<GameObject> Donuts { get; private set; } = new Stack<GameObject>();
-    public int DonutCount => Donuts.Count;
+    // Donut과 Trash 여기로 모두 모아둠
+    public Dictionary<EItemType, List<Item>> Items { get; private set; } = new Dictionary<EItemType, List<Item>>();
 
     // Trash
     public Stack<GameObject> Trash { get; private set; } = new Stack<GameObject>();
 
-    public void AddDonut(GameObject donut)
+    public void AddItem(Item item)
     {
-        Donuts.Push(donut);
+        if (!Items.TryAdd(item.ItemType, new List<Item> { item }))
+            Items[item.ItemType].Add(item);
     }
 
-    public GameObject RemoveDonut()
+    public Item RemoveItem(EItemType itemType)
     {
-        if (Donuts.Count == 0)
+        var items = GetItemByType(itemType);
+        if (items.Count == 0)
         {
-            Debug.LogWarning("No donuts to remove.");
+            Debug.LogWarning("No Items to remove.");
             return null;
         }
 
-        return Donuts.Pop();
+        var item = items[items.Count - 1];
+        Items[itemType].Remove(item);
+
+        return item;
     }
 
-    public void AddTrash(GameObject trash)
+    public List<Item> GetItemByType(EItemType itemType)
     {
-        Trash.Push(trash);
+        return Items.TryGetValue(itemType, out var itemList) ? itemList : new List<Item>();
     }
 
-    public GameObject RemoveTrash()
+    public bool CanGetItemType(EItemType itemType)
     {
-        if (Trash.Count == 0)
+        if (itemType == EItemType.Cash)
+            return true;
+
+        int totalItemCount = 0;
+        foreach (var (type, itemList) in Items)
         {
-            Debug.LogWarning("No trash to remove.");
-            return null;
+            totalItemCount += itemList.Count;
+            if (itemList.Count > 0)
+            {
+                if (type == itemType)
+                    return true;
+            }
         }
 
-        return Trash.Pop();
+        if (totalItemCount == 0)
+            return true;
+
+        return false;
     }
 }

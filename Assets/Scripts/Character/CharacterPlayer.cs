@@ -25,34 +25,31 @@ namespace DonutPlease.Game.Character
 
         #region Tray
 
-        protected override void AddToTray(CharacterBase player, Transform child)
+        public override void AddToTray(Transform child)
         {
-            Stock.AddDonut(child.gameObject);
+            var item = child.GetComponent<Item>();
 
-            _trayController.PlayAddToTray(child);
-        }
-
-        protected override void RemoveFromTray(CharacterBase character, PileBase pile)
-        {
-            if (character is CharacterPlayer player)
+            if (Stock.CanGetItemType(item.ItemType))
             {
-                var donut = Stock.RemoveDonut();
-                _trayController.PlayPutDownFromTray(donut.transform, pile);
+                Stock.AddItem(item);
+                _trayController.PlayAddToTray(item);
             }
         }
 
-        public void PickUpTrash(Transform child)
+        public override void RemoveFromTray(EItemType itemType, PileBase pile)
         {
-            Stock.AddTrash(child.gameObject);
-            _trayController.SetCharacter(this).PlayAddToTray(child);
+            var item = Stock.RemoveItem(itemType);
+            _trayController.PlayPutDownFromTray(item.transform, pile);
         }
 
-        public void DropTrash(Transform trashDropPos)
+        public override void RemoveFromTray(EItemType itemType, Transform trashDropPos)
         {
-            var trash = Stock.RemoveTrash();
-            _trayController.PlayPutDownFromTray(trash.transform, trashDropPos);
-        }
+            var item = Stock.RemoveItem(itemType);
+            if (item == null)
+                return;
 
+            _trayController.PlayPutDownFromTray(item.transform, trashDropPos);
+        }
         #endregion
     }
 }

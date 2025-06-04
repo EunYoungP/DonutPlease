@@ -20,34 +20,27 @@ namespace DonutPlease.Game.Character
 
         #region Tray
 
-        protected override void AddToTray(CharacterBase character, Transform child)
+        public override void AddToTray(Transform child)
         {
-            if (character is CharacterWorker worker)
+            var item = child.GetComponent<Item>();
+
+            if (Stock.CanGetItemType(item.ItemType))
             {
-                Stock.AddDonut(child.gameObject);
-                _trayController.SetCharacter(worker).PlayAddToTray(child);
+                Stock.AddItem(item);
+                _trayController.SetCharacter(this).PlayAddToTray(item);
             }
         }
 
-        protected override void RemoveFromTray(CharacterBase character, PileBase pile)
+        public override void RemoveFromTray(EItemType itemType, PileBase pile)
         {
-            if (character is CharacterWorker worker)
-            {
-                var donut = Stock.RemoveDonut();
-                _trayController.PlayPutDownFromTray(donut.transform, pile);
-            }
+            var item = Stock.RemoveItem(itemType);
+            _trayController.PlayPutDownFromTray(item.transform, pile);
         }
 
-        public void PickUpTrash(Transform child)
+        public override void RemoveFromTray(EItemType itemType, Transform targetPos)
         {
-            Stock.AddTrash(child.gameObject);
-            _trayController.SetCharacter(this).PlayAddToTray(child);
-        }
-
-        public void DropTrash(Transform trashDropPos)
-        {
-            var trash = Stock.RemoveTrash();
-            _trayController.PlayPutDownFromTray(trash.transform, trashDropPos);
+            var item = Stock.RemoveItem(itemType);
+            _trayController.PlayPutDownFromTray(item.transform, targetPos);
         }
 
         #endregion

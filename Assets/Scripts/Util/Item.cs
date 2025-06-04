@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public enum EItemType
+public enum EItemType : int
 {
-    Donut,
+    Donut = 0,
     Trash,
     Cash,
 }

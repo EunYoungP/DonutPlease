@@ -84,9 +84,8 @@ public class TrayController : MonoBehaviour
         }
     }
 
-    public void PlayAddToTray(Transform child)
+    public void PlayAddToTray(Item item)
     {
-        Item item = child.GetComponent<Item>();
         if (item == null)
         {
             Debug.LogError("Item component is missing on the child object.");
@@ -101,13 +100,13 @@ public class TrayController : MonoBehaviour
 
         Vector3 dest = transform.position + Vector3.up * TotalItemCount * _itemHeight;
 
-        child.DOJump(dest, 5, 1, 0.3f)
+        item.transform.DOJump(dest, 5, 1, 0.3f)
             .OnComplete(() =>
             {
                 _reserved.Remove(item);
                 _items.Add(item);
 
-                child.SetParent(transform);
+                item.transform.SetParent(transform);
                 CheckTrayActivation();
             });
     }

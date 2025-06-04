@@ -94,7 +94,7 @@ public class Machine : PropBase
         }
 
         GameObject donut = _donutPile.RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetDonut(donut, _enterCharcater));
+        FluxSystem.Dispatch(new OnGetItem(EItemType.Donut, donut, _enterCharcater));
     }
 
     private IEnumerator CoMakeDonut()

@@ -4,6 +4,8 @@ using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using DonutPlease.Game.Character;
 
 public class Table : PropBase
 {
@@ -22,7 +24,7 @@ public class Table : PropBase
 
     [SerializeField] private Transform _trashFrontPosition;
     
-    private Stack<GameObject> _trash = new();
+    private List<GameObject> _trash = new List<GameObject>(2);
 
     private List<Seat> _seats = new List<Seat>();
 
@@ -30,7 +32,14 @@ public class Table : PropBase
 
     private void Awake()
     {
-        for(int i = 0; i < _trashPosition.Count; i++)
+        FluxSystem.ColliderEnterActionStream.Subscribe(data =>
+        {
+            OnTriggerEnterAction(data.Item1, data.Item2);
+
+        }).AddTo(this);
+
+
+        for (int i = 0; i < _trashPosition.Count; i++)
         {
             _seats.Add(new Seat
             {
@@ -42,17 +51,33 @@ public class Table : PropBase
         }
     }
 
+    private void OnTriggerEnterAction(CharacterBase character, EColliderIdentifier identifier)
+    {
+        if (identifier == EColliderIdentifier.GetTrash)
+        {
+            ClearTable(out GameObject trash);
+            if (trash != null)
+            {
+                if (character is CharacterPlayer player)
+                {
+                    player.AddToTray(trash.transform);
+                }
+            }
+        }
+    }
+
+
     public void MakeTrash(int seatIndex)
     {
         var seat = _seats[seatIndex];
 
         GameObject go = Instantiate(_trashPrefab, seat.trashPos.position, Quaternion.identity, seat.trashPos);
-        AddTrash(go);
+        AddTrash(seatIndex, go);
     }
 
     public void ClearTable(out GameObject trash)
     {
-        RemoveTrash(out var popTrash);
+        RemoveTrash(out int seatIdnex, out var popTrash);
         trash = popTrash;
     }
 
@@ -70,11 +95,13 @@ public class Table : PropBase
             bool haveCustomer = seat.haveCustomer;
             if (haveCustomer == false)
             {
+                CheckClearTable(i);
                 return true;
             }
         }
         return false;
     }
+
 
     public bool GetEmptySeatPos(out Vector3 seatPosition, out int seatIndex)
     {
@@ -89,6 +116,9 @@ public class Table : PropBase
 
             if (haveCustomer == false)
             {
+                if (!CheckClearTable(i))
+                    continue;
+
                 seatPosition = seatPos.position;
                 seatIndex = i;
                 UpdateSeatEmptyState(i);
@@ -96,6 +126,11 @@ public class Table : PropBase
             }
         }
         return false;
+    }
+
+    private bool CheckClearTable(int trashIndex)
+    {
+        return _trash[trashIndex] == null;
     }
 
     public void UpdateSeatEmptyState(int seatIndex)
@@ -106,14 +141,25 @@ public class Table : PropBase
     }
 
 
-    private void AddTrash(GameObject trash)
+    private void AddTrash(int seatIndex, GameObject trash)
     {
-        _trash.Push(trash);
+        _trash[seatIndex] = trash;
     }
 
-    private void RemoveTrash(out GameObject trash)
+    private void RemoveTrash(out int trashIndex, out GameObject trash)
     {
-        _trash.TryPop(out GameObject popTrash);
-        trash = popTrash;
+        for(int i = 0; i < _trash.Count; i++)
+        {
+            if (_trash[i] != null)
+            {
+                trashIndex = i;
+                trash = _trash[i];
+                _trash[i] = null;
+                return;
+            }
+        }
+
+        trashIndex = -1;
+        trash = null;
     }
 }

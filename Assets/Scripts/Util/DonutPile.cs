@@ -142,7 +142,7 @@ public class DonutPile : PileBase
         }
 
         GameObject donut = RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetDonut(donut, character));
+        FluxSystem.Dispatch(new OnGetItem(EItemType.Donut, donut, character));
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ½×±â
@@ -159,7 +159,7 @@ public class DonutPile : PileBase
             yield return null;
         }
 
-        FluxSystem.Dispatch(new OnPutDownDonut(character, this));
+        FluxSystem.Dispatch(new OnPutDownItemToPile(EItemType.Donut, character, this));
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ¹İº¹ÇØ¼­ ¸¸µé±â
@@ -190,15 +190,15 @@ public class DonutPile : PileBase
     {
         if (character is CharacterPlayer player)
         {
-            return GameManager.GetGameManager.Player.Character.Stock.DonutCount > 0;
+            return GameManager.GetGameManager.Player.Character.Stock.GetItemByType(EItemType.Donut).Count > 0;
         }
         else if (character is CharacterWorker worker)
         {
-            return worker.Stock.DonutCount > 0;
+            return worker.Stock.GetItemByType(EItemType.Donut).Count > 0;
         }
         else if (character is CharacterCustomer customer)
         {
-            return customer.Stock.DonutCount > 0;
+            return customer.Stock.GetItemByType(EItemType.Donut).Count > 0;
         }
 
         return false;

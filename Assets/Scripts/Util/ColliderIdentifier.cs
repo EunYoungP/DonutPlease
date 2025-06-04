@@ -7,7 +7,9 @@ public enum EColliderIdentifier : int
     GetDonut,
     TakeDonut,
     Cash,
-    CasherPlace
+    CasherPlace,
+    GetTrash,
+    TakeTrash,
 }
 
 public class ColliderIdentifier : MonoBehaviour

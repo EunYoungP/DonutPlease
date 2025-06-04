@@ -100,7 +100,6 @@ public class Store : MonoBehaviour
 
                 // 3. 이동 중 도넛이 없어지면 이동 취소
 
-
                 // 4. 머신 -> 도넛 가져오기
                 machineDonutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
 
@@ -160,17 +159,20 @@ public class Store : MonoBehaviour
                 // 3. 쓰레기 삭제
                 targetTable.ClearTable(out var trash);
 
-                // 3. 테이블 쓰레기 줍기
-                worker.PickUpTrash(trash.transform);
+                if (trash != null)
+                {
+                    // 3. 테이블 쓰레기 줍기
+                    worker.AddToTray(trash.transform);
 
-                // 4. 쓰레기통으로 이동
-                worker.Controller.MoveTo(trashCan.TrashCanFrontPos);
+                    // 4. 쓰레기통으로 이동
+                    worker.Controller.MoveTo(trashCan.TrashCanFrontPos);
 
-                // 4-1. 이동 대기
-                yield return new WaitUntil(() => !worker.Controller.IsMoving);
+                    // 4-1. 이동 대기
+                    yield return new WaitUntil(() => !worker.Controller.IsMoving);
 
-                // 5. 쓰레기통에 쓰레기 버리기
-                worker.DropTrash(trashCan.TrashDropPos);
+                    // 5. 쓰레기통에 쓰레기 버리기
+                    worker.RemoveFromTray(EItemType.Trash, trashCan.TrashDropPos);
+                }
 
                 //RemoveJob
             }

@@ -34,19 +34,19 @@ namespace DonutPlease.Game.Character
             FluxSystem.ActionStream
             .Subscribe(data =>
             {
-                if (data is OnGetDonut getDonut)
+                if (data is OnGetItem getDonut)
                 {
                     if (getDonut.character is CharacterPlayer player)
                     {
-                        player.AddToTray(player, getDonut.donut.transform);
+                        player.AddToTray(getDonut.item.transform);
                     }
                     else if (getDonut.character is CharacterCustomer customer)
                     {
-                        customer.AddToTray(customer, getDonut.donut.transform);
+                        customer.AddToTray(getDonut.item.transform);
                     }
                     else if (getDonut.character is CharacterWorker worker)
                     {
-                        worker.AddToTray(worker, getDonut.donut.transform);
+                        worker.AddToTray(getDonut.item.transform);
                     }
                 }
             })
@@ -55,30 +55,34 @@ namespace DonutPlease.Game.Character
             FluxSystem.ActionStream
             .Subscribe(data =>
             {
-                if (data is OnPutDownDonut putDownDonut)
+                if (data is OnPutDownItemToPile putDownDonut)
                 {
                     if (putDownDonut.character is CharacterPlayer player)
                     {
-                        player.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                        player.RemoveFromTray(EItemType.Donut,  putDownDonut.pile);
                     }
                     else if (putDownDonut.character is CharacterCustomer customer)
                     {
-                        customer.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                        customer.RemoveFromTray(EItemType.Donut, putDownDonut.pile);
                     }
                     else if (putDownDonut.character is CharacterWorker worker)
                     {
-                        worker.RemoveFromTray(putDownDonut.character, putDownDonut.pile);
+                        worker.RemoveFromTray(EItemType.Donut, putDownDonut.pile);
                     }
                 }
             })
             .AddTo(this);
         }
 
-        protected virtual void AddToTray(CharacterBase character, Transform child)
+        public virtual void AddToTray(Transform child)
         {
         }
 
-        protected virtual void RemoveFromTray(CharacterBase character, PileBase pile)
+        public virtual void RemoveFromTray(EItemType itemType, PileBase pile)
+        {
+        }
+
+        public virtual void RemoveFromTray(EItemType itemType, Transform trashDropPos)
         {
         }
     }
