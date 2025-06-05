@@ -142,8 +142,6 @@ public class DonutPile : PileBase
     // 도넛 파일에 도넛 반복해서 만들기
     public IEnumerator CoLoopMakeDonut()
     {
-        yield return new WaitUntil(() => !IsWorking);
-
         float elapsedTime = 0f;
 
         while (elapsedTime < _makingInterval)
@@ -153,14 +151,14 @@ public class DonutPile : PileBase
             yield return null;
         }
 
-        if (IsWorking)
-            yield break;
+        yield return new WaitUntil(() => !IsWorking);
 
         GameObject go = Instantiate(_prefab, transform.position, Quaternion.identity);
         AddToPile(go);
 
-        if (!IsFull)
-            StartCoroutine(CoLoopMakeDonut());
+        yield return new WaitUntil(() => !IsFull);
+
+        StartCoroutine(CoLoopMakeDonut());
     }
 
     #endregion

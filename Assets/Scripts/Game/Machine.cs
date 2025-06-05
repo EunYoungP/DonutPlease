@@ -30,12 +30,14 @@ public class Machine : PropBase
 
     private void OnEnable()
     {
-        _curCoroutine = StartCoroutine(_donutPile.CoLoopMakeDonut());
+        StartCoroutine(_donutPile.CoLoopMakeDonut());
     }
 
     private void OnDestroy()
     {
         ResetCoroutine();
+
+        StopAllCoroutines();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -62,8 +64,6 @@ public class Machine : PropBase
         if (other.CompareTag("Player"))
         {
             ResetCoroutine();
-
-            _curCoroutine = StartCoroutine(_donutPile.CoLoopMakeDonut());
         }
     }
 
