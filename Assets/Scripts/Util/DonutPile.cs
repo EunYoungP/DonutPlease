@@ -95,7 +95,7 @@ public class DonutPile : PileBase
 
     private IEnumerator CoLoopEnterGetCoroutine()
     {
-        while (IsWorking)
+        while (IsWorking && CheckPileDonutExist())
         {
             _curCoroutine = StartCoroutine(CoGetFromPile(_workingCharcater));
             yield return _curCoroutine;
@@ -106,7 +106,7 @@ public class DonutPile : PileBase
 
     private IEnumerator CoLoopEnterTakeCoroutine()
     {
-        while (IsWorking)
+        while (IsWorking && CheckCharacterDonutExist(_workingCharcater))
         {
             _curCoroutine = StartCoroutine(CoMoveToPile(_workingCharcater));
             yield return _curCoroutine;
