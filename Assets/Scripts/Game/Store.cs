@@ -104,7 +104,7 @@ public class Store : MonoBehaviour
                 machineDonutPile.GetDonutFromPileByCount(worker, targetMachine.DonutCount);
 
                 // 4-1. 도넛 받기 대기
-                yield return new WaitUntil(() => !machineDonutPile.IsWorkingAI);
+                yield return new WaitUntil(() => !machineDonutPile.IsWorking);
 
                 // 5. 카운터로 이동
                 worker.Controller.MoveTo(_mainCounter.DonutPileFrontPosition);
@@ -116,7 +116,7 @@ public class Store : MonoBehaviour
                 counterDonutPile.LoopMoveDonutToPile(worker);
 
                 // 6-1. 도넛 놓기 대기
-                yield return new WaitUntil(() => !counterDonutPile.IsWorkingAI);
+                yield return new WaitUntil(() => !counterDonutPile.IsWorking);
 
                 //RemoveJob
                 RemoveJob(EJob.CarryDonut, targetMachine);

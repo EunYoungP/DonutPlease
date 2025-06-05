@@ -127,7 +127,7 @@ public class Counter : PropBase
                     yield return new WaitForSeconds(1f);
 
                     Debug.Log("은영 6-1. 도넛 받기 대기");
-                    yield return new WaitUntil(() => !_donutPile.IsWorkingAI);
+                    yield return new WaitUntil(() => !_donutPile.IsWorking);
 
                     // 자리로 이동
                     var store = GameManager.GetGameManager.Store.GetStore(1);

@@ -24,7 +24,7 @@ public class Table : PropBase
 
     [SerializeField] private Transform _trashFrontPosition;
     
-    private List<GameObject> _trash = new List<GameObject>(2);
+    private List<GameObject> _trash = new List<GameObject>();
 
     private List<Seat> _seats = new List<Seat>();
 
@@ -48,6 +48,8 @@ public class Table : PropBase
                 trashPos = _trashPosition[i],
                 donutPile = _donutPiles[i]
             });
+
+            _trash.Add(null);
         }
     }
 
@@ -95,8 +97,8 @@ public class Table : PropBase
             bool haveCustomer = seat.haveCustomer;
             if (haveCustomer == false)
             {
-                CheckClearTable(i);
-                return true;
+                if (CheckClearTable(i))
+                    return true;
             }
         }
         return false;
