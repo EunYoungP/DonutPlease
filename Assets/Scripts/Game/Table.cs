@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using DonutPlease.Game.Character;
+using Unity.VisualScripting;
 
 public class Table : PropBase
 {
@@ -85,7 +86,12 @@ public class Table : PropBase
 
     public bool CheckHaveTrash()
     {
-        return _trash.Count > 0;
+        foreach(var t in _trash)
+        {
+            if (t != null)
+                return true;
+        }
+        return false;
     }
 
     public bool CheckHaveEmptySeat()
