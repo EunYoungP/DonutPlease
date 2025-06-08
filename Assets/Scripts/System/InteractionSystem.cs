@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum InteractionType
 {
-    Open,
+    OpenFrontDoor,
     CreateTable,
     CreateMachine,
     CreateCounter,
@@ -41,7 +41,7 @@ public class InteractionSystem
             InteractionType interactionType = uiInteraction.interactionType;
             int nextInteractionId = uiInteraction.nextInerationId;
 
-            if (interactionType == InteractionType.Open)
+            if (interactionType == InteractionType.OpenFrontDoor)
             {
                 CreateProp(interactionId, interactionType);
             }

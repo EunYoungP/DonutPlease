@@ -1,5 +1,7 @@
 using DonutPlease.Game.Character;
+using DonutPlease.System;
 using System;
+using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,28 +36,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    public UIRoot _uiRoot;
+    [SerializeField]public UIRoot _uiRoot;
 
-    [SerializeField]
-    public Canvas _canvas;
+    [SerializeField]public Canvas _canvas;
 
-    [SerializeField]
-    private Vector3 _startPos;
+    [SerializeField]private Vector3 _startPos;
 
-    [SerializeField]
-    private GameObject _characterPrefab;
+    [SerializeField]private GameObject _characterPrefab;
 
-    [SerializeField] 
-    public LocalMapSystem LocalMap;
-
+    [Header("System")]
+    [SerializeField]public LocalMapSystem LocalMap;
     private InteractionSystem Intercation;
     public StoreSystem Store;
     public ResourceSystem Resource;
-
+    public TutorialSystem Tutorial;
 
     public GamePlayer Player { get; private set; }
-    public  bl_Joystick JoyStick;
+    public bl_Joystick JoyStick;
 
     private void Awake()
     {

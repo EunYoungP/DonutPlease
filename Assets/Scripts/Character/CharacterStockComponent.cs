@@ -3,8 +3,9 @@ using UniRx;
 using NUnit.Framework;
 using System.Collections.Generic;
 using static UnityEditor.Progress;
+using DonutPlease.Game.Character;
 
-public class CharacterStockComponent 
+public class CharacterStockComponent : ComponentBase
 {
     // Donut과 Trash 여기로 모두 모아둠
     public Dictionary<EItemType, List<Item>> Items { get; private set; } = new Dictionary<EItemType, List<Item>>();
@@ -41,7 +42,7 @@ public class CharacterStockComponent
     public bool CanGetItemType(EItemType itemType)
     {
         if (itemType == EItemType.Cash)
-            return true;
+            return false;
 
         int totalItemCount = 0;
         foreach (var (type, itemList) in Items)

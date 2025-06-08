@@ -5,6 +5,7 @@ using UniRx;
 using System.Collections;
 using Unity.VisualScripting;
 using DG.Tweening;
+using System;
 
 public class Counter : PropBase
 {
@@ -12,7 +13,7 @@ public class Counter : PropBase
     private DonutPile _donutPile;
 
     [SerializeField]
-    private PileBase _moneyPile;
+    private CashPile _cashPile;
 
     [SerializeField]
     private Transform _donutPileFrontPos;
@@ -57,6 +58,18 @@ public class Counter : PropBase
             OnTriggerExitAction(data.Item1, data.Item2);
 
         }).AddTo(this);
+
+        //FluxSystem.ActionStream
+        //.Subscribe(data =>
+        //{
+        //    if (data is OnGetItem onGetCash)
+        //    {
+        //        if (onGetCash.character is CharacterCustomer customer)
+        //        {
+        //            // 도넛 ㅇ벗애기
+        //        }
+        //    }
+        //}).AddTo();
 
         StartCoroutine(CoAddCustomer());
     }
@@ -117,14 +130,20 @@ public class Counter : PropBase
                 {
                     customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.EatDonut);
 
-                    // 줄에서 나가기
+                    // 줄에서 삭제
                     RemoveCustomerInLine();
 
                     Debug.Log("은영 6. 도넛 받기");
-                    // 도넛 받기
-                    _donutPile.GetDonutFromPileByCount(customer, 1);
 
-                    yield return new WaitForSeconds(1f);
+                    const int DonutCount = 1;
+
+                    // 도넛 받기
+                    _donutPile.GetDonutFromPileByCount(customer, DonutCount);
+
+                    // 돈 내기
+                    customer.Pay(DonutCount, _cashPile);
+
+                    // 돈 없애기
 
                     Debug.Log("은영 6-1. 도넛 받기 대기");
                     yield return new WaitUntil(() => !_donutPile.IsWorking);

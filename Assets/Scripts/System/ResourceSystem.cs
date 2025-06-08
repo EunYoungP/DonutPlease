@@ -1,43 +1,46 @@
 using UnityEngine;
 
-public class ResourceSystem : MonoBehaviour
+namespace DonutPlease.System
 {
-    private GameObject Counter;
-    private GameObject Machine;
-    private GameObject Table;
-    private GameObject TrashCan;
-    private GameObject Door;
-    private GameObject InteractionUI;
-
-    public void Initialize()
+    public class ResourceSystem : MonoBehaviour
     {
-        Counter = Resources.Load<GameObject>("Prefabs/Counter");
-        Machine = Resources.Load<GameObject>("Prefabs/DonutMachine");
-        Table = Resources.Load<GameObject>("Prefabs/TableSet");
-        TrashCan = Resources.Load<GameObject>("Prefabs/TrashCan");
-        Door = Resources.Load<GameObject>("Prefabs/Door");
-        InteractionUI = Resources.Load<GameObject>("Prefabs/UI/InteractionUI");
-    }
+        private GameObject Counter;
+        private GameObject Machine;
+        private GameObject Table;
+        private GameObject TrashCan;
+        private GameObject FrontDoor;
+        private GameObject InteractionUI;
 
-    public GameObject GetPropByType(InteractionType type)
-    {
-        switch(type)
+        public void Initialize()
         {
-            case InteractionType.CreateCounter:
-                return Counter;
-            case InteractionType.CreateMachine:
-                return Machine;
-            case InteractionType.CreateTable:
-                return Table;
-            case InteractionType.Open:
-                return Door;
-            case InteractionType.TrashCan:
-                return TrashCan;
-            case InteractionType.CreateInteractionUI:
-                return InteractionUI;
-            default:
-                Debug.LogWarning("Unknown interaction type: " + type);
-                return null;
+            Counter = Resources.Load<GameObject>("Prefabs/Counter");
+            Machine = Resources.Load<GameObject>("Prefabs/DonutMachine");
+            Table = Resources.Load<GameObject>("Prefabs/TableSet");
+            TrashCan = Resources.Load<GameObject>("Prefabs/TrashCan");
+            FrontDoor = Resources.Load<GameObject>("Prefabs/FrontDoor");
+            InteractionUI = Resources.Load<GameObject>("Prefabs/UI/InteractionUI");
+        }
+
+        public GameObject GetPropByType(InteractionType type)
+        {
+            switch (type)
+            {
+                case InteractionType.CreateCounter:
+                    return Counter;
+                case InteractionType.CreateMachine:
+                    return Machine;
+                case InteractionType.CreateTable:
+                    return Table;
+                case InteractionType.OpenFrontDoor:
+                    return FrontDoor;
+                case InteractionType.TrashCan:
+                    return TrashCan;
+                case InteractionType.CreateInteractionUI:
+                    return InteractionUI;
+                default:
+                    Debug.LogWarning("Unknown interaction type: " + type);
+                    return null;
+            }
         }
     }
 }

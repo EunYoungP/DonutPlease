@@ -16,6 +16,11 @@ namespace DonutPlease.Game.Character
             Stock = new CharacterStockComponent();
         }
 
+        public void Pay(int getDonutCount, CashPile cashPile)
+        {
+            cashPile.MakeCashInPile(this, getDonutCount);
+        }
+
         #region Tray
 
         public override void AddToTray(Transform child)
@@ -34,7 +39,6 @@ namespace DonutPlease.Game.Character
             var item = Stock.RemoveItem(itemType);
             _trayController.PlayPutDownFromTray(item.transform, pile);
         }
-
 
         #endregion
     }

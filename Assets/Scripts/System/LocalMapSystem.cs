@@ -55,7 +55,7 @@ public class LocalMapSystem : MonoBehaviour
 
         switch (type)
         {
-            case InteractionType.Open:
+            case InteractionType.OpenFrontDoor:
                 break;
             case InteractionType.CreateTable:
                 Table table = propObj.GetComponent<Table>();
