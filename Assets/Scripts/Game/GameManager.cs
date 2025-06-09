@@ -1,6 +1,7 @@
 using DonutPlease.Game.Character;
 using DonutPlease.System;
 using System;
+using System.IO;
 using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -78,22 +79,40 @@ public class GameManager : MonoBehaviour
 
         JoyStick = _canvas.GetComponentInChildren<bl_Joystick>();
 
+        Initialize();
+    }
+
+    private void OnApplicationQuit()
+    {
+        DataManager.Save();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+        {
+            DataManager.Save();
+        }
+    }
+
+    private void Initialize()
+    {
         CreateActors();
 
-        Initialize();
+        Debug.Log($"Application.persistentDataPath : {Application.persistentDataPath}");
+        Debug.Log($"Application.dataPath : {Application.dataPath}");
+        Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
+
+        DataManager.Load(out SaveData data);
+        Player.Initialize(data.playerData);
+        LocalMap.Initialize();
+        Intercation.Initialize();
+        Store.Initialize();
+        Resource.Initialize();
     }
 
     private void CreateActors()
     {
         GameObject playerObject = Instantiate(_characterPrefab, _startPos, Quaternion.identity) as GameObject;
-    }
-
-    private void Initialize()
-    {
-        Player.Initialize();
-        LocalMap.Initialize();
-        Intercation.Initialize();
-        Store.Initialize();
-        Resource.Initialize();
     }
 }
