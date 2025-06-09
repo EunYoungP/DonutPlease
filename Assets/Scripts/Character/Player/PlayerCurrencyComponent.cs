@@ -3,12 +3,18 @@ using UniRx;
 using DonutPlease.Game.Character;
 using System;
 
+public enum CurrencyType
+{
+    Cash,
+    Gem,
+}
+
 public class PlayerCurrencyComponent : ComponentBase
 {
     public int Cash { get; private set; }
     public int Gem { get; private set; }
 
-    public void Initialize()
+    public void Initialize(PlayerData playerData)
     {
         FluxSystem.ActionStream
             .Subscribe(data =>
@@ -21,6 +27,9 @@ public class PlayerCurrencyComponent : ComponentBase
                     }
                 }
             }).AddTo(Disposables);
+
+        Cash = playerData.cash;
+        Gem = playerData.gem;
     }
 
     public void AddCash(int amount)
@@ -48,6 +57,8 @@ public class PlayerCurrencyComponent : ComponentBase
             return;
 
         AddCash(item.RewardCash);
+
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
     #endregion

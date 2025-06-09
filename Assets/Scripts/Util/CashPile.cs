@@ -41,6 +41,8 @@ public class CashPile : PileBase
     {
         StartCoroutine(CoWaitOtherWorking());
 
+        _workingCharcater = workingCharacter;
+
         IsWorking = true;
 
         StartCoroutine(CoLoopEnterGetCoroutine());

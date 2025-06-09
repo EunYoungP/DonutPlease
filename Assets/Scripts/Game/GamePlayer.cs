@@ -2,7 +2,6 @@ using DonutPlease.Game.Character;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 
-
 public class GamePlayer
 {
     [SerializeField] private CharacterPlayer _character;
@@ -11,13 +10,12 @@ public class GamePlayer
 
     private PlayerCurrencyComponent Currency;
 
-    public void Initialize()
+    public void Initialize(PlayerData playerData)
     {
         _character = GameObject.FindAnyObjectByType<CharacterPlayer>();
-        _character.Initialize();
+        _character?.Initialize();
 
         Currency = new PlayerCurrencyComponent();
-        if (Currency == null)
-            Currency.Initialize();
+        Currency?.Initialize(playerData);
     }
 }
