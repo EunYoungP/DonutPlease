@@ -34,10 +34,12 @@ public class PlayerCurrencyComponent : ComponentBase
 
     public void AddCash(int amount)
     {
-        if (amount <= 0)
+        if (amount < 0)
             return;
 
         Cash += amount;
+
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
     public void RemoveCash(int amount)
@@ -46,6 +48,8 @@ public class PlayerCurrencyComponent : ComponentBase
             return;
 
         Cash -= amount;
+
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
     #region OnEvent
@@ -57,8 +61,6 @@ public class PlayerCurrencyComponent : ComponentBase
             return;
 
         AddCash(item.RewardCash);
-
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
     #endregion

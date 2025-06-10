@@ -1,7 +1,6 @@
 
 namespace DonutEditor
 {
-    using UnityEditor;
     using UnityEngine;
 
     public class ShowEnumAttribute : PropertyAttribute

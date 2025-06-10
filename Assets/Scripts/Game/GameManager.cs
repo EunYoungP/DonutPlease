@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
 
     [Header("System")]
     [SerializeField]public LocalMapSystem LocalMap;
-    private InteractionSystem Intercation;
+    public InteractionSystem Intercation;
     public StoreSystem Store;
     public ResourceSystem Resource;
     public TutorialSystem Tutorial;
