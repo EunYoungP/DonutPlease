@@ -20,6 +20,8 @@ public class PlayerGrowthComponent : ComponentBase
     {
         Exp = playerData.exp;
         Level = playerData.level;
+
+        FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
     }
 
     public void AddExp(int exp)
@@ -31,7 +33,7 @@ public class PlayerGrowthComponent : ComponentBase
 
         UpdateLevel();
 
-        //FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+        FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
     }
 
     public void RemoveExp(int exp)
@@ -40,18 +42,21 @@ public class PlayerGrowthComponent : ComponentBase
             return;
 
         Exp -= exp;
-
-        //FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
     private void UpdateLevel()
     {
+        bool isLevelUp = Exp >= _expMaxByLevel[Level];
+
         while (Exp >= _expMaxByLevel[Level])
         {
             RemoveExp(_expMaxByLevel[Level]);
             Level++;
         }
 
-        //FluxSystem.Dispatch(new OnUpdatePlayerLevel(Level));
+        if (isLevelUp)
+        {
+            FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
+        }
     }
 }

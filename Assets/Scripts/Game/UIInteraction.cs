@@ -24,16 +24,18 @@ public class UIInteraction : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textGold;
     [SerializeField] private Image _imgFilled;
 
-    private Action _callbacks;
-    private bool _isTrigger;
     private float _duration = 0.1f;
+    private int _payUnit = 10;
+    private int _paidCash = 0;
 
-    private int payUnit = 10;
-    private int needCash;
-    private int paidCash = 0;
+    private int _needCash;
+    private int _rewardExp;
+
+    private bool _isTrigger;
+    private Action _callbacks;
 
     public int Id { get; private set; }
-    public bool IsPaidComplete => paidCash >= needCash;
+    public bool IsPaidComplete => _paidCash >= _needCash;
 
 
     private void Awake()
@@ -45,8 +47,9 @@ public class UIInteraction : MonoBehaviour
     {
         Id = interactionId;
 
-        needCash = GameManager.GetGameManager.LocalMap.GetPropData(Id).NeedCash;
-        _textGold.text = needCash.ToString();
+        _needCash = GameManager.GetGameManager.LocalMap.GetPropData(Id).NeedCash;
+        _rewardExp = GameManager.GetGameManager.LocalMap.GetPropData(Id).RewardExp;
+        _textGold.text = _needCash.ToString();
     }
 
     public void AddCallback(Action callback)
@@ -77,22 +80,26 @@ public class UIInteraction : MonoBehaviour
         while (_isTrigger && !IsPaidComplete)
         {
             // 플레이어 재화 갱신
-            if (!GameManager.GetGameManager.Player.Currency.Pay(payUnit))
+            if (!GameManager.GetGameManager.Player.Currency.Pay(_payUnit))
             {
-                payUnit = GameManager.GetGameManager.Player.Currency.Cash;
-                if (payUnit == 0)
+                _payUnit = GameManager.GetGameManager.Player.Currency.Cash;
+                if (_payUnit == 0)
                     yield break;
 
-                GameManager.GetGameManager.Player.Currency.Pay(payUnit);
+                GameManager.GetGameManager.Player.Currency.Pay(_payUnit);
+
+                // 경험치 받기
             }
 
-            // 돈 더미 하나 받기
+            // 돈 더미 이동
            yield return StartCoroutine(CoPayToInteractionUI());
         }
 
         // 돈 지불 완료
         if (IsPaidComplete)
         {
+            GameManager.GetGameManager.Player.Growth.AddExp(_rewardExp);
+
             _callbacks?.Invoke();
 
             Destroy(gameObject);
@@ -112,10 +119,10 @@ public class UIInteraction : MonoBehaviour
         var player = GameManager.GetGameManager.Player;
         player.Character.RemoveCashFromPlayerTo(gameObject.transform, () =>
         {
-            paidCash += payUnit;
+            _paidCash += _payUnit;
 
-            _textGold.text = (needCash - paidCash).ToString();
-            _imgFilled.fillAmount = (float)paidCash / needCash;
+            _textGold.text = (_needCash - _paidCash).ToString();
+            _imgFilled.fillAmount = (float)_paidCash / _needCash;
         });
     }
 }

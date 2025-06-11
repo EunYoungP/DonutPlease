@@ -1,13 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using UniRx;
 
 public static class ContentLockSystem
 {
     static ContentLockSystem()
     {
         // 게임 상태 변화 이벤트들 등록
+
+        FluxSystem.ActionStream
+        .Subscribe(data =>
+        {
+            if (data is OnUpdateCurrency updateCurrency)
+            {
+                TryUnlock("HR");
+                TryUnlock("Upgrade");
+                TryUnlock("DriveThru");
+            }
+        });
     }
 
     private static Dictionary<string, Action> contents = new Dictionary<string, Action>()

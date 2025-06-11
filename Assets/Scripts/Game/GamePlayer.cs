@@ -9,7 +9,7 @@ public class GamePlayer
     public CharacterPlayer Character => _character;
 
     public PlayerCurrencyComponent Currency;
-    private PlayerGrowthComponent Growth;
+    public PlayerGrowthComponent Growth;
 
     public void Initialize(PlayerData playerData)
     {

@@ -14,6 +14,7 @@ public struct InteractionProp
     // Create Interaction UIÀÏ °æ¿ì
     public int[] NextIds;
     public int NeedCash;
+    public int RewardExp;
 }
 
 public class LocalMapSystem : MonoBehaviour

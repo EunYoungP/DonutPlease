@@ -21,6 +21,21 @@ public class Panel_HUD : MonoBehaviour
                 }
                 
             }).AddTo(this);
+
+        FluxSystem.ActionStream
+        .Subscribe(data =>
+        {
+            if (data is OnUpdatePlayerGrowth updateGrowth)
+            {
+                UpdateGrowth(updateGrowth.level, updateGrowth.exp, updateGrowth.maxExp);
+            }
+        });
+    }
+
+    private void UpdateGrowth(int level, int curExp, int maxExp)
+    {
+        _expBar.SetLevel(level);
+        _expBar.SetExp(curExp, maxExp); 
     }
 
     private void OnUpdateCash(int cash)
