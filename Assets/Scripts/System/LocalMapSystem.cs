@@ -10,7 +10,10 @@ public struct InteractionProp
     public Vector3 Pos;
     public Vector3 Rot;
     public InteractionType Type;
+
+    // Create Interaction UI일 경우
     public int[] NextIds;
+    public int NeedCash;
 }
 
 public class LocalMapSystem : MonoBehaviour
@@ -100,30 +103,24 @@ public class LocalMapSystem : MonoBehaviour
 
     public void CreateInteractionUI(int id)
     {
-        InteractionProp propData = GetPropData(id);
-
-        // NextIds로 연결된 InteractionProp을 가져옴
-        foreach(int nextId in propData.NextIds)
-        {
-            // 생성될 InteractionPorp이 있다면 콜백으로 넘겨야함.
-            GameManager.GetGameManager.Intercation.ActiveInteraction(nextId);
-        }
-
         GameObject propRoot = new GameObject($"UIInteraction_{id}");
         propRoot.transform.SetParent(_uIRoot.transform);
 
+        InteractionProp propData = GetPropData(id);
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
 
         UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
+        uIInteraction.SetId(id);
 
-        // 기존에는 생성되는 UIInteraction에 어떤 타입을 부여할지 여기서 정의,
-        // 이제는 
-        //uIInteraction.AddData(nextInterationId, nextPropData.Type);
+        // Set Callback
+        foreach (int nextId in propData.NextIds)
+        {
+            uIInteraction.AddCallback(() => GameManager.GetGameManager.Intercation.ActiveInteraction(nextId));
+        }
 
         propRoot.transform.localPosition = propData.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
 }
-

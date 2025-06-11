@@ -63,7 +63,7 @@ public static class DataManager
     {
         return new SaveData
         {
-            playerData = new PlayerData { level = 1, exp = 0, moveSpeed = 5, capacity = 10, cash = 0, gem = 0 },
+            playerData = new PlayerData { level = 1, exp = 0, moveSpeed = 5, capacity = 10, cash = 300, gem = 0 },
             workerData = new WorkerData { capacity = 5, moveSpeed = 3},
             stageData = new StageData { stageLevel = 1},
             contentLocks = new ContentLockData[]

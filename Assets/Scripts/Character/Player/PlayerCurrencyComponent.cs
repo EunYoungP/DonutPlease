@@ -11,8 +11,8 @@ public enum CurrencyType
 
 public class PlayerCurrencyComponent : ComponentBase
 {
-    public int Cash { get; private set; }
-    public int Gem { get; private set; }
+    public int Cash { get; private set; } = 0;
+    public int Gem { get; private set; } = 0;
 
     public void Initialize(PlayerData playerData)
     {
@@ -28,13 +28,16 @@ public class PlayerCurrencyComponent : ComponentBase
                 }
             }).AddTo(Disposables);
 
+
         Cash = playerData.cash;
         Gem = playerData.gem;
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
     }
 
     public void AddCash(int amount)
     {
-        if (amount < 0)
+        if (amount <= 0)
             return;
 
         Cash += amount;
@@ -44,12 +47,41 @@ public class PlayerCurrencyComponent : ComponentBase
 
     public void RemoveCash(int amount)
     {
-        if (amount < 0 || Cash < amount)
+        if (amount <= 0 || Cash < amount)
             return;
 
         Cash -= amount;
 
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+    }
+
+    public void AddGem(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        Gem += amount;
+
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
+    }
+
+    public void RemoveGem(int amount)
+    {
+        if (amount <= 0 || Gem < amount)
+            return;
+
+        Gem -= amount;
+
+        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
+    }
+
+    public bool Pay(int cash)
+    {
+        if (cash <= 0 || Cash < cash)
+            return false;
+
+        RemoveCash(cash);
+        return true;
     }
 
     #region OnEvent

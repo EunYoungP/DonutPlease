@@ -10,6 +10,7 @@ namespace DonutPlease.System
         private GameObject TrashCan;
         private GameObject FrontDoor;
         private GameObject InteractionUI;
+        private GameObject Cash;
 
         public void Initialize()
         {
@@ -19,6 +20,7 @@ namespace DonutPlease.System
             TrashCan = Resources.Load<GameObject>("Prefabs/TrashCan");
             FrontDoor = Resources.Load<GameObject>("Prefabs/FrontDoor");
             InteractionUI = Resources.Load<GameObject>("Prefabs/UI/InteractionUI");
+            Cash = Resources.Load<GameObject>("Prefabs/Item/Cash");
         }
 
         public GameObject GetPropByType(InteractionType type)
@@ -41,6 +43,11 @@ namespace DonutPlease.System
                     Debug.LogWarning("Unknown interaction type: " + type);
                     return null;
             }
+        }
+
+        public GameObject GetCash()
+        {
+            return Cash;
         }
     }
 }

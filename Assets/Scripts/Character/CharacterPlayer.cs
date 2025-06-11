@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 
 using UnityEngine.TextCore.Text;
@@ -56,6 +57,21 @@ namespace DonutPlease.Game.Character
                 .OnComplete(() =>
                 {
                     Destroy(cashItem.gameObject);
+                });
+        }
+
+        public void RemoveCashFromPlayerTo(Transform dest, Action callback = null)
+        {
+            GameObject prefab = GameManager.GetGameManager.Resource.GetCash();
+            GameObject cash = Instantiate(prefab, transform.position, Quaternion.identity);
+
+            // 여기로 이동
+            cash.transform.DOJump(gameObject.transform.position, 5, 1, 0.1f)
+                .OnComplete(() =>
+                {
+                    callback?.Invoke();
+
+                    Destroy(cash);
                 });
         }
 

@@ -27,22 +27,7 @@ public class InteractionSystem
 
     public  void Initialize()
     {
-        FluxSystem.ActionStream
-            .Subscribe(data =>
-            {
-                ActiveInteraction(data);
-
-            }).AddTo(disposable);
-
         CreateInteractionUI(0);
-    }
-
-    private void ActiveInteraction(object action)
-    {
-        if (action is OnTriggerEnterInteractionUI uiInteraction)
-        {
-            ActiveInteraction(uiInteraction.interactionId);
-        }
     }
 
     public void ActiveInteraction(int interactionId)

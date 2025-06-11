@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DonutEditor;
+using DG.Tweening;
+using UnityEngine.TextCore.Text;
 
 [Serializable]
 public class IntercationData
@@ -19,22 +21,37 @@ public class IntercationData
 
 public class UIInteraction : MonoBehaviour
 {
-    [SerializeField] private List<IntercationData> _interactionDatas;
-
     [SerializeField] private TextMeshProUGUI _textGold;
     [SerializeField] private Image _imgFilled;
 
+    private Action _callbacks;
     private bool _isTrigger;
+    private float _duration = 0.1f;
 
-    public void AddData(int interactionId, InteractionType type)
+    private int payUnit = 10;
+    private int needCash;
+    private int paidCash = 0;
+
+    public int Id { get; private set; }
+    public bool IsPaidComplete => paidCash >= needCash;
+
+
+    private void Awake()
     {
-        IntercationData intercationData = new IntercationData
-        {
-            InteractionId = interactionId,
-            InteractionType = type
-        };
+        _imgFilled.fillAmount = 0f;
+    }
 
-        _interactionDatas.Add(intercationData);
+    public void SetId(int interactionId)
+    {
+        Id = interactionId;
+
+        needCash = GameManager.GetGameManager.LocalMap.GetPropData(Id).NeedCash;
+        _textGold.text = needCash.ToString();
+    }
+
+    public void AddCallback(Action callback)
+    {
+        _callbacks += callback;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -43,7 +60,7 @@ public class UIInteraction : MonoBehaviour
         {
             _isTrigger = true;
 
-            StartCoroutine(Filled(1.5f));
+            StartCoroutine(CoPayCash());
         }
     }
 
@@ -55,28 +72,50 @@ public class UIInteraction : MonoBehaviour
         }
     }
 
-    private IEnumerator Filled(float duration)
+    private IEnumerator CoPayCash()
+    {
+        while (_isTrigger && !IsPaidComplete)
+        {
+            // 플레이어 재화 갱신
+            if (!GameManager.GetGameManager.Player.Currency.Pay(payUnit))
+            {
+                payUnit = GameManager.GetGameManager.Player.Currency.Cash;
+                if (payUnit == 0)
+                    yield break;
+
+                GameManager.GetGameManager.Player.Currency.Pay(payUnit);
+            }
+
+            // 돈 더미 하나 받기
+           yield return StartCoroutine(CoPayToInteractionUI());
+        }
+
+        // 돈 지불 완료
+        if (IsPaidComplete)
+        {
+            _callbacks?.Invoke();
+
+            Destroy(gameObject);
+        }
+    }
+
+    private IEnumerator CoPayToInteractionUI()
     {
         float elapsedTime = 0f;
-        _imgFilled.fillAmount = 0;
-
-        while (elapsedTime < duration)
+        while (elapsedTime < _duration)
         {
-            if (!_isTrigger)
-                yield break;
-
-            _imgFilled.fillAmount = elapsedTime / duration;
-
             elapsedTime += Time.deltaTime;
-
             yield return null;
         }
 
-        foreach (var intercationData in _interactionDatas)
+        // Cash 이동
+        var player = GameManager.GetGameManager.Player;
+        player.Character.RemoveCashFromPlayerTo(gameObject.transform, () =>
         {
-            FluxSystem.Dispatch(new OnTriggerEnterInteractionUI(intercationData.InteractionId, intercationData.InteractionType, intercationData.NextInteractionId));
-        }
+            paidCash += payUnit;
 
-        Destroy(gameObject);
+            _textGold.text = (needCash - paidCash).ToString();
+            _imgFilled.fillAmount = (float)paidCash / needCash;
+        });
     }
 }

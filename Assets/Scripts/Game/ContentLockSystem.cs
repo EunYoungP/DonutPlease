@@ -69,6 +69,9 @@ public static class ContentLockSystem
 
     public static bool IsUnlocked(string contentId)
     {
+        if (conditions.TryGetValue(contentId, out var condition))
+            return condition.Invoke();
+
         return false;
     }
 

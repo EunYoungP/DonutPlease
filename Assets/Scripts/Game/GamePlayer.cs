@@ -8,7 +8,7 @@ public class GamePlayer
 
     public CharacterPlayer Character => _character;
 
-    private PlayerCurrencyComponent Currency;
+    public PlayerCurrencyComponent Currency;
     private PlayerGrowthComponent Growth;
 
     public void Initialize(PlayerData playerData)

@@ -104,11 +104,11 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
 
         DataManager.Load(out SaveData data);
+        Resource.Initialize();
         Player.Initialize(data.playerData);
         LocalMap.Initialize();
         Intercation.Initialize();
         Store.Initialize();
-        Resource.Initialize();
     }
 
     private void CreateActors()
