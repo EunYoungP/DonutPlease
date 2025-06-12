@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class TextImage : MonoBehaviour
+public class TextImage : UIBehaviour
 {
     [SerializeField] private Text _text;
 

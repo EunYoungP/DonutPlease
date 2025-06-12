@@ -1,7 +1,8 @@
 using UnityEngine;
 using UniRx;
+using UnityEngine.EventSystems;
 
-public class Panel_HUD : MonoBehaviour
+public class Panel_HUD : UIBehaviour
 {
     [SerializeField] private ExpBar _expBar;
     [SerializeField] private TextImage _textImageCash;

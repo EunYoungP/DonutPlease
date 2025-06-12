@@ -5,14 +5,14 @@ using UniRx;
 
 public static class ContentLockSystem
 {
-    static ContentLockSystem()
+    public static void Initialize()
     {
         // 게임 상태 변화 이벤트들 등록
 
         FluxSystem.ActionStream
         .Subscribe(data =>
         {
-            if (data is OnUpdateCurrency updateCurrency)
+            if (data is OnUpdatePlayerGrowth updateGrowth)
             {
                 TryUnlock("HR");
                 TryUnlock("Upgrade");
@@ -21,7 +21,7 @@ public static class ContentLockSystem
         });
     }
 
-    private static Dictionary<string, Action> contents = new Dictionary<string, Action>()
+    private static Dictionary<string, Action> contentUnlockCallbacks = new Dictionary<string, Action>()
     {
         { "HR", UnlockHRCallback },
         { "Upgrade", UnlockUpgradeCallback },
@@ -30,12 +30,15 @@ public static class ContentLockSystem
 
     private static Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>()
     {
-        { "HR", () => DataManager.SaveData.playerData.level>= 2 },
-        { "Upgrade", () => DataManager.SaveData.playerData.level >= 3 },
-        { "DriveThru", () => DataManager.SaveData.playerData.level >= 4 },
+        { "HR", () => GameManager.GetGameManager.Player.Growth.Level>= 2 },
+        { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level >= 3 },
+        { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level >= 4 },
     };
 
+    public static List<string> Contents => contentUnlockCallbacks.Keys.ToList();
+
     #region callback unlcok
+
     private static void UnlockHRCallback()
     {
         // HR UIIntercation 생성
@@ -80,22 +83,30 @@ public static class ContentLockSystem
 
     public static bool IsUnlocked(string contentId)
     {
-        if (conditions.TryGetValue(contentId, out var condition))
-            return condition.Invoke();
-
+        foreach( var content in GameManager.GetGameManager.Data.SaveData.contentLocks)
+        {
+            if (content.contentId == contentId && content.isUnlocked)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
     private static void SetUnlock(string contentId)
     {
-        var list = DataManager.SaveData.contentLocks.ToList();
-        ContentLockData contentLockData = list.Find(c => c.contentId == contentId);
+        var ContentDatalist = GameManager.GetGameManager.Data.SaveData.contentLocks;
+
+        ContentLockData contentLockData = ContentDatalist.Find(c => c.contentId == contentId);
         if (contentLockData != null)
             contentLockData.isUnlocked = true;
         else
-            list.Add(new ContentLockData { contentId = contentId, isUnlocked = true });
+            ContentDatalist.Add(new ContentLockData { contentId = contentId, isUnlocked = true });
+
+        if (contentUnlockCallbacks.TryGetValue(contentId, out var callback))
+            callback.Invoke();
 
         // 저장 필요
-        DataManager.Save(); 
+        GameManager.GetGameManager.Data.Save(); 
     }
 }

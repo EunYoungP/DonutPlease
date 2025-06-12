@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UniRx;
+using DonutPlease.Game.Character;
+using DonutPlease.UI;
 
 [System.Serializable]
 public struct InteractionProp
@@ -43,7 +45,16 @@ public class LocalMapSystem : MonoBehaviour
 
     public void Initialize()
     {
+        FluxSystem.ColliderEnterActionStream.Subscribe(data =>
+        {
+            if (data.Item1 is CharacterPlayer player)
+            {
+                if (data.Item2 == EColliderIdentifier.InHR || data.Item2 == EColliderIdentifier.InUpgrade)
+                    OnTriggerEnterOffice(data.Item2);
+            }
+        }).AddTo(this);
     }
+
 
     public InteractionProp GetPropData(int id)
     {
@@ -124,4 +135,21 @@ public class LocalMapSystem : MonoBehaviour
         propRoot.transform.localPosition = propData.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
+
+    #region Office
+
+    private void OnTriggerEnterOffice(EColliderIdentifier identifier)
+    {
+        if (identifier == EColliderIdentifier.InHR)
+        {
+            //  HR ÆË¾÷ Ãâ·Â
+            GameManager.GetGameManager.Popup.Show<Popup_HR>();
+        }
+        else if (identifier == EColliderIdentifier.InUpgrade)
+        {
+            // Upgrad ÆË¾÷ Ãâ·Â
+        }
+    }
+
+    #endregion
 }

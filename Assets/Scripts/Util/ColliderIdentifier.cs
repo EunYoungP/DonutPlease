@@ -10,6 +10,8 @@ public enum EColliderIdentifier : int
     CasherPlace,
     GetTrash,
     TakeTrash,
+    InHR,
+    InUpgrade,
 }
 
 public class ColliderIdentifier : MonoBehaviour

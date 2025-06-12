@@ -1,8 +1,9 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ExpBar : MonoBehaviour
+public class ExpBar : UIBehaviour
 {
     [SerializeField] private TextMeshProUGUI _levelText;
 

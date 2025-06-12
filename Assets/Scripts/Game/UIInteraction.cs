@@ -80,13 +80,13 @@ public class UIInteraction : MonoBehaviour
         while (_isTrigger && !IsPaidComplete)
         {
             // 플레이어 재화 갱신
-            if (!GameManager.GetGameManager.Player.Currency.Pay(_payUnit))
+            if (!GameManager.GetGameManager.Player.Currency.PayCash(_payUnit))
             {
                 _payUnit = GameManager.GetGameManager.Player.Currency.Cash;
                 if (_payUnit == 0)
                     yield break;
 
-                GameManager.GetGameManager.Player.Currency.Pay(_payUnit);
+                GameManager.GetGameManager.Player.Currency.PayCash(_payUnit);
 
                 // 경험치 받기
             }

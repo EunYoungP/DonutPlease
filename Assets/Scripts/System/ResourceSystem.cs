@@ -4,6 +4,8 @@ namespace DonutPlease.System
 {
     public class ResourceSystem : MonoBehaviour
     {
+        private readonly string UIResourcePath = "Prefabs/UI/";
+
         private GameObject Counter;
         private GameObject Machine;
         private GameObject Table;
@@ -48,6 +50,16 @@ namespace DonutPlease.System
         public GameObject GetCash()
         {
             return Cash;
+        }
+
+        public GameObject GetAsset(string path)
+        {
+            return Instantiate(Resources.Load<GameObject>(path));
+        }
+
+        public string GetUIResourcePath(string name)
+        {
+            return UIResourcePath + name;
         }
     }
 }

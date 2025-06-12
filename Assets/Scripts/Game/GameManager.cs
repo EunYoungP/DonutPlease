@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]public Canvas _canvas;
 
+    [SerializeField]public GameObject _popupsRoot;
+
     [SerializeField]private Vector3 _startPos;
 
     [SerializeField]private GameObject _characterPrefab;
@@ -51,7 +53,9 @@ public class GameManager : MonoBehaviour
     public StoreSystem Store;
     public ResourceSystem Resource;
     public TutorialSystem Tutorial;
+    public PopupSystem Popup;
 
+    public DataManager Data;
     public GamePlayer Player { get; private set; }
     public bl_Joystick JoyStick;
 
@@ -77,6 +81,20 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        Popup = new();
+        if (Popup == null)
+        {
+            Debug.LogError("PopupSystem not found");
+            return;
+        }
+
+        Data = GetComponentInChildren<DataManager>();
+        if (Data == null)
+        {
+            Debug.LogError("DataManager not found");
+            return;
+        }
+
         JoyStick = _canvas.GetComponentInChildren<bl_Joystick>();
 
         Initialize();
@@ -84,14 +102,14 @@ public class GameManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        DataManager.Save();
+        Data.Save();
     }
 
     private void OnApplicationPause(bool pause)
     {
         if (pause)
         {
-            DataManager.Save();
+            Data.Save();
         }
     }
 
@@ -103,8 +121,10 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Application.dataPath : {Application.dataPath}");
         Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
 
-        DataManager.Load(out SaveData data);
         Resource.Initialize();
+        ContentLockSystem.Initialize();
+
+        Data.Load(out SaveData data);
         Player.Initialize(data.playerData);
         LocalMap.Initialize();
         Intercation.Initialize();

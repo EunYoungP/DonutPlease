@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ using UnityEngine;
 public class SaveData
 {
     public PlayerData playerData;
-    public WorkerData workerData;
-    public StageData stageData;
-    public ContentLockData[] contentLocks;
+    public HRData hrData;
+    public StoreData stageData;
+    public List<ContentLockData> contentLocks;
 }
 
 [System.Serializable]
@@ -23,16 +24,17 @@ public class PlayerData
 }
 
 [System.Serializable]
-public class StageData
+public class StoreData
 {
-    public int stageLevel;
+    public int storeID;
 }
 
 [System.Serializable]
-public class WorkerData
+public class HRData
 {
     public int capacity;
     public int moveSpeed;
+    public int hiredCount;
 }
 
 [System.Serializable]
@@ -42,14 +44,14 @@ public class ContentLockData
     public bool isUnlocked;
 }
 
-public static class DataManager
+public class DataManager : MonoBehaviour
 {
     static string saveFileDir = Application.dataPath;
 
-    private static readonly string SavePath;
-    public static SaveData SaveData { get; private set; }
+    private static string SavePath;
+    public SaveData SaveData { get; private set; }
 
-    static DataManager()
+    private void Awake()
     {
 #if UNITY_EDITOR
         saveFileDir = Directory.GetParent(Application.dataPath).FullName;
@@ -59,30 +61,30 @@ public static class DataManager
         SavePath = Path.Combine(saveFileDir, "save.json");
     }
 
-    private static SaveData CreateDefaultSaveData()
+    private SaveData CreateDefaultSaveData()
     {
+        List<ContentLockData> contentLocks = new();
+        foreach (var content in ContentLockSystem.Contents)
+        {
+            contentLocks.Add(new ContentLockData { contentId = content, isUnlocked = false });
+        }
+
         return new SaveData
         {
-            playerData = new PlayerData { level = 1, exp = 0, moveSpeed = 5, capacity = 10, cash = 300, gem = 0 },
-            workerData = new WorkerData { capacity = 5, moveSpeed = 3},
-            stageData = new StageData { stageLevel = 1},
-            contentLocks = new ContentLockData[]
-            {
-                new ContentLockData { contentId = "worker", isUnlocked = false },
-                new ContentLockData { contentId = "stage", isUnlocked = false },
-                new ContentLockData { contentId = "shop", isUnlocked = false },
-                new ContentLockData { contentId = "settings", isUnlocked = false }
-            }
+            playerData = new PlayerData { level = 1, exp = 0, moveSpeed = 1, capacity = 10, cash = 1000, gem = 0 },
+            hrData = new HRData { capacity = 1, moveSpeed = 1, hiredCount = 1 },
+            stageData = new StoreData { storeID = 1 },
+            contentLocks = contentLocks
         };
     }
 
-    public static void Save()
+    public void Save()
     {
         string json = JsonUtility.ToJson(SaveData, true);
         File.WriteAllText(SavePath, json);
     }
 
-    public static void Load(out SaveData data)
+    public void Load(out SaveData data)
     {
         if (!File.Exists(SavePath))
         {

@@ -55,6 +55,8 @@ public class PlayerCurrencyComponent : ComponentBase
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
 
+
+
     public void AddGem(int amount)
     {
         if (amount <= 0)
@@ -75,12 +77,21 @@ public class PlayerCurrencyComponent : ComponentBase
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
     }
 
-    public bool Pay(int cash)
+    public bool PayCash(int cash)
     {
         if (cash <= 0 || Cash < cash)
             return false;
 
         RemoveCash(cash);
+        return true;
+    }
+
+    public bool PayGem(int gem)
+    {
+        if (gem <= 0 || Gem < gem)
+            return false;
+
+        RemoveGem(gem);
         return true;
     }
 

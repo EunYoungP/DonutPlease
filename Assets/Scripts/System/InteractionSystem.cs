@@ -65,7 +65,6 @@ public class InteractionSystem
         }
         else if (interactionType == InteractionType.OpenDriveThru)
         {
-            //GameManager.LocalMap.OfficeUpgradeProps.SetActive(true);
         }
     }
 

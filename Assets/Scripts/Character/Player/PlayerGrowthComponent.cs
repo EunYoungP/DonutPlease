@@ -56,7 +56,7 @@ public class PlayerGrowthComponent : ComponentBase
 
         if (isLevelUp)
         {
-            FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
+            //FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
         }
     }
 }
