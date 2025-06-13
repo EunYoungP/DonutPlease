@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,6 +6,12 @@ using UnityEngine.UI;
 
 namespace DonutPlease.UI
 {
+    public enum PageType
+    {
+        HR,
+        Player
+    }
+
     public class UI_HRPage : UIBehaviour
     {
         [SerializeField] private TextMeshProUGUI _titleText;
@@ -15,16 +20,19 @@ namespace DonutPlease.UI
         [SerializeField] private Button_ImageText _upgradeByGemBtn;
         [SerializeField] private Button_ImageText _upgradeByCashBtn;
 
+        private PageType _pageType;
         private PageData _pageData;
 
         protected override void Awake()
         {
-            _upgradeByGemBtn.SetCallback(() => OnClickPayGem());
-            _upgradeByCashBtn.SetCallback(() => OnClickPayCash());
+            _upgradeByGemBtn.SetCallback(() => OnUpgradeByGem());
+            _upgradeByCashBtn.SetCallback(() => OnUpgradeByCash());
         }
 
-        public void SetPage(PageData pageData)
+        public void SetPage(PageData pageData, PageType pageType)
         {
+            _pageType = pageType;
+
             var gameMng = GameManager.GetGameManager;
 
             _pageData = pageData;
@@ -39,14 +47,37 @@ namespace DonutPlease.UI
             _upgradeByGemBtn.SetImage(pageData.needCash.ToString());
         }
 
-        private void OnClickPayGem()
+        private void UpdateUpgradeLevel()
         {
-
+            for (int i = 0; i < _pageData.upgradeLevel; i++)
+            {
+                _upgradeLevelIcons[i].gameObject.SetActive(true);
+            }
         }
 
-        private void OnClickPayCash()
+        #region OnButtonEvent
+
+        private void OnUpgradeByGem()
         {
-            GameManager.GetGameManager.Player.Currency.PayCash(_pageData.needCash);
         }
+
+        private void OnUpgradeByCash()
+        {
+            if (GameManager.GetGameManager.Player.Currency.PayCash(_pageData.needCash))
+            {
+                if (_pageType == PageType.HR)
+                {
+                    GameManager.GetGameManager.Store.CurStore.UpgradeWorkerData(_pageData.dataFieldName, 1);
+                }
+                else if (_pageType == PageType.Player)
+                {
+                    GameManager.GetGameManager.Player.Character.Stat.UpgradePlayerData(_pageData.dataFieldName, 1);
+                }
+            }
+
+            UpdateUpgradeLevel();
+        }
+
+        #endregion
     }
 }

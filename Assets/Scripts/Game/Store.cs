@@ -1,11 +1,7 @@
 using DonutPlease.Game.Character;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static GameManager;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public enum EJob
 {
@@ -42,6 +38,15 @@ public class Store : MonoBehaviour
     public List<Machine> Machines => _machines;
     public List<Table> Tables => _tables;
 
+    // Worker Stat
+    private const float MoveSpeedFactor = 0.2f;
+    public int MoveSpeedGrade { get; private set; }
+    public int DonutCapacityGrade { get; private set; }
+    public int HiredCountGrade { get; private set; }
+    public float MoveSpeed { get; private set; }
+    public int DonutCapacity { get; private set; }
+    public int HiredCount { get; private set; }
+
     //Jobs : 정확히 Job을 표현하는 컨테이너인지 판단해볼 필요.
     private Dictionary<EJob, List<PropBase>> _jobs = new();
 
@@ -55,6 +60,44 @@ public class Store : MonoBehaviour
     {
         TrashCan localMapTrashCan = GameManager.GetGameManager.LocalMap.Map.GetComponentInChildren<TrashCan>();
         AddTrashCan(localMapTrashCan);
+
+        var storeDtat = GameManager.GetGameManager.Data.SaveData.storeData;
+
+        MoveSpeedGrade = storeDtat.hrData.moveSpeedGrade;
+        DonutCapacityGrade = storeDtat.hrData.capacityGrade;
+        HiredCountGrade = storeDtat.hrData.hiredCountGrade;
+
+        CalculateStatValue();
+    }
+
+    public void UpgradeWorkerData(string fieldName, int increment)
+    {
+        switch (fieldName)
+        {
+            case "moveSpeedGrade":
+                MoveSpeedGrade += increment;
+                break;
+            case "capacityGrade":
+                DonutCapacityGrade += increment;
+                break;
+            case "hiredCountGrade":
+                HiredCountGrade += increment;
+                break;
+            default:
+                Debug.LogWarning($"[DataManager] Unknown HR field: {fieldName}");
+                break;
+        }
+
+        CalculateStatValue();
+
+        FluxSystem.Dispatch(new OnUpdateHRStat(MoveSpeedGrade, DonutCapacityGrade, HiredCountGrade));
+    }
+
+    private void CalculateStatValue()
+    {
+        MoveSpeed = 1 + (MoveSpeedFactor * MoveSpeedGrade);
+        DonutCapacity = 1 + DonutCapacityGrade;
+        HiredCount = 1 + HiredCountGrade;
     }
 
     #region Worker
@@ -350,6 +393,25 @@ public class Store : MonoBehaviour
             }
         }
         return Vector3.zero;
+    }
+
+    #endregion
+
+    #region HR
+
+    public void UpdateHRData()
+    {
+        var hrData = GameManager.GetGameManager.Data.SaveData.storeData.hrData;
+
+        var moveSpeedGrade = hrData.moveSpeedGrade;
+        var burgerCapacityGrade = hrData.capacityGrade;
+        var hiredCountGrade = hrData.hiredCountGrade;
+
+        MoveSpeed = 1 + (MoveSpeedFactor * moveSpeedGrade);
+        DonutCapacity = 1 + burgerCapacityGrade;
+        HiredCount = 1 + hiredCountGrade;
+
+
     }
 
     #endregion

@@ -11,12 +11,18 @@ public class StoreSystem : MonoBehaviour
     // for test
     [SerializeField] public TrashCan TrashCan;
 
+
+    public int CurStoreId { get; private set; }
+    public Store CurStore => GetStore(CurStoreId);
     private static Dictionary<int, Store> _stores = new();
 
     public void Initialize()
     {
-        // 1 Store 持失
-        AddStore(1);
+        int storeId = 1;
+
+        // Store 持失
+        AddStore(storeId);
+        CurStoreId = storeId;
     }
 
     public CharacterWorker CreateWorker()

@@ -1,9 +1,7 @@
 using UnityEngine;
-using UniRx;
-using NUnit.Framework;
 using System.Collections.Generic;
-using static UnityEditor.Progress;
-using DonutPlease.Game.Character;
+using NUnit.Framework.Constraints;
+
 
 public class CharacterStockComponent : ComponentBase
 {
@@ -48,8 +46,12 @@ public class CharacterStockComponent : ComponentBase
         foreach (var (type, itemList) in Items)
         {
             totalItemCount += itemList.Count;
-            if (itemList.Count > 0)
+            if ( 0 < itemList.Count)
             {
+                if (itemType == EItemType.Donut
+                 && GameManager.GetGameManager.Player.Character.Stat.DonutCapacity <= itemList.Count)
+                    return false;
+
                 if (type == itemType)
                     return true;
             }

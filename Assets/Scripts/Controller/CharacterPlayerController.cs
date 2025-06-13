@@ -8,14 +8,15 @@ public class CharacterPlayerController : MonoBehaviour
     private bl_Joystick _joystick;
     
     private float _cameraRot = -45f;
-    private float _moveSpeed = 1.2f;
+    private float _moveSpeed = 0f;
     private float _rotateSpeed = 10f;
 
     private bool _isMoving;
 
-    private void Awake()
+    public void Initialize()
     {
         _joystick = GameManager.GetGameManager.JoyStick;
+        _moveSpeed = GameManager.GetGameManager.Player.Character.Stat.MoveSpeed;
     }
 
     private void Update()

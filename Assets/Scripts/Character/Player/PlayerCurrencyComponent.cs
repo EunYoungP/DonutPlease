@@ -11,6 +11,8 @@ public enum CurrencyType
 
 public class PlayerCurrencyComponent : ComponentBase
 {
+    protected readonly CompositeDisposable Disposables = new CompositeDisposable();
+
     public int Cash { get; private set; } = 0;
     public int Gem { get; private set; } = 0;
 
@@ -28,9 +30,9 @@ public class PlayerCurrencyComponent : ComponentBase
                 }
             }).AddTo(Disposables);
 
-
         Cash = playerData.cash;
         Gem = playerData.gem;
+
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
     }
@@ -40,7 +42,7 @@ public class PlayerCurrencyComponent : ComponentBase
         if (amount <= 0)
             return;
 
-        Cash += amount;
+        Cash += Mathf.FloorToInt(amount * GameManager.GetGameManager.Player.Character.Stat.ProfitGrowthRate);
 
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
@@ -54,8 +56,6 @@ public class PlayerCurrencyComponent : ComponentBase
 
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
     }
-
-
 
     public void AddGem(int amount)
     {

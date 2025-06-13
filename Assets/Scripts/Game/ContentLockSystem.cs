@@ -95,18 +95,9 @@ public static class ContentLockSystem
 
     private static void SetUnlock(string contentId)
     {
-        var ContentDatalist = GameManager.GetGameManager.Data.SaveData.contentLocks;
-
-        ContentLockData contentLockData = ContentDatalist.Find(c => c.contentId == contentId);
-        if (contentLockData != null)
-            contentLockData.isUnlocked = true;
-        else
-            ContentDatalist.Add(new ContentLockData { contentId = contentId, isUnlocked = true });
+        GameManager.GetGameManager.Data.UpgradeContentLockData(contentId, true);
 
         if (contentUnlockCallbacks.TryGetValue(contentId, out var callback))
             callback.Invoke();
-
-        // 저장 필요
-        GameManager.GetGameManager.Data.Save(); 
     }
 }

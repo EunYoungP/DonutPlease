@@ -186,9 +186,6 @@ public class DonutPile : PileBase
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ½×±â
     private IEnumerator CoMoveToPile(CharacterBase character)
     {
-        if (!CheckCharacterDonutExist(character))
-            yield break;
-
         float elapsedTime = 0f;
         while (elapsedTime < _gettingInterval)
         {
@@ -196,6 +193,9 @@ public class DonutPile : PileBase
 
             yield return null;
         }
+
+        if (!CheckCharacterDonutExist(character))
+            yield break;
 
         FluxSystem.Dispatch(new OnPutDownItemToPile(EItemType.Donut, character, this));
     }

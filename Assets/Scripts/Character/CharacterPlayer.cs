@@ -2,9 +2,6 @@ using DG.Tweening;
 using System;
 using UnityEngine;
 
-using UnityEngine.TextCore.Text;
-using static UnityEditor.Progress;
-
 namespace DonutPlease.Game.Character
 {
     public class CharacterPlayer : CharacterBase
@@ -14,16 +11,20 @@ namespace DonutPlease.Game.Character
 
         private PlayerCamera _camera;
 
-        public CharacterPlayerController Controller => _controller;
-
         public CharacterStockComponent Stock { get; private set; }
+        public PlayerStatComponent Stat { get; private set; }
+
+        public CharacterPlayerController Controller => _controller;
 
         public void Initialize()
         {
             Stock = new CharacterStockComponent();
+            Stat = new PlayerStatComponent();
 
             _camera = Camera.main.GetComponent<PlayerCamera>();
             _camera.Initialize(this);
+
+            _controller.Initialize();
         }
 
         #region Tray
@@ -78,6 +79,9 @@ namespace DonutPlease.Game.Character
         public override void RemoveFromTray(EItemType itemType, PileBase pile)
         {
             var item = Stock.RemoveItem(itemType);
+            if (item == null)
+                return;
+
             _trayController.PlayPutDownFromTray(item.transform, pile);
         }
 

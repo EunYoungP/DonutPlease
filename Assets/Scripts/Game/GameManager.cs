@@ -88,7 +88,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Data = GetComponentInChildren<DataManager>();
         if (Data == null)
         {
             Debug.LogError("DataManager not found");
@@ -124,7 +123,7 @@ public class GameManager : MonoBehaviour
         Resource.Initialize();
         ContentLockSystem.Initialize();
 
-        Data.Load(out SaveData data);
+        Data.Initialize().Load(out SaveData data);
         Player.Initialize(data.playerData);
         LocalMap.Initialize();
         Intercation.Initialize();

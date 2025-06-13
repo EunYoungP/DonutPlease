@@ -7,7 +7,7 @@ namespace DonutPlease.UI
 {
     public struct PageData
     {
-        public string pageId;
+        public string dataFieldName;
         public string title;
         public string imageName;
         public int upgradeLevel;
@@ -19,9 +19,9 @@ namespace DonutPlease.UI
     {
         private readonly List<PageData> _pageDataList = new List<PageData>
         {
-            new PageData { pageId = "capacity", title = "Capacity Upgrade", imageName = "HR_capacity", needGen = 3, needCash = 50 },
-            new PageData { pageId = "moveSpeed", title = "MoveSpeed Upgrade", imageName = "HR_moveSpeed", needGen = 3, needCash = 100 },
-            new PageData { pageId = "hiredCount", title = "HiredCount Upgrade", imageName = "HR_hiredCount", needGen = 3, needCash = 100 },
+            new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "HR_capacity", needGen = 3, needCash = 50 },
+            new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "HR_moveSpeed", needGen = 3, needCash = 100 },
+            new PageData { dataFieldName = "hiredCountGrade", title = "HiredCount Upgrade", imageName = "HR_hiredCount", needGen = 3, needCash = 100 },
         };
 
         [SerializeField] private Button _closeBtn;
@@ -36,12 +36,12 @@ namespace DonutPlease.UI
 
         public void Initialize()
         {
-            var hrData = GameManager.GetGameManager.Data.SaveData.hrData;
+            var hrData = GameManager.GetGameManager.Data.SaveData.storeData.hrData;
 
             for(int i = 0; i < _pageDataList.Count; i++)
             {
                 var pageData = _pageDataList[i];
-                string pageId = pageData.pageId;
+                string pageId = pageData.dataFieldName;
 
                 foreach (var data in hrData.GetType().GetFields())
                 {
@@ -52,7 +52,7 @@ namespace DonutPlease.UI
                     }
                 }
 
-                _pages[i].SetPage(pageData);
+                _pages[i].SetPage(pageData, PageType.HR);
             }
         }
     }
