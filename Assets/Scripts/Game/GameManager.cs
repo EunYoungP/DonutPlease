@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]public Canvas _canvas;
 
+    [SerializeField]public GameObject _alertPopupsRoot;
+
     [SerializeField]public GameObject _popupsRoot;
 
     [SerializeField]private Vector3 _startPos;
@@ -48,12 +50,14 @@ public class GameManager : MonoBehaviour
     [SerializeField]private GameObject _characterPrefab;
 
     [Header("System")]
-    [SerializeField]public LocalMapSystem LocalMap;
+    public LocalMapSystem LocalMap;
     public InteractionSystem Intercation;
     public StoreSystem Store;
     public ResourceSystem Resource;
     public TutorialSystem Tutorial;
     public PopupSystem Popup;
+    public AudioSystem Audio;
+    public PoolSystem Pool;
 
     public DataManager Data;
     public GamePlayer Player { get; private set; }
@@ -91,6 +95,19 @@ public class GameManager : MonoBehaviour
         if (Data == null)
         {
             Debug.LogError("DataManager not found");
+            return;
+        }
+
+        if (Audio == null)
+        {
+            Debug.LogError("AudioSystem not found");
+            return;
+        }
+
+        Pool = new PoolSystem();
+        if (Pool == null)
+        {
+            Debug.LogError("PoolSystem not found");
             return;
         }
 

@@ -7,10 +7,12 @@ using UnityEngine.Pool;
 public class PoolSystem : IDisposable
 {
     public GameObjectPool GameObjectPool { get; private set; }
+    public AudioSourcePool AudioSourcePool { get; private set; }
 
     public void Initialize()
     {
         GameObjectPool = new GameObjectPool(new GameObject(), 10, null);
+        AudioSourcePool = new AudioSourcePool(new AudioSource(), 10, GameManager.GetGameManager.Audio.transform);
     }
 
     public void Dispose()

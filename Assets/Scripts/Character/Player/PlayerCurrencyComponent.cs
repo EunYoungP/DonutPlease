@@ -45,6 +45,7 @@ public class PlayerCurrencyComponent : ComponentBase
         Cash += Mathf.FloorToInt(amount * GameManager.GetGameManager.Player.Character.Stat.ProfitGrowthRate);
 
         FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+        GameManager.GetGameManager.Audio.PlaySFX(AudioClipNames.pileCashString);
     }
 
     public void RemoveCash(int amount)
