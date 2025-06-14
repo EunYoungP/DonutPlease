@@ -3,6 +3,8 @@ using UnityEngine;
 using UniRx;
 using DonutPlease.Game.Character;
 using DonutPlease.UI;
+using DG.Tweening;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 [System.Serializable]
 public struct InteractionProp
@@ -87,6 +89,10 @@ public class LocalMapSystem : MonoBehaviour
 
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(prop.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
+
+        propObj.transform.localScale = Vector3.one * 0.7f;
+        propObj.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack);
+
         propObj.transform.SetParent(propRoot.transform);
 
         propRoot.transform.localPosition = prop.Pos;
