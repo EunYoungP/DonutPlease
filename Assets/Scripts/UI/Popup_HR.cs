@@ -11,7 +11,7 @@ namespace DonutPlease.UI
         public string title;
         public string imageName;
         public int upgradeLevel;
-        public int needGen;
+        public int needGem;
         public int needCash;
     }
 
@@ -19,9 +19,9 @@ namespace DonutPlease.UI
     {
         private readonly List<PageData> _pageDataList = new List<PageData>
         {
-            new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "HR_capacity", needGen = 3, needCash = 50 },
-            new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "HR_moveSpeed", needGen = 3, needCash = 100 },
-            new PageData { dataFieldName = "hiredCountGrade", title = "HiredCount Upgrade", imageName = "HR_hiredCount", needGen = 3, needCash = 100 },
+            new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "HR_capacity", needGem = 3, needCash = 50 },
+            new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "HR_moveSpeed", needGem = 3, needCash = 100 },
+            new PageData { dataFieldName = "hiredCountGrade", title = "HiredCount Upgrade", imageName = "HR_hiredCount", needGem = 3, needCash = 100 },
         };
 
         [SerializeField] private Button _closeBtn;

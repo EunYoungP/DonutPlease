@@ -7,9 +7,9 @@ public class Popup_PlayerUpgrade : UIPopup
 {
     private readonly List<PageData> _pageDataList = new List<PageData>
     {
-        new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "Player_capacity", needGen = 3, needCash = 50 },
-        new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "Player_moveSpeed", needGen = 3, needCash = 100 },
-        new PageData { dataFieldName = "profitGrowthGrade", title = "Profit Upgrade", imageName = "Player_ProfitGrowth", needGen = 3, needCash = 100 },
+        new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "Player_capacity", needGem = 3, needCash = 50 },
+        new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "Player_moveSpeed", needGem = 3, needCash = 100 },
+        new PageData { dataFieldName = "profitGrowthGrade", title = "Profit Upgrade", imageName = "Player_ProfitGrowth", needGem = 3, needCash = 100 },
     };
 
     [SerializeField] private Button _closeBtn;

@@ -37,14 +37,14 @@ namespace DonutPlease.UI
 
             _pageData = pageData;
             _titleText.text = pageData.title;
-            _image.sprite = gameMng.Resource.GetAsset(gameMng.Resource.GetUIResourcePath(pageData.imageName)).GetComponent<Image>().sprite;
+            _image.sprite = gameMng.Resource.GetSprite(gameMng.Resource.GetUIResourcePath(pageData.imageName));
             for (int i = 0; i < pageData.upgradeLevel; i++)
             {
                 _upgradeLevelIcons[i].gameObject.SetActive(true);
             }
 
-            _upgradeByGemBtn.SetText(pageData.needGen.ToString());
-            _upgradeByGemBtn.SetImage(pageData.needCash.ToString());
+            _upgradeByGemBtn.SetText(pageData.needGem.ToString());
+            _upgradeByGemBtn.SetText(pageData.needCash.ToString());
         }
 
         private void UpdateUpgradeLevel()
@@ -68,10 +68,12 @@ namespace DonutPlease.UI
                 if (_pageType == PageType.HR)
                 {
                     GameManager.GetGameManager.Store.CurStore.UpgradeWorkerData(_pageData.dataFieldName, 1);
+                    _pageData.upgradeLevel++;
                 }
                 else if (_pageType == PageType.Player)
                 {
                     GameManager.GetGameManager.Player.Character.Stat.UpgradePlayerData(_pageData.dataFieldName, 1);
+                    _pageData.upgradeLevel++;
                 }
             }
 
