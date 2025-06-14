@@ -43,6 +43,9 @@ namespace DonutPlease.Game.Character
         public override void RemoveFromTray(EItemType itemType, Transform targetPos)
         {
             var item = Stock.RemoveItem(itemType);
+            if (item == null)
+                return;
+
             _trayController.PlayPutDownFromTray(item.transform, targetPos);
         }
 

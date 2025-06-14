@@ -28,7 +28,7 @@ public class Counter : PropBase
 
     private List<CharacterCustomer> _customers = new();
     private List<CharacterCustomer> _customersInLine = new();
-    private int _inLineCustomerMax = 1;
+    private const int _inLineCustomerMax = 0;
 
     private CharacterBase _cashier = null;
 

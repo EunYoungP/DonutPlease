@@ -1,3 +1,4 @@
+
 using DonutPlease.Game.Character;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,13 +11,6 @@ public enum EJob
     ClearTrash,
 
     // 도넛머신
-}
-
-public struct EJobData
-{
-    // 도넛 옮기기 -> 머신 개수
-    // 계산 하기 -> 카운터 개수
-    // 테이블 청소하기 -> 테이블 개수
 }
 
 public class Store : MonoBehaviour
@@ -53,7 +47,7 @@ public class Store : MonoBehaviour
     private void OnEnable()
     {
         // 워커 생성 테스트
-        TestWorker();
+        //TestWorker();
     }
 
     public void Initialize()

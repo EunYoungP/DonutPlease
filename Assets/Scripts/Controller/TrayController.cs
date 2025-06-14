@@ -69,6 +69,9 @@ public class TrayController : MonoBehaviour
         Quaternion cameraRot = Quaternion.Euler(0, _cameraRot, 0);
         Vector3 dir = cameraRot * new Vector3(characterH, 0, characterV);
 
+        if (TotalItemCount <= 0)
+            return;
+
         _items[0].transform.position = transform.position;
         _items[0].transform.rotation = transform.rotation;
 
@@ -123,15 +126,15 @@ public class TrayController : MonoBehaviour
         if (_items.Contains(item))
         {
             _items.Remove(item);
-            child.DOJump(dest.GetPositionAt(dest.ObjectCount), 5, 1, 0.3f)
+            item.transform.DOJump(dest.GetPositionAt(dest.ObjectCount), 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
                     dest.AddToPile(child.gameObject);
                     child.transform.rotation = Quaternion.identity;
+
+                    CheckTrayActivation();
                 });
         }
-
-        CheckTrayActivation();
     }
 
     public void PlayPutDownFromTray(Transform trash, Transform dest)
@@ -155,10 +158,10 @@ public class TrayController : MonoBehaviour
                 .OnComplete(() =>
                 {
                     Destroy(trash.gameObject);
+
+                    CheckTrayActivation();
                 });
         }
-
-        CheckTrayActivation();
     }
 
     private void CheckTrayActivation()

@@ -168,11 +168,11 @@ public class DataManager : MonoBehaviour
     {
         if (type == CurrencyType.Cash)
         {
-            SaveData.playerData.cash += value;
+            SaveData.playerData.cash = value;
         }
         else if (type == CurrencyType.Gem)
         {
-            SaveData.playerData.gem += value;
+            SaveData.playerData.gem = value;
         }
         else
         {
