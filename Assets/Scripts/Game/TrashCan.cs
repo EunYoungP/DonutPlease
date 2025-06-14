@@ -26,7 +26,7 @@ public class TrashCan : PropBase
         {
             if (character is CharacterPlayer player)
             {
-                player.RemoveFromTray(EItemType.Trash, _trashCanFrontPos);
+                player.RemoveFromTray(EItemType.Trash, _trashDropPos);
             }
         }
     }

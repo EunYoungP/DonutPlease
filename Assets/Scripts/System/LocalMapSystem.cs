@@ -53,6 +53,15 @@ public class LocalMapSystem : MonoBehaviour
                     OnTriggerEnterOffice(data.Item2);
             }
         }).AddTo(this);
+
+        FluxSystem.ColliderExitActionStream.Subscribe(data =>
+        {
+            if (data.Item1 is CharacterPlayer player)
+            {
+                if (data.Item2 == EColliderIdentifier.InHR || data.Item2 == EColliderIdentifier.InUpgrade)
+                    OnTriggerExitOffice(data.Item2);
+            }
+        }).AddTo(this);
     }
 
 
@@ -148,6 +157,21 @@ public class LocalMapSystem : MonoBehaviour
         else if (identifier == EColliderIdentifier.InUpgrade)
         {
             // Upgrad ÆË¾÷ Ãâ·Â
+            GameManager.GetGameManager.Popup.Show<Popup_PlayerUpgrade>();
+        }
+    }
+
+    private void OnTriggerExitOffice(EColliderIdentifier identifier)
+    {
+        if (identifier == EColliderIdentifier.InHR)
+        {
+            //  HR ÆË¾÷ Ãâ·Â
+            GameManager.GetGameManager.Popup.Hide<Popup_HR>();
+        }
+        else if (identifier == EColliderIdentifier.InUpgrade)
+        {
+            // Upgrad ÆË¾÷ Ãâ·Â
+            GameManager.GetGameManager.Popup.Hide<Popup_PlayerUpgrade>();
         }
     }
 

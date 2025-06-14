@@ -45,4 +45,19 @@ public class PopupSystem
 
         return popup;
     }
+
+    public void Hide<T>() where T : UIPopup
+    {
+        Hide(typeof(T).Name);
+    }
+
+    private void Hide(string popupName)
+    {
+        UIPopup popup = _popups.Find(p => p.GetType().Name == popupName);
+        if (popup != null)
+        {
+            popup.Hide();
+            _popups.Remove(popup);
+        }
+    }
 }

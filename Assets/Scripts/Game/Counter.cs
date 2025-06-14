@@ -28,7 +28,7 @@ public class Counter : PropBase
 
     private List<CharacterCustomer> _customers = new();
     private List<CharacterCustomer> _customersInLine = new();
-    private const int _inLineCustomerMax = 0;
+    private const int _inLineCustomerMax = 2;
 
     private CharacterBase _cashier = null;
 
@@ -66,7 +66,7 @@ public class Counter : PropBase
         //    {
         //        if (onGetCash.character is CharacterCustomer customer)
         //        {
-        //            // µµ³Ó ¤·¹þ¾Ö±â
+        //            // µµ³Ó ¾ø¾Ö±â
         //        }
         //    }
         //}).AddTo();
