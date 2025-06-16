@@ -82,7 +82,7 @@ public class UIInteraction : MonoBehaviour
             // 플레이어 재화 갱신
             if (!GameManager.GetGameManager.Player.Currency.PayCash(_payUnit))
             {
-                _payUnit = GameManager.GetGameManager.Player.Currency.Cash;
+                _payUnit = GameManager.GetGameManager.Player.Currency.Cash.Value;
                 if (_payUnit == 0)
                     yield break;
 
@@ -98,7 +98,7 @@ public class UIInteraction : MonoBehaviour
         // 돈 지불 완료
         if (IsPaidComplete)
         {
-            GameManager.GetGameManager.Player.Growth.AddExp(_rewardExp);
+            FluxSystem.Dispatch(new FxOnUpdatePlayerGrowth(_rewardExp));
 
             _callbacks?.Invoke();
 

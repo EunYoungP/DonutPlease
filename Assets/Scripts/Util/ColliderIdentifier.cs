@@ -23,7 +23,7 @@ public class ColliderIdentifier : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             CharacterBase characterBase = other.GetComponent<CharacterBase>();
-            FluxSystem.DispatchColliderEnterEvent(characterBase, eColliderIdentifier);
+            FluxSystem.DispatchColliderTriggerEvent(new FxOnTriggerEnter(characterBase, eColliderIdentifier));
 
             Debug.Log("Player Entered Collider");
         }
@@ -34,7 +34,7 @@ public class ColliderIdentifier : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             CharacterBase characterBase = other.GetComponent<CharacterBase>();
-            FluxSystem.DispatchColliderExitEvent(characterBase, eColliderIdentifier);
+            FluxSystem.DispatchColliderTriggerEvent(new FxOnTriggerExit(characterBase, eColliderIdentifier));
 
             Debug.Log("Player Exited Collider");
         }

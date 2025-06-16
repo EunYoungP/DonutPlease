@@ -1,11 +1,7 @@
-using DonutPlease.Game.Character;
 using DonutPlease.System;
 using System;
 using System.IO;
-using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 public class GameManager : MonoBehaviour
@@ -41,6 +37,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]public Canvas _canvas;
 
+    [SerializeField] public Panel_HUD _HUD;
+
     [SerializeField]public GameObject _alertPopupsRoot;
 
     [SerializeField]public GameObject _popupsRoot;
@@ -48,6 +46,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]private Vector3 _startPos;
 
     [SerializeField]private GameObject _characterPrefab;
+
+    public DataManager Data;
+    public GamePlayer Player { get; private set; }
+    public bl_Joystick JoyStick;
 
     [Header("System")]
     public LocalMapSystem LocalMap;
@@ -59,9 +61,6 @@ public class GameManager : MonoBehaviour
     public AudioSystem Audio;
     public PoolSystem Pool;
 
-    public DataManager Data;
-    public GamePlayer Player { get; private set; }
-    public bl_Joystick JoyStick;
 
     private void Awake()
     {
@@ -111,8 +110,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        JoyStick = _canvas.GetComponentInChildren<bl_Joystick>();
-
         Initialize();
     }
 
@@ -138,13 +135,17 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
 
         Resource.Initialize();
-        ContentLockSystem.Initialize();
 
         Data.Initialize().Load(out SaveData data);
         Player.Initialize(data.playerData);
         LocalMap.Initialize();
         Intercation.Initialize();
         Store.Initialize();
+        Pool.Initialize();
+
+        ContentLockSystem.Initialize();
+        _HUD.gameObject.SetActive(true);
+        JoyStick.gameObject.SetActive(true);
     }
 
     private void CreateActors()

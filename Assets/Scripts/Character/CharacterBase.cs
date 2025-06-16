@@ -34,7 +34,7 @@ namespace DonutPlease.Game.Character
             FluxSystem.ActionStream
             .Subscribe(data =>
             {
-                if (data is OnGetItem getDonut)
+                if (data is FxOnGetItem getDonut)
                 {
                     getDonut.character.AddToTray(getDonut.item.transform);
                 }
@@ -44,11 +44,11 @@ namespace DonutPlease.Game.Character
             FluxSystem.ActionStream
             .Subscribe(data =>
             {
-                if (data is OnPutDownItemToPile putDownDonut)
+                if (data is FxOnPutDownItemToPile putDownDonut)
                 {
                     putDownDonut.character.RemoveFromTray(EItemType.Donut, putDownDonut.pile);
                 }
-            })
+            })      
             .AddTo(this);
         }
 

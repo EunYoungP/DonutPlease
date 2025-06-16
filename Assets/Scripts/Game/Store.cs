@@ -18,31 +18,17 @@ public class Store : MonoBehaviour
     [SerializeField] private GameObject WorkerPrefab;
     [SerializeField] private Transform WorkerStartPos;
 
-    private Counter _mainCounter;
-
-    private List<Machine> _machines = new List<Machine>();
-
-    private List<Table> _tables = new List<Table>();
-
-    private List<CharacterWorker> _workers = new List<CharacterWorker>();
+    public Counter MainCounter { get; private set; }
+    public List<Machine> Machines { get; private set; } = new List<Machine>();
+    public List<Table> Tables { get; private set; } = new List<Table>();
+    public List<CharacterWorker> Workers { get; private set; } = new List<CharacterWorker>();
 
     private TrashCan _trashCan;
 
-    public Counter MainCounter => _mainCounter;
-    public List<Machine> Machines => _machines;
-    public List<Table> Tables => _tables;
-
-    // Worker Stat
-    private const float MoveSpeedFactor = 0.2f;
-    public int MoveSpeedGrade { get; private set; }
-    public int DonutCapacityGrade { get; private set; }
-    public int HiredCountGrade { get; private set; }
-    public float MoveSpeed { get; private set; }
-    public int DonutCapacity { get; private set; }
-    public int HiredCount { get; private set; }
-
     //Jobs : 정확히 Job을 표현하는 컨테이너인지 판단해볼 필요.
     private Dictionary<EJob, List<PropBase>> _jobs = new();
+
+    public StoreStatComponent Stat { get; private set; }
 
     private void OnEnable()
     {
@@ -52,46 +38,11 @@ public class Store : MonoBehaviour
 
     public void Initialize()
     {
+        Stat = new();
+        Stat.Initialize();
+
         TrashCan localMapTrashCan = GameManager.GetGameManager.LocalMap.Map.GetComponentInChildren<TrashCan>();
         AddTrashCan(localMapTrashCan);
-
-        var storeDtat = GameManager.GetGameManager.Data.SaveData.storeData;
-
-        MoveSpeedGrade = storeDtat.hrData.moveSpeedGrade;
-        DonutCapacityGrade = storeDtat.hrData.capacityGrade;
-        HiredCountGrade = storeDtat.hrData.hiredCountGrade;
-
-        CalculateStatValue();
-    }
-
-    public void UpgradeWorkerData(string fieldName, int increment)
-    {
-        switch (fieldName)
-        {
-            case "moveSpeedGrade":
-                MoveSpeedGrade += increment;
-                break;
-            case "capacityGrade":
-                DonutCapacityGrade += increment;
-                break;
-            case "hiredCountGrade":
-                HiredCountGrade += increment;
-                break;
-            default:
-                Debug.LogWarning($"[DataManager] Unknown HR field: {fieldName}");
-                break;
-        }
-
-        CalculateStatValue();
-
-        FluxSystem.Dispatch(new OnUpdateHRStat(MoveSpeedGrade, DonutCapacityGrade, HiredCountGrade));
-    }
-
-    private void CalculateStatValue()
-    {
-        MoveSpeed = 1 + (MoveSpeedFactor * MoveSpeedGrade);
-        DonutCapacity = 1 + DonutCapacityGrade;
-        HiredCount = 1 + HiredCountGrade;
     }
 
     #region Worker
@@ -124,7 +75,7 @@ public class Store : MonoBehaviour
             if (ShouldDoCarryDonut(out Machine targetMachine))
             {
                 DonutPile machineDonutPile = targetMachine.DonutPile;
-                DonutPile counterDonutPile = _mainCounter.DonutPile;
+                DonutPile counterDonutPile = MainCounter.DonutPile;
 
                 // 1. Job 등록
                 AddJob(EJob.CarryDonut, targetMachine);
@@ -144,7 +95,7 @@ public class Store : MonoBehaviour
                 yield return new WaitUntil(() => !machineDonutPile.IsWorking);
 
                 // 5. 카운터로 이동
-                worker.Controller.MoveTo(_mainCounter.DonutPileFrontPosition);
+                worker.Controller.MoveTo(MainCounter.DonutPileFrontPosition);
 
                 // 5-1. 이동 대기
                 yield return new WaitUntil(() => !worker.Controller.IsMoving);
@@ -267,17 +218,17 @@ public class Store : MonoBehaviour
         //    }
         //}
 
-        if (!_mainCounter.HaveCashier)
+        if (!MainCounter.HaveCashier)
         {
             // 도넛이 없을 경우
-            if (_mainCounter.DonutCount == 0)
+            if (MainCounter.DonutCount == 0)
                 return false;
 
             // 줄 선 손님이 없을 경우
-            if (_mainCounter.InLineCustomerCount == 0)
+            if (MainCounter.InLineCustomerCount == 0)
                 return false;
 
-            targetCounter = _mainCounter;
+            targetCounter = MainCounter;
             return true; // 캐셔가 없는 카운터가 존재할 경우
         }
         return false;
@@ -333,24 +284,24 @@ public class Store : MonoBehaviour
 
     private void AddWorker(CharacterWorker worker)
     {
-        _workers.Add(worker);
+        Workers.Add(worker);
     }
 
     public void AddMainCouter(Counter counter)
     {
-        _mainCounter = counter;
+        MainCounter = counter;
         AddJob(EJob.Cashier, counter);
     }
 
     public void AddMachine(Machine machine)
     {
-        _machines.Add(machine);
+        Machines.Add(machine);
         AddJob(EJob.CarryDonut, machine);
     }
 
     public void AddTable(Table table)
     {
-        _tables.Add(table);
+        Tables.Add(table);
         AddJob(EJob.ClearTrash, table);
     }
 
@@ -364,7 +315,7 @@ public class Store : MonoBehaviour
 
     public bool CheckHaveEmptySeat()
     {
-        foreach (var table in _tables)
+        foreach (var table in Tables)
         {
             if (table.CheckHaveEmptySeat())
                 return true;
@@ -377,7 +328,7 @@ public class Store : MonoBehaviour
         targetTable = null;
         seatIndex = -1;
 
-        foreach (var table in _tables)
+        foreach (var table in Tables)
         {
             if (table.GetEmptySeatPos(out var seatPos, out var index))
             {
@@ -387,25 +338,6 @@ public class Store : MonoBehaviour
             }
         }
         return Vector3.zero;
-    }
-
-    #endregion
-
-    #region HR
-
-    public void UpdateHRData()
-    {
-        var hrData = GameManager.GetGameManager.Data.SaveData.storeData.hrData;
-
-        var moveSpeedGrade = hrData.moveSpeedGrade;
-        var burgerCapacityGrade = hrData.capacityGrade;
-        var hiredCountGrade = hrData.hiredCountGrade;
-
-        MoveSpeed = 1 + (MoveSpeedFactor * moveSpeedGrade);
-        DonutCapacity = 1 + burgerCapacityGrade;
-        HiredCount = 1 + hiredCountGrade;
-
-
     }
 
     #endregion

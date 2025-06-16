@@ -104,7 +104,7 @@ public class CashPile : PileBase
         }
 
         GameObject cash = RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetItem(EItemType.Cash, cash, character));
+        FluxSystem.Dispatch(new FxOnGetItem(EItemType.Cash, cash, character));
     }
 
     private IEnumerator CoMakeCashInPile(CharacterBase character)

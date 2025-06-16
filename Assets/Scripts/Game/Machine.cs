@@ -35,8 +35,6 @@ public class Machine : PropBase
 
     private void OnDestroy()
     {
-        ResetCoroutine();
-
         StopAllCoroutines();
     }
 
@@ -47,10 +45,9 @@ public class Machine : PropBase
             if (DonutCount > 0)
             {
                 ResetCoroutine();
-                _isGettingDonut = true;
-                _enterCharcater = other.GetComponent<CharacterBase>();
 
-                StartCoroutine(CoLoopGetDonutFromPile());
+                var enterCharcater = other.GetComponent<CharacterBase>();
+                _donutPile.LoopGetDonutFromPile(enterCharcater);
             }
             else
             {
@@ -63,46 +60,8 @@ public class Machine : PropBase
     {
         if (other.CompareTag("Player"))
         {
-            ResetCoroutine();
+            DonutPile.OnTriggerExitGetDonut();
         }
-    }
-
-    private IEnumerator CoLoopGetDonutFromPile()
-    {
-        while (_isGettingDonut)
-        {
-            _curCoroutine = StartCoroutine(CoGetDonutFromPile());
-            yield return _curCoroutine;
-        }
-        yield return null;
-    }
-
-    private IEnumerator CoGetDonutFromPile()
-    {
-        if (_donutPile.IsEmpty)
-        {
-            _isGettingDonut = false;
-            yield break;
-        }
-
-        float elapsedTime = 0f;
-        while (elapsedTime < _getInterval)
-        {
-            elapsedTime += Time.deltaTime;
-
-            yield return null;
-        }
-
-        GameObject donut = _donutPile.RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetItem(EItemType.Donut, donut, _enterCharcater));
-    }
-
-    private IEnumerator CoMakeDonut()
-    {
-        if (_isGettingDonut)
-            yield break;
-
-        yield return null;
     }
 
     private void ResetCoroutine()

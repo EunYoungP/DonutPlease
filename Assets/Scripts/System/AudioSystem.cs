@@ -13,8 +13,6 @@ public class AudioSystem : MonoBehaviour
     [Range(0f, 1f)] public float bgmVolume = 0.5f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
-    private readonly Queue<AudioSource> _poolSFX = new();
-
     private Dictionary<string, AudioClip> _clipCache = new();
 
     private void Awake()

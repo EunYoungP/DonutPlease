@@ -47,21 +47,24 @@ public class LocalMapSystem : MonoBehaviour
 
     public void Initialize()
     {
-        FluxSystem.ColliderEnterActionStream.Subscribe(data =>
+        FluxSystem.ColliderTriggerActionStream.Subscribe(data =>
         {
-            if (data.Item1 is CharacterPlayer player)
+            if (data is FxOnTriggerEnter fxTriggerEnter)
             {
-                if (data.Item2 == EColliderIdentifier.InHR || data.Item2 == EColliderIdentifier.InUpgrade)
-                    OnTriggerEnterOffice(data.Item2);
+                if (fxTriggerEnter.characterBase is CharacterPlayer player)
+                {
+                    if (fxTriggerEnter.colliderType == EColliderIdentifier.InHR || fxTriggerEnter.colliderType == EColliderIdentifier.InUpgrade)
+                        OnTriggerEnterOffice(fxTriggerEnter.colliderType);
+                }
             }
-        }).AddTo(this);
 
-        FluxSystem.ColliderExitActionStream.Subscribe(data =>
-        {
-            if (data.Item1 is CharacterPlayer player)
+            if (data is FxOnTriggerExit fxTriggerExit)
             {
-                if (data.Item2 == EColliderIdentifier.InHR || data.Item2 == EColliderIdentifier.InUpgrade)
-                    OnTriggerExitOffice(data.Item2);
+                if (fxTriggerExit.characterBase is CharacterPlayer player)
+                {
+                    if (fxTriggerExit.colliderType == EColliderIdentifier.InHR || fxTriggerExit.colliderType == EColliderIdentifier.InUpgrade)
+                        OnTriggerExitOffice(fxTriggerExit.colliderType);
+                }
             }
         }).AddTo(this);
     }

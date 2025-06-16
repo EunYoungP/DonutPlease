@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using Unity.VisualScripting;
 
 public static class ContentLockSystem
 {
@@ -9,13 +10,18 @@ public static class ContentLockSystem
     {
         // 게임 상태 변화 이벤트들 등록
 
-        FluxSystem.ActionStream
-        .Subscribe(data =>
+        GameManager.GetGameManager.Player.Growth.Level.Subscribe(level =>
         {
-            if (data is OnUpdatePlayerGrowth updateGrowth)
+            if (level == 2)
             {
                 TryUnlock("HR");
+            }
+            else if (level == 3)
+            {
                 TryUnlock("Upgrade");
+            }
+            else if (level == 4)
+            {
                 TryUnlock("DriveThru");
             }
         });
@@ -30,9 +36,9 @@ public static class ContentLockSystem
 
     private static Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>()
     {
-        { "HR", () => GameManager.GetGameManager.Player.Growth.Level>= 2 },
-        { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level >= 3 },
-        { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level >= 4 },
+        { "HR", () => GameManager.GetGameManager.Player.Growth.Level.Value>= 2 },
+        { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
+        { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
     };
 
     public static List<string> Contents => contentUnlockCallbacks.Keys.ToList();

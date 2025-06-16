@@ -23,7 +23,6 @@ public class InteractionSystem
     private Transform InteractionRoot;
 
     private GameManager GameManager => GameManager.GetGameManager;
-    private readonly CompositeDisposable disposable = new();
 
     public  void Initialize()
     {

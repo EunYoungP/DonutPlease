@@ -13,7 +13,7 @@ public class Popup_PlayerUpgrade : UIPopup
     };
 
     [SerializeField] private Button _closeBtn;
-    [SerializeField] private List<UI_HRPage> _pages;
+    [SerializeField] private List<UI_Page> _pages;
 
     protected override void Awake()
     {

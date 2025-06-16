@@ -7,9 +7,11 @@ public class AudioSourcePool
     private readonly Transform _parent;
     private readonly AudioSource _prefab;
 
-    public AudioSourcePool(AudioSource prefab, int initialSize, Transform parent)
+    public AudioSourcePool(int initialSize, Transform parent)
     {
-        _prefab = prefab;
+        var go = new GameObject("AudioSourcePrefab");
+        var audioSource = go.AddComponent<AudioSource>();
+        _prefab = audioSource;
         _parent = parent;
 
         for (int i = 0; i < initialSize; i++)

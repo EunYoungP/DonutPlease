@@ -4,6 +4,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.LightTransport;
 
+
+public enum PopupLayerType : int
+{
+    Alert = 0,
+    Common
+}
+
 public class PopupSystem
 {
     private List<UIPopup> _popups = new();
@@ -40,10 +47,18 @@ public class PopupSystem
         popup.gameObject.SetActive(true);
         popup.PopupOpend();
 
-        var parent = GameManager.GetGameManager._popupsRoot.transform;
+        var parent = GetPopupParent(popup.layerType);
         popup.transform.SetParent(parent, false);
 
         return popup;
+    }
+
+    private Transform GetPopupParent(PopupLayerType layerType)
+    {
+        if (layerType == PopupLayerType.Alert)
+            return GameManager.GetGameManager._alertPopupsRoot.transform;
+
+        return GameManager.GetGameManager._popupsRoot.transform;
     }
 
     public void Hide<T>() where T : UIPopup

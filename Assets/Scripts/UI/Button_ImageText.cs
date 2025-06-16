@@ -17,7 +17,7 @@ public class Button_ImageText : UIBehaviour
         _button.onClick.AddListener(() =>_btnCallback?.Invoke());
     }
 
-    public void SetCallback(Action callback)
+    public void SetButtonCallback(Action callback)
     {
         _btnCallback = callback;
     }

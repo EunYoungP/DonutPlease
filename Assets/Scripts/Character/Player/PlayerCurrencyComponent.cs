@@ -2,6 +2,7 @@ using UnityEngine;
 using UniRx;
 using DonutPlease.Game.Character;
 using System;
+using Unity.VisualScripting;
 
 public enum CurrencyType
 {
@@ -13,28 +14,21 @@ public class PlayerCurrencyComponent : ComponentBase
 {
     protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 
-    public int Cash { get; private set; } = 0;
-    public int Gem { get; private set; } = 0;
+    public ReactiveProperty<int> Cash { get; private set; } = new();
+    public ReactiveProperty<int> Gem { get; private set; } = new();
 
     public void Initialize(PlayerData playerData)
     {
-        FluxSystem.ActionStream
-            .Subscribe(data =>
+        FluxSystem.ActionStream.Subscribe(data =>
+        {
+            if (data is FxOnUpdateCurrency updateCurrency)
             {
-                if (data is OnGetItem getDonut)
-                {
-                    if (getDonut.character is CharacterPlayer player)
-                    {
-                        OnGetCash(getDonut);
-                    }
-                }
-            }).AddTo(Disposables);
+                OnUpdateCurrency(updateCurrency.currencyType, updateCurrency.value);
+            }
+        }).AddTo(Disposables);
 
-        Cash = playerData.cash;
-        Gem = playerData.gem;
-
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
+        Cash.Value = playerData.cash;
+        Gem.Value = playerData.gem;
     }
 
     public void AddCash(int amount)
@@ -42,20 +36,20 @@ public class PlayerCurrencyComponent : ComponentBase
         if (amount <= 0)
             return;
 
-        Cash += Mathf.FloorToInt(amount * GameManager.GetGameManager.Player.Character.Stat.ProfitGrowthRate);
+        Cash.Value += Mathf.FloorToInt(amount * GameManager.GetGameManager.Player.Character.Stat.ProfitGrowthRate);
 
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+        GameManager.GetGameManager.Data.UpgradePlayerCurrency(CurrencyType.Cash, Cash.Value);
         GameManager.GetGameManager.Audio.PlaySFX(AudioClipNames.pileCashString);
     }
 
     public void RemoveCash(int amount)
     {
-        if (amount <= 0 || Cash < amount)
+        if (amount <= 0 || Cash.Value < amount)
             return;
 
-        Cash -= amount;
-
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Cash, Cash));
+        Cash.Value -= amount;
+        GameManager.GetGameManager.Data.UpgradePlayerCurrency(CurrencyType.Cash, Cash.Value);
+        GameManager.GetGameManager.Audio.PlaySFX(AudioClipNames.pileCashString);
     }
 
     public void AddGem(int amount)
@@ -63,24 +57,20 @@ public class PlayerCurrencyComponent : ComponentBase
         if (amount <= 0)
             return;
 
-        Gem += amount;
-
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
+        Gem.Value += amount;
     }
 
     public void RemoveGem(int amount)
     {
-        if (amount <= 0 || Gem < amount)
+        if (amount <= 0 || Gem.Value < amount)
             return;
 
-        Gem -= amount;
-
-        FluxSystem.Dispatch(new OnUpdateCurrency(CurrencyType.Gem, Gem));
+        Gem.Value -= amount;
     }
 
     public bool PayCash(int cash)
     {
-        if (cash <= 0 || Cash < cash)
+        if (cash <= 0 || Cash.Value < cash)
             return false;
 
         RemoveCash(cash);
@@ -89,23 +79,18 @@ public class PlayerCurrencyComponent : ComponentBase
 
     public bool PayGem(int gem)
     {
-        if (gem <= 0 || Gem < gem)
+        if (gem <= 0 || Gem.Value < gem)
             return false;
 
         RemoveGem(gem);
         return true;
     }
 
-    #region OnEvent
-
-    private void OnGetCash(OnGetItem onGetCash)
+    private void OnUpdateCurrency(CurrencyType type, int value)
     {
-        var item = onGetCash.item.GetComponent<Item>();
-        if (item.ItemType != EItemType.Cash)
-            return;
-
-        AddCash(item.RewardCash);
+        if (type == CurrencyType.Cash)
+            AddCash(value);
+        else if (type == CurrencyType.Gem)
+            AddGem(value);
     }
-
-    #endregion
 }

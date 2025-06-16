@@ -61,42 +61,6 @@ public class DataManager : MonoBehaviour
 #endif
         SavePath = Path.Combine(saveFileDir, "save.json");
 
-        FluxSystem.ActionStream
-        .Subscribe(data =>
-        {
-            if (data is OnUpdatePlayerGrowth updatePlayerGrowth)
-            {
-                UpgradePlayerGrowth(updatePlayerGrowth.level, updatePlayerGrowth.exp);
-            }
-        });
-
-        FluxSystem.ActionStream
-        .Subscribe(data =>
-        {
-            if (data is OnUpdateCurrency updateCurrency)
-            {
-                UpgradePlayerCurrency(CurrencyType.Cash, updateCurrency.value);
-            }
-        });
-
-        FluxSystem.ActionStream
-        .Subscribe(data =>
-        {
-            if (data is OnUpdatePlayerStat updatePlayerStat)
-            {
-                UpgradePlayerData(updatePlayerStat.MoveSpeedGrade, updatePlayerStat.DonutCapacityGrade, updatePlayerStat.ProfitGrowthRateGrade);
-            }
-        });
-
-        FluxSystem.ActionStream
-        .Subscribe(data =>
-        {
-            if (data is OnUpdateHRStat updateHRStat)
-            {
-                UpdateHRData(updateHRStat.moveSpeedGrade, updateHRStat.capacityGrade, updateHRStat.hiredCountGrade);
-            }
-        });
-
         return this;
     }
 
@@ -138,7 +102,7 @@ public class DataManager : MonoBehaviour
         data = SaveData;
     }
 
-    private void UpgradePlayerData(int moveSpeedGrade, int donutCapacityGrade, int profitGrowthRateGrade)
+    public void SavePlayerData(int moveSpeedGrade, int donutCapacityGrade, int profitGrowthRateGrade)
     {
         SaveData.playerData.moveSpeedGrade = moveSpeedGrade;
         SaveData.playerData.capacityGrade = donutCapacityGrade;
@@ -147,7 +111,7 @@ public class DataManager : MonoBehaviour
         Save();
     }
 
-    private void UpdateHRData(int moveSpeedGrade, int donutCapacityGrade, int hiredCountGrade)
+    public void SaveHRData(int moveSpeedGrade, int donutCapacityGrade, int hiredCountGrade)
     {
         SaveData.storeData.hrData.moveSpeedGrade = moveSpeedGrade;
         SaveData.storeData.hrData.capacityGrade = donutCapacityGrade;
@@ -156,7 +120,7 @@ public class DataManager : MonoBehaviour
         Save();
     }
 
-    private void UpgradePlayerGrowth(int level, int exp)
+    public void UpgradePlayerGrowth(int level, int exp)
     {
         SaveData.playerData.level = level;
         SaveData.playerData.exp = exp;
@@ -164,7 +128,7 @@ public class DataManager : MonoBehaviour
         Save();
     }
 
-    private void UpgradePlayerCurrency(CurrencyType type, int value)
+    public void UpgradePlayerCurrency(CurrencyType type, int value)
     {
         if (type == CurrencyType.Cash)
         {

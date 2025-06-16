@@ -1,28 +1,15 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
-
-public struct PlayerStatData
-{
-    public float moveSpeedGrade;
-    public int donutCapacityGrade;
-    public float profitGrowthRateGrade;
-
-    public PlayerStatData(float moveSpeedGrade, int donutCapacityGrade, float profitGrowthRateGrade)
-    {
-        this.moveSpeedGrade = moveSpeedGrade;
-        this.donutCapacityGrade = donutCapacityGrade;
-        this.profitGrowthRateGrade = profitGrowthRateGrade;
-    }
-}
 
 public class PlayerStatComponent : ComponentBase
 {
     private const float MoveSpeedFactor = 0.2f;
 
-    public int MoveSpeedGrade { get; private set; }
-    public int DonutCapacityGrade { get; private set; }
-    public int ProfitGrowthRateGrade { get; private set; }
+    public ReactiveProperty<int> MoveSpeedGrade { get; private set; } = new();
+    public ReactiveProperty<int> DonutCapacityGrade { get; private set; } = new();
+    public ReactiveProperty<int> ProfitGrowthRateGrade { get; private set; } = new();
 
     public float MoveSpeed { get; private set; }
     public int DonutCapacity { get; private set; }
@@ -30,6 +17,14 @@ public class PlayerStatComponent : ComponentBase
 
     public PlayerStatComponent()
     {
+        FluxSystem.ActionStream.Subscribe(data =>
+        {
+            if (data is FxOnUpdatePlayerStat updateData)
+            {
+                UpgradePlayerData(updateData.fieldName, updateData.increase);
+            }
+        });
+
         Initialize();
     }
 
@@ -37,40 +32,43 @@ public class PlayerStatComponent : ComponentBase
     {
         var playerData = GameManager.GetGameManager.Data.SaveData.playerData;
 
-        MoveSpeedGrade = playerData.moveSpeedGrade;
-        DonutCapacityGrade = playerData.capacityGrade;
-        ProfitGrowthRateGrade = playerData.profitGrowthGrade;
+        MoveSpeedGrade.Value = playerData.moveSpeedGrade;
+        DonutCapacityGrade.Value = playerData.capacityGrade;
+        ProfitGrowthRateGrade.Value = playerData.profitGrowthGrade;
 
         CalculateStatValue();
     }
 
-    public void UpgradePlayerData(string fieldName, int increment)
+    private void UpgradePlayerData(string fieldName, int increment)
     {
         switch (fieldName)
         {
             case "moveSpeedGrade":
-                MoveSpeedGrade += increment;
+                MoveSpeedGrade.Value += increment;
                 break;
             case "capacityGrade":
-                DonutCapacityGrade += increment;
+                DonutCapacityGrade.Value += increment;
                 break;
             case "profitGrowthGrade":
-                ProfitGrowthRateGrade += increment;
+                ProfitGrowthRateGrade.Value += increment;
                 break;
             default:
                 Debug.LogWarning($"[DataManager] Unknown HR field: {fieldName}");
                 break;
         }
 
-        CalculateStatValue();
+        GameManager.GetGameManager.Data.SavePlayerData(
+            MoveSpeedGrade.Value, 
+            DonutCapacityGrade.Value, 
+            ProfitGrowthRateGrade.Value);   
 
-        FluxSystem.Dispatch(new OnUpdatePlayerStat(MoveSpeedGrade, DonutCapacityGrade, ProfitGrowthRateGrade));
+        CalculateStatValue();
     }
 
     private void CalculateStatValue()
     {
-        MoveSpeed = 1 + (MoveSpeedFactor * MoveSpeedGrade);
-        DonutCapacity = 1 + DonutCapacityGrade;
-        ProfitGrowthRate = 1 + (0.1f * ProfitGrowthRateGrade);
+        MoveSpeed = 1 + (MoveSpeedFactor * MoveSpeedGrade.Value);
+        DonutCapacity = 1 + DonutCapacityGrade.Value;
+        ProfitGrowthRate = 1 + (0.1f * ProfitGrowthRateGrade.Value);
     }
 }

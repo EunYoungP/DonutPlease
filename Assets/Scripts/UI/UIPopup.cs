@@ -7,6 +7,8 @@ public class UIPopup : UIBehaviour
 {
     [SerializeField] private GameObject contents;
 
+    public PopupLayerType layerType = 0;
+
     protected override void OnDestroy()
     {
         if (contents != null)

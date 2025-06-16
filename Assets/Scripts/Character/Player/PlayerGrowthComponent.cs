@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 
 public class PlayerGrowthComponent : ComponentBase
@@ -7,21 +8,36 @@ public class PlayerGrowthComponent : ComponentBase
     private readonly Dictionary<int, int> _expMaxByLevel = new Dictionary<int, int>
     {
         { 1, 20 },
-        { 2, 20 },
-        { 3, 20 },
-        { 4, 20 },
-        { 5, 20 },
+        { 2, 40 },
+        { 3, 60 },
+        { 4, 80 },
+        { 5, 100 },
     };
 
-    public int Level { get; private set; }
-    public int Exp { get; private set; }
+    public ReactiveProperty<int> Level { get; private set; } = new();
+    public ReactiveProperty<int> Exp { get; private set; } = new();
+
+    public int GetMaxExpByLevel(int level)
+    {
+        if (_expMaxByLevel.TryGetValue(level, out int maxExp))
+        {
+            return maxExp;
+        }
+        return 0; // 기본값 또는 예외 처리
+    }
 
     public void Initialize(PlayerData playerData)
     {
-        Exp = playerData.exp;
-        Level = playerData.level;
+        FluxSystem.ActionStream.Subscribe(data =>
+            {
+                if (data is FxOnUpdatePlayerGrowth updateGrowth)
+                {
+                    AddExp(updateGrowth.addExp);
+                }
+            });
 
-        FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
+        Exp.Value = playerData.exp;
+        Level.Value = playerData.level;
     }
 
     public void AddExp(int exp)
@@ -29,34 +45,28 @@ public class PlayerGrowthComponent : ComponentBase
         if (exp < 0)
             return;
 
-        Exp += exp;
+        Exp.Value += exp;
 
         UpdateLevel();
 
-        FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
+        GameManager.GetGameManager.Data.UpgradePlayerGrowth(Level.Value, Exp.Value);
     }
 
     public void RemoveExp(int exp)
     {
-        if (exp < 0 || Exp < exp)
+        if (exp < 0 || Exp.Value < exp)
             return;
 
-        Exp -= exp;
+        Exp.Value -= exp;
     }
 
     private void UpdateLevel()
     {
-        bool isLevelUp = Exp >= _expMaxByLevel[Level];
+        bool isLevelUp = Exp.Value >= _expMaxByLevel[Level.Value];
 
-        while (Exp >= _expMaxByLevel[Level])
+        while (Exp.Value >= _expMaxByLevel[Level.Value])
         {
-            RemoveExp(_expMaxByLevel[Level]);
-            Level++;
-        }
-
-        if (isLevelUp)
-        {
-            //FluxSystem.Dispatch(new OnUpdatePlayerGrowth(Level, Exp, _expMaxByLevel[Level]));
+            Level.Value++;
         }
     }
 }

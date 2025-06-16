@@ -27,24 +27,23 @@ namespace DonutPlease.Game.Character
             _controller.Initialize();
         }
 
+
         #region Tray
 
         public override void AddToTray(Transform child)
         {
             var item = child.GetComponent<Item>();
-
             if (item.ItemType == EItemType.Cash)
-                AddCashToCharacter(item);
+                GetCash(item);
 
             if (Stock.CanGetItemType(item.ItemType))
             {
-                // 캐쉬는 Currency에 저장
                 Stock.AddItem(item);
                 _trayController.PlayAddToTray(item);
             }
         }
 
-        private void AddCashToCharacter(Item cashItem)
+        private void GetCash(Item cashItem)
         {
             if (cashItem == null)
             {
@@ -52,27 +51,13 @@ namespace DonutPlease.Game.Character
                 return;
             }
 
-            Vector3 dest = transform.position + Vector3.up;
+            FluxSystem.Dispatch(new FxOnUpdateCurrency(CurrencyType.Cash, cashItem.RewardCash));
 
+            Vector3 dest = transform.position + Vector3.up;
             cashItem.transform.DOJump(dest, 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
                     Destroy(cashItem.gameObject);
-                });
-        }
-
-        public void RemoveCashFromPlayerTo(Transform dest, Action callback = null)
-        {
-            GameObject prefab = GameManager.GetGameManager.Resource.GetCash();
-            GameObject cash = Instantiate(prefab, transform.position, Quaternion.identity);
-
-            // 여기로 이동
-            cash.transform.DOJump(gameObject.transform.position, 5, 1, 0.1f)
-                .OnComplete(() =>
-                {
-                    callback?.Invoke();
-
-                    Destroy(cash);
                 });
         }
 
@@ -93,6 +78,22 @@ namespace DonutPlease.Game.Character
 
             _trayController.PlayPutDownFromTray(item.transform, trashDropPos);
         }
+
+        public void RemoveCashFromPlayerTo(Transform dest, Action callback = null)
+        {
+            GameObject prefab = GameManager.GetGameManager.Resource.GetCash();
+            GameObject cash = Instantiate(prefab, transform.position, Quaternion.identity);
+
+            // 여기로 이동
+            cash.transform.DOJump(gameObject.transform.position, 5, 1, 0.1f)
+                .OnComplete(() =>
+                {
+                    callback?.Invoke();
+
+                    Destroy(cash);
+                });
+        }
+
         #endregion
     }
 }

@@ -12,7 +12,7 @@ public class PoolSystem : IDisposable
     public void Initialize()
     {
         GameObjectPool = new GameObjectPool(new GameObject(), 10, null);
-        AudioSourcePool = new AudioSourcePool(new AudioSource(), 10, GameManager.GetGameManager.Audio.transform);
+        AudioSourcePool = new AudioSourcePool(10, GameManager.GetGameManager.Audio.transform);
     }
 
     public void Dispose()

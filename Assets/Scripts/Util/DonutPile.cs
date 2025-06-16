@@ -180,7 +180,7 @@ public class DonutPile : PileBase
         }
 
         GameObject donut = RemoveFromPile();
-        FluxSystem.Dispatch(new OnGetItem(EItemType.Donut, donut, character));
+        FluxSystem.Dispatch(new FxOnGetItem(EItemType.Donut, donut, character));
     }
 
     // µµ³Ó ÆÄÀÏ¿¡ µµ³Ó ½×±â
@@ -197,7 +197,7 @@ public class DonutPile : PileBase
         if (!CheckCharacterDonutExist(character))
             yield break;
 
-        FluxSystem.Dispatch(new OnPutDownItemToPile(EItemType.Donut, character, this));
+        FluxSystem.Dispatch(new FxOnPutDownItemToPile(EItemType.Donut, character, this));
     }
 
     #endregion

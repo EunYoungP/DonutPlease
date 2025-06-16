@@ -43,33 +43,22 @@ public class Counter : PropBase
 
     private void OnEnable()
     {
-        FluxSystem.ColliderEnterActionStream.Subscribe(data =>
+        FluxSystem.ColliderTriggerActionStream.Subscribe(data =>
         {
-            SetCashier(data.Item1);
+            if (data is FxOnTriggerEnter fxTriggerEnter)
+            {
+                SetCashier(fxTriggerEnter.characterBase);
 
-            OnTriggerEnterAction(data.Item1, data.Item2);
+                OnTriggerEnterAction(fxTriggerEnter.characterBase, fxTriggerEnter.colliderType);
+            }
 
+            if (data is FxOnTriggerExit fxTriggerExit)
+            {
+                SetCashier(null);
+
+                OnTriggerExitAction(fxTriggerExit.characterBase, fxTriggerExit.colliderType);
+            }
         }).AddTo(this);
-
-        FluxSystem.ColliderExitActionStream.Subscribe(data =>
-        {
-            SetCashier(null);
-
-            OnTriggerExitAction(data.Item1, data.Item2);
-
-        }).AddTo(this);
-
-        //FluxSystem.ActionStream
-        //.Subscribe(data =>
-        //{
-        //    if (data is OnGetItem onGetCash)
-        //    {
-        //        if (onGetCash.character is CharacterCustomer customer)
-        //        {
-        //            // µµ³Ó ¾ø¾Ö±â
-        //        }
-        //    }
-        //}).AddTo();
 
         StartCoroutine(CoAddCustomer());
     }

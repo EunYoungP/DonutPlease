@@ -13,9 +13,12 @@ public class TrashCan : PropBase
 
     private void OnEnable()
     {
-        FluxSystem.ColliderEnterActionStream.Subscribe(data =>
+        FluxSystem.ColliderTriggerActionStream.Subscribe(data =>
         {
-            OnTriggerEnterAction(data.Item1, data.Item2);
+            if (data is FxOnTriggerEnter fxTriggerEnter)
+            {
+                OnTriggerEnterAction(fxTriggerEnter.characterBase, fxTriggerEnter.colliderType);
+            }
 
         }).AddTo(this);
     }

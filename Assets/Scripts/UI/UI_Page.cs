@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UniRx;
 
 namespace DonutPlease.UI
 {
@@ -12,7 +13,7 @@ namespace DonutPlease.UI
         Player
     }
 
-    public class UI_HRPage : UIBehaviour
+    public class UI_Page : UIBehaviour
     {
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private Image _image;
@@ -25,8 +26,8 @@ namespace DonutPlease.UI
 
         protected override void Awake()
         {
-            _upgradeByGemBtn.SetCallback(() => OnUpgradeByGem());
-            _upgradeByCashBtn.SetCallback(() => OnUpgradeByCash());
+            _upgradeByGemBtn.SetButtonCallback(() => OnUpgradeByGem());
+            _upgradeByCashBtn.SetButtonCallback(() => OnUpgradeByCash());
         }
 
         public void SetPage(PageData pageData, PageType pageType)
@@ -67,12 +68,12 @@ namespace DonutPlease.UI
             {
                 if (_pageType == PageType.HR)
                 {
-                    GameManager.GetGameManager.Store.CurStore.UpgradeWorkerData(_pageData.dataFieldName, 1);
+                    FluxSystem.Dispatch(new FxOnUpdateHRStat(_pageData.dataFieldName, 1));
                     _pageData.upgradeLevel++;
                 }
                 else if (_pageType == PageType.Player)
                 {
-                    GameManager.GetGameManager.Player.Character.Stat.UpgradePlayerData(_pageData.dataFieldName, 1);
+                    FluxSystem.Dispatch(new FxOnUpdatePlayerStat(_pageData.dataFieldName, 1));
                     _pageData.upgradeLevel++;
                 }
             }

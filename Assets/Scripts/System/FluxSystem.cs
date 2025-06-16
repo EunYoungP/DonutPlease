@@ -1,6 +1,5 @@
-using UniRx;
 using System;
-using DonutPlease.Game.Character;
+using UniRx;
 
 public static class FluxSystem
 {
@@ -8,25 +7,17 @@ public static class FluxSystem
     public static IObservable<object> ActionStream => _subject;
 
 
-    private static readonly Subject<(CharacterBase, EColliderIdentifier)> _colliderEnterSubject = new Subject<(CharacterBase, EColliderIdentifier)>();
-    public static IObservable<(CharacterBase, EColliderIdentifier)> ColliderEnterActionStream => _colliderEnterSubject;
+    private static readonly Subject<IFluxAction> _colliderTriggerActionSubject = new Subject<IFluxAction>();
+    public static IObservable<IFluxAction> ColliderTriggerActionStream => _colliderTriggerActionSubject;
 
-
-    private static readonly Subject<(CharacterBase, EColliderIdentifier)> _colliderExitSubject = new Subject<(CharacterBase, EColliderIdentifier)>();
-    public static IObservable<(CharacterBase, EColliderIdentifier)> ColliderExitActionStream => _colliderExitSubject;
 
     public static void Dispatch(object action)
     {
         _subject.OnNext(action);
     }
 
-    public static void DispatchColliderEnterEvent(CharacterBase target, EColliderIdentifier identifier)
+    public static void DispatchColliderTriggerEvent(IFluxAction fluxAction)
     {
-        _colliderEnterSubject.OnNext((target, identifier));
-    }
-
-    public static void DispatchColliderExitEvent(CharacterBase target, EColliderIdentifier identifier)
-    {
-        _colliderExitSubject.OnNext((target, identifier));
+        _colliderTriggerActionSubject.OnNext(fluxAction);
     }
 }
