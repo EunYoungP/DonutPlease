@@ -29,7 +29,10 @@ public class StoreSystem : MonoBehaviour
     {
         // 况目 积己
         GameObject workerObj = Instantiate(WorkerPrefab, WorkerStartPos, Quaternion.identity);
-        return workerObj.GetComponent<CharacterWorker>();
+        var worker = workerObj.GetComponent<CharacterWorker>();
+        CurStore.CreateWorker(worker);
+
+        return worker;
     }
 
     public void AddStore(int storeId)

@@ -106,6 +106,8 @@ public class TrayController : MonoBehaviour
         item.transform.DOJump(dest, 5, 1, 0.3f)
             .OnComplete(() =>
             {
+                PlayGetItemSFX(item.ItemType);
+
                 _reserved.Remove(item);
                 _items.Add(item);
 
@@ -129,6 +131,8 @@ public class TrayController : MonoBehaviour
             item.transform.DOJump(dest.GetPositionAt(dest.ObjectCount), 5, 1, 0.3f)
                 .OnComplete(() =>
                 {
+                    PlayGetItemSFX(item.ItemType);
+
                     dest.AddToPile(child.gameObject);
                     child.transform.rotation = Quaternion.identity;
 
@@ -162,6 +166,14 @@ public class TrayController : MonoBehaviour
                     CheckTrayActivation();
                 });
         }
+    }
+
+    private void PlayGetItemSFX(EItemType type)
+    {
+        if (type == EItemType.Donut)
+            GameManager.GetGameManager.Audio.PlaySFX(AudioClipNames.pileDonutString);
+        else if (type == EItemType.Trash)
+            GameManager.GetGameManager.Audio.PlaySFX(AudioClipNames.pileDonutString);
     }
 
     private void CheckTrayActivation()

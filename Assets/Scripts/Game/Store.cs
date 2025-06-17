@@ -30,12 +30,6 @@ public class Store : MonoBehaviour
 
     public StoreStatComponent Stat { get; private set; }
 
-    private void OnEnable()
-    {
-        // 况目 积己 抛胶飘
-        //TestWorker();
-    }
-
     public void Initialize()
     {
         Stat = new();
@@ -47,15 +41,9 @@ public class Store : MonoBehaviour
 
     #region Worker
 
-    private void TestWorker()
-    {
-        CreateWorker();
-    }
-
-    private void CreateWorker()
+    public void CreateWorker(CharacterWorker worker)
     {
         // 况目 积己
-        var worker = GameManager.GetGameManager.Store.CreateWorker();
         worker.transform.SetParent(transform);
 
         AddWorker(worker);

@@ -50,6 +50,9 @@ public static class ContentLockSystem
         // HR UIIntercation 积己
         GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
 
+        // 流盔 积己
+        GameManager.GetGameManager.Store.CreateWorker();
+
         // 牧刨明 坷锹 扑诀 免仿
     }
 
