@@ -116,6 +116,8 @@ public class Store : MonoBehaviour
                 // 손님/햄버거가 없다면 작업 취소
                 yield return new WaitUntil(() => !ShouldDoMainCounterCashierJob(out Counter targetCounter));
 
+                targetCounter.SetCashier(null);
+
                 //RemoveJob
                 RemoveJob(EJob.Cashier, targetCounter);
             }
@@ -189,9 +191,9 @@ public class Store : MonoBehaviour
         if (MainCounter == null)
             return false;
 
-        //var jobs = GetJobs(EJob.Cashier);
-        //if (jobs == null)
-        //    return false;
+        var jobs = GetJobs(EJob.Cashier);
+        if (jobs == null)
+            return false;
 
         // 캐셔 작업이 존재하는지 확인
         //foreach (var job in jobs)

@@ -151,6 +151,11 @@ public class Table : PropBase
         _seats[seatIndex] = s;
     }
 
+    public Seat GetSeatByIndex(int index)
+    {
+        return _seats[index];
+    }
+
 
     private void AddTrash(int seatIndex, GameObject trash)
     {

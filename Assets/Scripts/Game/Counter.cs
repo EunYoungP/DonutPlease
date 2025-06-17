@@ -6,6 +6,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using DG.Tweening;
 using System;
+using System.Linq;
 
 public class Counter : PropBase
 {
@@ -115,15 +116,11 @@ public class Counter : PropBase
             if (customer.Controller.CheckState(CharacterCustomerController.ECustomerState.Waiting))
             {
                 Debug.Log("은영 5. 도넛 차례 검사");
-                if (CanGetDonut())
+                if (CanGetDonut(customer))
                 {
                     customer.Controller.ChangeState(CharacterCustomerController.ECustomerState.EatDonut);
 
-                    // 줄에서 삭제
-                    RemoveCustomerInLine();
-
                     Debug.Log("은영 6. 도넛 받기");
-
                     const int DonutCount = 1;
 
                     // 도넛 받기
@@ -132,10 +129,11 @@ public class Counter : PropBase
                     // 돈 내기
                     customer.Pay(DonutCount, _cashPile);
 
-                    // 돈 없애기
-
                     Debug.Log("은영 6-1. 도넛 받기 대기");
                     yield return new WaitUntil(() => !_donutPile.IsWorking);
+
+                    // 줄에서 삭제
+                    RemoveCustomerInLine();
 
                     // 자리로 이동
                     var store = GameManager.GetGameManager.Store.GetStore(1);
@@ -156,7 +154,8 @@ public class Counter : PropBase
                     // - 앉기
 
                     // - 도넛 내려놓기
-                    _donutPile.MoveDonutToPile(customer, 1);
+                    //_donutPile.MoveDonutToPile(customer, 1);
+                    table.GetSeatByIndex(seatIndex).donutPile.MoveDonutToPile(customer, 1);
 
                     // - 먹기
                     Debug.Log("은영 10. 먹는동안 5초 대기");
@@ -164,6 +163,8 @@ public class Counter : PropBase
 
                     // 먹은 후 나가기
                     // - 손님 도넛 삭제
+                    var donut = table.GetSeatByIndex(seatIndex).donutPile.RemoveFromPile();
+                    Destroy(donut);
 
                     // - 쓰레기 생성
                     Debug.Log("은영 11. 쓰레기 생성");
@@ -213,13 +214,16 @@ public class Counter : PropBase
         return lineStartPos;
     }
 
-    private bool CanGetDonut()
+    private bool CanGetDonut(CharacterCustomer customer)
     {
         // 도넛이 있는지 검사
         if (_donutPile.IsEmpty)
             return false;
 
         if (!HaveCashier)
+            return false;
+
+        if (customer != _customersInLine.First())
             return false;
 
         // 빈 자리가 있는지 검사
