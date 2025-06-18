@@ -1,7 +1,4 @@
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using UniRx;
 using UnityEngine;
 
 public enum InteractionType
@@ -17,16 +14,53 @@ public enum InteractionType
     TrashCan,
 }
 
-public class InteractionSystem
+public class InteractionSystem : MonoBehaviour
 {
     [SerializeField]
     private Transform InteractionRoot;
 
+    [SerializeField]
+    public List<InteractionProp> _interactionPropDatas;
+    
+    // 현재 활성화 된 UIInteraction
+    public Dictionary<int, UIInteractionData> UIInteractionsInStore { get; private set; } = new();
+
     private GameManager GameManager => GameManager.GetGameManager;
 
-    public  void Initialize()
+    public  void Initialize(List<UIInteractionData> loadDatas)
     {
-        CreateInteractionUI(0);
+        foreach (var loadData in loadDatas)
+            UIInteractionsInStore.Add(loadData.interactionId, loadData);
+
+        InitializeInteraction();
+    }
+
+    private void InitializeInteraction()
+    {
+        if (UIInteractionsInStore.Count == 0)
+            CreateInteractionUI(0);
+
+        foreach (var (id, UIInteraction) in UIInteractionsInStore)
+        {
+            if (UIInteraction.isComplete)
+            {
+                // 완료된 것들은 연결된 콜백중에 UI제외된 것들만 실행
+                var propData = GameManager.LocalMap.GetPropData(id);
+
+                foreach (int nextId in propData.NextIds)
+                {
+                    var connectDatas = GameManager.LocalMap.GetPropData(nextId);
+                    if (connectDatas.Type == InteractionType.CreateInteractionUI)
+                        continue;
+
+                    ActiveInteraction(nextId);
+                }
+            }
+            else
+            {
+                GameManager.LocalMap.CreateInteractionUI(id);
+            }
+        }
     }
 
     public void ActiveInteraction(int interactionId)
@@ -75,5 +109,32 @@ public class InteractionSystem
     public void CreateInteractionUI(int id)
     {
         GameManager.LocalMap.CreateInteractionUI(id);
+
+        UpdateInteractionInStore(id, false);
+    }
+
+    public void UpdateInteractionInStore(int id, bool isComplete, int paidCash = 0)
+    {
+        UIInteractionData UIInteractionData;
+        if (UIInteractionsInStore.TryGetValue(id, out var uiIntercationData))
+        {
+            uiIntercationData.isComplete = isComplete;
+            uiIntercationData.paidCash = paidCash;
+
+            UIInteractionData = uiIntercationData;
+        }
+        else
+        {
+            UIInteractionData = new UIInteractionData
+            {
+                interactionId = id,
+                isComplete = isComplete,
+                paidCash = paidCash
+            };
+
+            UIInteractionsInStore.Add(id, UIInteractionData);
+        }
+
+        GameManager.GetGameManager.Data.SaveUIIntercationData(UIInteractionData);
     }
 }

@@ -14,6 +14,7 @@ public static class ContentLockSystem
         {
             if (level == 2)
             {
+                TryUnlock("HRInteraction");
                 TryUnlock("HR");
             }
             else if (level == 3)
@@ -29,6 +30,7 @@ public static class ContentLockSystem
 
     private static Dictionary<string, Action> contentUnlockCallbacks = new Dictionary<string, Action>()
     {
+        { "HRInteraction", UnlockHRInteractionCallback },
         { "HR", UnlockHRCallback },
         { "Upgrade", UnlockUpgradeCallback },
         { "DriveThru", UnlockDriveThruCallback },
@@ -36,6 +38,7 @@ public static class ContentLockSystem
 
     private static Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>()
     {
+        { "HRInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 2 },
         { "HR", () => GameManager.GetGameManager.Player.Growth.Level.Value>= 2 },
         { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
         { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
@@ -45,7 +48,7 @@ public static class ContentLockSystem
 
     #region callback unlcok
 
-    private static void UnlockHRCallback()
+    private static void UnlockHRInteractionCallback()
     {
         // HR UIIntercation »ý¼º
         GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
@@ -54,6 +57,17 @@ public static class ContentLockSystem
         GameManager.GetGameManager.Store.CreateWorker();
 
         // ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
+    }
+
+    private static void UnlockHRCallback()
+    {
+        //// HR UIIntercation »ý¼º
+        //GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
+
+        //// Á÷¿ø »ý¼º
+        //GameManager.GetGameManager.Store.CreateWorker();
+
+        //// ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
     }
 
     private static void UnlockUpgradeCallback()

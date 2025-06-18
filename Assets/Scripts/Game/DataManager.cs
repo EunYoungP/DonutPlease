@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UniRx;
+using System.Collections;
 
 [System.Serializable]
 public class SaveData
@@ -9,6 +10,7 @@ public class SaveData
     public PlayerData playerData;
     public StoreData storeData;
     public List<ContentLockData> contentLocks;
+    public List<UIInteractionData> uiInteractions;
 }
 
 [System.Serializable]
@@ -45,6 +47,14 @@ public class ContentLockData
     public bool isUnlocked;
 }
 
+[System.Serializable]
+public class UIInteractionData
+{
+    public int interactionId;
+    public bool isComplete;
+    public int paidCash;
+}
+
 public class DataManager : MonoBehaviour
 {
     static string saveFileDir = Application.dataPath;
@@ -61,6 +71,8 @@ public class DataManager : MonoBehaviour
 #endif
         SavePath = Path.Combine(saveFileDir, "save.json");
 
+        StartCoroutine(CoAutoSave(30f));
+
         return this;
     }
 
@@ -72,11 +84,20 @@ public class DataManager : MonoBehaviour
             contentLocks.Add(new ContentLockData { contentId = content, isUnlocked = false });
         }
 
+        List<UIInteractionData> uiinteractionDatas = new();
+        foreach (var (id, UIInteractionInStore) in GameManager.GetGameManager.Intercation.UIInteractionsInStore)
+        {
+            uiinteractionDatas.Add(new UIInteractionData { interactionId = id, 
+                isComplete = UIInteractionInStore.isComplete, 
+                paidCash = UIInteractionInStore.paidCash });
+        }
+
         return new SaveData
         {
             playerData = new PlayerData { level = 1, exp = 0, moveSpeedGrade = 0, capacityGrade = 0, profitGrowthGrade = 0,  cash = 1000, gem = 0 },
             storeData = new StoreData { storeID = 1, hrData = new HRData { capacityGrade = 0, moveSpeedGrade = 0, hiredCountGrade = 0 } },
-            contentLocks = contentLocks
+            contentLocks = contentLocks,
+            uiInteractions = uiinteractionDatas
         };
     }
 
@@ -100,6 +121,15 @@ public class DataManager : MonoBehaviour
         }
 
         data = SaveData;
+    }
+
+    private IEnumerator CoAutoSave(float interval)
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(interval);
+            Save();
+        }
     }
 
     public void SavePlayerData(int moveSpeedGrade, int donutCapacityGrade, int profitGrowthRateGrade)
@@ -154,6 +184,26 @@ public class DataManager : MonoBehaviour
             contentLockData.isUnlocked = true;
         else
             SaveData.contentLocks.Add(new ContentLockData { contentId = contentId, isUnlocked = true });
+
+        Save();
+    }
+
+    public void SaveUIIntercationData(UIInteractionData data)
+    {
+        bool isExistData = false;
+        foreach (var uiInteractionData in SaveData.uiInteractions)
+        {
+            if (uiInteractionData.interactionId == data.interactionId)
+            {
+                uiInteractionData.isComplete = data.isComplete;
+                uiInteractionData.paidCash = data.paidCash;
+
+                isExistData = true;
+            }
+        }
+
+        if (!isExistData)
+            SaveData.uiInteractions.Add(data);
 
         Save();
     }

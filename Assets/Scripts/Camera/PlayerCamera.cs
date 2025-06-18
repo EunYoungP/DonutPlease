@@ -1,7 +1,9 @@
+using DG.Tweening;
 using DonutPlease.Game.Character;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
+using Sequence = DG.Tweening.Sequence;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -15,10 +17,12 @@ public class PlayerCamera : MonoBehaviour
     public float RoatateY { get; private set; } = -45f;
 
     private Vector3 playerBeforePos;
+    public bool IsZooming { get; private set; } = false;
 
     private void LateUpdate()
     {
-        FollowPlayer();
+        if(!IsZooming)
+            FollowPlayer();
     }
 
     public void Initialize(CharacterPlayer player)
@@ -48,5 +52,30 @@ public class PlayerCamera : MonoBehaviour
         transform.position = tmp;
 
         playerBeforePos = playerCurPos;
+    }
+
+    public void ZoomToTarget(Transform target, float moveDuration = 1.5f, float waitDuration = 2f)
+    {
+        IsZooming = true;
+
+        var originFOV = _mainCamera.fieldOfView;
+        var cameraOriginPos = _mainCamera.transform.position;
+        var zoomFOV = 30F;
+        var zoomOutDuration = 1f;
+
+        Sequence seq = DOTween.Sequence();
+
+        Vector3 targetPos = new Vector3(target.position.x, target.position.y, _mainCamera.transform.position.z);
+
+        seq.Append(_mainCamera.transform.DOMove(targetPos, moveDuration));
+        seq.Join(_mainCamera.DOFieldOfView(zoomFOV, moveDuration));
+        seq.AppendInterval(waitDuration);
+        seq.Append(_mainCamera.transform.DOMove(cameraOriginPos, moveDuration));
+        seq.Join(_mainCamera.DOFieldOfView(originFOV, zoomOutDuration));
+
+        seq.OnComplete(() =>
+        {
+            IsZooming = false;
+        });
     }
 }

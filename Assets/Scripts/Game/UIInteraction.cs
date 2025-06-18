@@ -87,8 +87,6 @@ public class UIInteraction : MonoBehaviour
                     yield break;
 
                 GameManager.GetGameManager.Player.Currency.PayCash(_payUnit);
-
-                // 경험치 받기
             }
 
             // 돈 더미 이동
@@ -98,11 +96,10 @@ public class UIInteraction : MonoBehaviour
         // 돈 지불 완료
         if (IsPaidComplete)
         {
+            // 경험치 받기
             FluxSystem.Dispatch(new FxOnUpdatePlayerGrowth(_rewardExp));
 
             _callbacks?.Invoke();
-
-            Destroy(gameObject);
         }
     }
 
@@ -119,10 +116,17 @@ public class UIInteraction : MonoBehaviour
         var player = GameManager.GetGameManager.Player;
         player.Character.RemoveCashFromPlayerTo(gameObject.transform, () =>
         {
-            _paidCash += _payUnit;
-
-            _textGold.text = (_needCash - _paidCash).ToString();
-            _imgFilled.fillAmount = (float)_paidCash / _needCash;
+            UpdateUI();
         });
+    }
+
+    private void UpdateUI()
+    {
+        _paidCash += _payUnit;
+
+        GameManager.GetGameManager.Intercation.UpdateInteractionInStore(Id, IsPaidComplete, _paidCash);
+
+        _textGold.text = (_needCash - _paidCash).ToString();
+        _imgFilled.fillAmount = (float)_paidCash / _needCash;
     }
 }

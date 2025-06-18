@@ -85,23 +85,55 @@ public class LocalMapSystem : MonoBehaviour
     // 프랍 생성은 무조건 여기에서 실행.
     public void CreateProp(int id)
     {
+        // 프랍 데이터 가져오기
         InteractionProp prop = GetPropData(id);
 
+        // 프랍 붙일 루트 생성
         GameObject propRoot = new GameObject("propPos");
         propRoot.transform.SetParent(_root.transform);
 
+        // 프랍 프리팹, 객체 생성
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(prop.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
-
-        propObj.transform.localScale = Vector3.one * 0.7f;
-        propObj.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack);
 
         propObj.transform.SetParent(propRoot.transform);
 
         propRoot.transform.localPosition = prop.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(prop.Rot);
 
+        // 프랍 생성 스케일 효과
+        Vector3 originScale = propObj.transform.localScale;
+        propObj.transform.localScale = originScale * 0.7f;
+        propObj.transform.DOScale(originScale, 0.25f).SetEase(Ease.OutBack);
+
         SetStore(propObj, prop);
+    }
+
+    public void CreateInteractionUI(int id)
+    {
+        // 프랍 붙일 루트 생성
+        GameObject propRoot = new GameObject($"UIInteraction_{id}");
+        propRoot.transform.SetParent(_uIRoot.transform);
+
+        // 프랍 데이터 가져오기
+        InteractionProp propData = GetPropData(id);
+
+        // 프랍 프리팹, 객체 생성
+        GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
+        GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
+        propObj.transform.SetParent(propRoot.transform);
+
+        // UIInteaction 가져오기
+        UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
+        uIInteraction.SetId(id);
+
+        // 콜백 등록
+        foreach (int nextId in propData.NextIds)
+            uIInteraction.AddCallback(() => GameManager.GetGameManager.Intercation.ActiveInteraction(nextId));
+        uIInteraction.AddCallback(() => Destroy(uIInteraction.gameObject));
+
+        propRoot.transform.localPosition = propData.Pos;
+        propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
 
     private void SetStore(GameObject propObj, InteractionProp prop)
@@ -129,29 +161,6 @@ public class LocalMapSystem : MonoBehaviour
             case InteractionType.OpenHR:
                 break;
         }
-    }
-
-    public void CreateInteractionUI(int id)
-    {
-        GameObject propRoot = new GameObject($"UIInteraction_{id}");
-        propRoot.transform.SetParent(_uIRoot.transform);
-
-        InteractionProp propData = GetPropData(id);
-        GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
-        GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
-        propObj.transform.SetParent(propRoot.transform);
-
-        UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
-        uIInteraction.SetId(id);
-
-        // Set Callback
-        foreach (int nextId in propData.NextIds)
-        {
-            uIInteraction.AddCallback(() => GameManager.GetGameManager.Intercation.ActiveInteraction(nextId));
-        }
-
-        propRoot.transform.localPosition = propData.Pos;
-        propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
 
     #region Office

@@ -71,7 +71,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Intercation = new InteractionSystem();
         if (Intercation == null)
         {
             Debug.LogError("InteractionSystem not found");
@@ -138,9 +137,9 @@ public class GameManager : MonoBehaviour
 
         Data.Initialize().Load(out SaveData data);
         Player.Initialize(data.playerData);
-        LocalMap.Initialize();
-        Intercation.Initialize();
         Store.Initialize();
+        LocalMap.Initialize();
+        Intercation.Initialize(data.uiInteractions);
         Pool.Initialize();
 
         ContentLockSystem.Initialize();
