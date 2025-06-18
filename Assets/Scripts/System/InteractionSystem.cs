@@ -37,14 +37,11 @@ public class InteractionSystem : MonoBehaviour
 
     private void InitializeInteraction()
     {
-        if (UIInteractionsInStore.Count == 0)
-            CreateInteractionUI(0);
-
         foreach (var (id, UIInteraction) in UIInteractionsInStore)
         {
             if (UIInteraction.isComplete)
             {
-                // 완료된 것들은 연결된 콜백중에 UI제외된 것들만 실행
+                // 완료된 것들은 연결된 콜백중에 UI제외된 것들만 생성
                 var propData = GameManager.LocalMap.GetPropData(id);
 
                 foreach (int nextId in propData.NextIds)
@@ -61,6 +58,9 @@ public class InteractionSystem : MonoBehaviour
                 GameManager.LocalMap.CreateInteractionUI(id);
             }
         }
+
+        if (UIInteractionsInStore.Count == 0)
+            CreateInteractionUI(0);
     }
 
     public void ActiveInteraction(int interactionId)
