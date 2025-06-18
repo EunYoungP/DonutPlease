@@ -19,7 +19,7 @@ public class IntercationData
     public int NextInteractionId;
 }
 
-public class UIInteraction : MonoBehaviour
+public class UIInteraction : PropBase
 {
     [SerializeField] private TextMeshProUGUI _textGold;
     [SerializeField] private Image _imgFilled;
@@ -47,8 +47,8 @@ public class UIInteraction : MonoBehaviour
     {
         Id = interactionId;
 
-        _needCash = GameManager.GetGameManager.LocalMap.GetPropData(Id).NeedCash;
-        _rewardExp = GameManager.GetGameManager.LocalMap.GetPropData(Id).RewardExp;
+        _needCash = GameManager.GetGameManager.LocalMap.GetInteractionPropData(Id).NeedCash;
+        _rewardExp = GameManager.GetGameManager.LocalMap.GetInteractionPropData(Id).RewardExp;
         _textGold.text = _needCash.ToString();
     }
 
@@ -100,6 +100,8 @@ public class UIInteraction : MonoBehaviour
             FluxSystem.Dispatch(new FxOnUpdatePlayerGrowth(_rewardExp));
 
             _callbacks?.Invoke();
+
+            FluxSystem.Dispatch(new FxOnCompleteUIInteraction(Id));
         }
     }
 

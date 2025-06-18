@@ -37,6 +37,9 @@ public class CharacterPlayerController : MonoBehaviour
             Idle();
         }
 
+        if (GameManager.GetGameManager.Tutorial.IsTutorial)
+            return;
+
         Move(dir);
         Rotate(dir);
     }

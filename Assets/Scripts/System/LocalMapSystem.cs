@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UniRx;
+using DG.Tweening;
 using DonutPlease.Game.Character;
 using DonutPlease.UI;
-using DG.Tweening;
-using static UnityEditor.Timeline.TimelinePlaybackControls;
+using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
 
 [System.Serializable]
 public struct InteractionProp
@@ -44,6 +43,7 @@ public class LocalMapSystem : MonoBehaviour
     public GameObject Map => _map;
     public GameObject OfficeHRProps => _officeHRProps;
     public GameObject OfficeUpgradeProps => _officeUpgradeProps;
+    public Dictionary<int, PropBase> PropsInStore { get; private set; } = new();
 
     public void Initialize()
     {
@@ -70,7 +70,7 @@ public class LocalMapSystem : MonoBehaviour
     }
 
 
-    public InteractionProp GetPropData(int id)
+    public InteractionProp GetInteractionPropData(int id)
     {
         foreach (var propData in _interactionPropDatas)
         {
@@ -86,7 +86,7 @@ public class LocalMapSystem : MonoBehaviour
     public void CreateProp(int id)
     {
         // 프랍 데이터 가져오기
-        InteractionProp prop = GetPropData(id);
+        InteractionProp prop = GetInteractionPropData(id);
 
         // 프랍 붙일 루트 생성
         GameObject propRoot = new GameObject("propPos");
@@ -95,8 +95,8 @@ public class LocalMapSystem : MonoBehaviour
         // 프랍 프리팹, 객체 생성
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(prop.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
-
         propObj.transform.SetParent(propRoot.transform);
+        PropsInStore.Add(id, propObj.GetComponent<PropBase>());
 
         propRoot.transform.localPosition = prop.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(prop.Rot);
@@ -116,12 +116,13 @@ public class LocalMapSystem : MonoBehaviour
         propRoot.transform.SetParent(_uIRoot.transform);
 
         // 프랍 데이터 가져오기
-        InteractionProp propData = GetPropData(id);
+        InteractionProp propData = GetInteractionPropData(id);
 
         // 프랍 프리팹, 객체 생성
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
+        PropsInStore.Add(id, propObj.GetComponent<PropBase>());
 
         // UIInteaction 가져오기
         UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
@@ -134,6 +135,11 @@ public class LocalMapSystem : MonoBehaviour
 
         propRoot.transform.localPosition = propData.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
+    }
+
+    public PropBase GetProp(int id)
+    {
+        return PropsInStore.TryGetValue(id, out PropBase prop) ? prop : null;
     }
 
     private void SetStore(GameObject propObj, InteractionProp prop)

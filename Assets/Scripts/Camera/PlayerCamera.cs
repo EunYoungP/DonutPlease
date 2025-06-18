@@ -1,7 +1,9 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using Sequence = DG.Tweening.Sequence;
 
@@ -21,8 +23,10 @@ public class PlayerCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(!IsZooming)
-            FollowPlayer();
+        if (IsZooming)
+            return;
+
+        FollowPlayer();
     }
 
     public void Initialize(CharacterPlayer player)
@@ -54,6 +58,28 @@ public class PlayerCamera : MonoBehaviour
         playerBeforePos = playerCurPos;
     }
 
+    public IEnumerator MoveToTarget(Transform target, float moveDuration = 1.5f)
+    {
+        float fixedY = _mainCamera.transform.position.y;
+
+        Vector3 offset = transform.rotation * _offset;
+        Vector3 targetPos = target.position + offset;
+        targetPos.y = fixedY;
+
+        float dist = Vector3.Distance(_mainCamera.transform.position, targetPos);
+        Debug.Log($"[MoveToTarget] target: {target.name}, 거리: {dist}, duration: {moveDuration}");
+
+        if (dist < 0.01f)
+        {
+            Debug.Log("거의 같은 위치. 트윈 생략");
+            yield break;
+        }
+
+        Debug.Log("두트윈 Start");
+        yield return _mainCamera.transform.DOMove(targetPos, moveDuration).WaitForCompletion();
+        Debug.Log("두트윈 End");
+    }
+
     public void ZoomToTarget(Transform target, float moveDuration = 1.5f, float waitDuration = 2f)
     {
         IsZooming = true;
@@ -76,6 +102,8 @@ public class PlayerCamera : MonoBehaviour
         seq.OnComplete(() =>
         {
             IsZooming = false;
+
+            seq.Kill();
         });
     }
 }

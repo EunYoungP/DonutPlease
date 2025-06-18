@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using System.Collections;
 
 public enum InteractionType
 {
@@ -21,11 +23,12 @@ public class InteractionSystem : MonoBehaviour
 
     [SerializeField]
     public List<InteractionProp> _interactionPropDatas;
+
+    private GameManager GameManager => GameManager.GetGameManager;
     
     // 현재 활성화 된 UIInteraction
     public Dictionary<int, UIInteractionData> UIInteractionsInStore { get; private set; } = new();
-
-    private GameManager GameManager => GameManager.GetGameManager;
+    
 
     public  void Initialize(List<UIInteractionData> loadDatas)
     {
@@ -42,11 +45,11 @@ public class InteractionSystem : MonoBehaviour
             if (UIInteraction.isComplete)
             {
                 // 완료된 것들은 연결된 콜백중에 UI제외된 것들만 생성
-                var propData = GameManager.LocalMap.GetPropData(id);
+                var propData = GameManager.LocalMap.GetInteractionPropData(id);
 
                 foreach (int nextId in propData.NextIds)
                 {
-                    var connectDatas = GameManager.LocalMap.GetPropData(nextId);
+                    var connectDatas = GameManager.LocalMap.GetInteractionPropData(nextId);
                     if (connectDatas.Type == InteractionType.CreateInteractionUI)
                         continue;
 
@@ -65,7 +68,7 @@ public class InteractionSystem : MonoBehaviour
 
     public void ActiveInteraction(int interactionId)
     {
-        var propData = GameManager.LocalMap.GetPropData(interactionId);
+        var propData = GameManager.LocalMap.GetInteractionPropData(interactionId);
         var interactionType = propData.Type;
 
         if (interactionType == InteractionType.OpenFrontDoor)
@@ -111,6 +114,15 @@ public class InteractionSystem : MonoBehaviour
         GameManager.LocalMap.CreateInteractionUI(id);
 
         UpdateInteractionInStore(id, false);
+    }
+
+    public UIInteractionData GetUIInteractionDataInStore(int id)
+    {
+        if (UIInteractionsInStore.TryGetValue(id, out var uiInteractionData))
+        {
+            return uiInteractionData;
+        }
+        return null;
     }
 
     public void UpdateInteractionInStore(int id, bool isComplete, int paidCash = 0)

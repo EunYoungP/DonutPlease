@@ -26,6 +26,17 @@ public static class ContentLockSystem
                 TryUnlock("DriveThru");
             }
         });
+
+        FluxSystem.ActionStream.Subscribe(data =>
+        {
+            if (data is FxOnCompleteUIInteraction fxOnCompleteUIInteraction)
+            {
+                if (fxOnCompleteUIInteraction.interactionId == 100) // HR Interaction
+                {
+                    TryUnlock("HR");
+                }
+            }
+        });
     }
 
     private static Dictionary<string, Action> contentUnlockCallbacks = new Dictionary<string, Action>()
@@ -39,7 +50,7 @@ public static class ContentLockSystem
     private static Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>()
     {
         { "HRInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 2 },
-        { "HR", () => GameManager.GetGameManager.Player.Growth.Level.Value>= 2 },
+        { "HR", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(100).isComplete},
         { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
         { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
     };
@@ -53,19 +64,15 @@ public static class ContentLockSystem
         // HR UIIntercation 积己
         GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
 
-        // 流盔 积己
-        GameManager.GetGameManager.Store.CreateWorker();
-
         // 牧刨明 坷锹 扑诀 免仿
     }
 
     private static void UnlockHRCallback()
     {
-        //// HR UIIntercation 积己
-        //GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
-
         //// 流盔 积己
-        //GameManager.GetGameManager.Store.CreateWorker();
+        GameManager.GetGameManager.Store.CreateWorker();
+
+        GameManager.GetGameManager.Tutorial.StartTutorial(1);
 
         //// 牧刨明 坷锹 扑诀 免仿
     }
