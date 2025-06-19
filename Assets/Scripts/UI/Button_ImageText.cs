@@ -25,7 +25,7 @@ public class Button_ImageText : UIBehaviour
     public void SetImage(string imageName)
     {
         var gameMng = GameManager.GetGameManager;
-        var path = gameMng.Resource.GetUIResourcePath(imageName);
+        var path = gameMng.Resource.GetImagePath(imageName);
 
         _image.sprite = GameManager.GetGameManager.Resource.GetSprite(path);
     }

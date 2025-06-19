@@ -7,6 +7,7 @@ namespace DonutPlease.Game.Character
     public class CharacterBase : MonoBehaviour
     {
         [SerializeField] private int _id;
+        [SerializeField] protected UIFollowCharacterBase _uiFollowCharacter;
 
         protected GameManager GameMng { get; private set; }
 

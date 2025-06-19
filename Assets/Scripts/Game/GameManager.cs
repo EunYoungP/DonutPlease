@@ -13,8 +13,10 @@ public class GameManager : MonoBehaviour
     }
 
     [Serializable]
-    public class UICommon : UIRoot
+    public class UIFollowCharacterRoot : UIRoot
     {
+        public GameObject EmojiRoot;
+        public GameObject BalloonRoot;
     }
 
     private static GameManager _gameManager;
@@ -33,19 +35,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [SerializeField]public UIRoot _uiRoot;
-
-    [SerializeField]public Canvas _canvas;
-
+    [SerializeField] private UIRoot _uiRoot;
+                     
+    [SerializeField] private UIFollowCharacterRoot _uiFollowCharacterRoot;
+                     
+    [SerializeField] public Canvas _canvas;
+                     
     [SerializeField] public Panel_HUD _HUD;
+                     
+    [SerializeField] public GameObject _alertPopupsRoot;
+                     
+    [SerializeField] public GameObject _popupsRoot;
+                     
+    [SerializeField] private Vector3 _startPos;
+                     
+    [SerializeField] private GameObject _characterPrefab;
 
-    [SerializeField]public GameObject _alertPopupsRoot;
-
-    [SerializeField]public GameObject _popupsRoot;
-
-    [SerializeField]private Vector3 _startPos;
-
-    [SerializeField]private GameObject _characterPrefab;
+    public UIRoot GetUIRoot => _uiRoot;
+    public UIFollowCharacterRoot GetUIFollowCharacterRoot => _uiFollowCharacterRoot;
 
     public DataManager Data;
     public GamePlayer Player { get; private set; }
@@ -60,7 +67,6 @@ public class GameManager : MonoBehaviour
     public PopupSystem Popup;
     public AudioSystem Audio;
     public PoolSystem Pool;
-
 
     private void Awake()
     {

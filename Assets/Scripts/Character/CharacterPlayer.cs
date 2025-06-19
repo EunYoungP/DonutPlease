@@ -9,7 +9,6 @@ namespace DonutPlease.Game.Character
         [SerializeField] private CharacterPlayerController _controller;
         [SerializeField] private TrayController _trayController;
 
-
         public CharacterStockComponent Stock { get; private set; }
         public PlayerStatComponent Stat { get; private set; }
 
@@ -24,6 +23,7 @@ namespace DonutPlease.Game.Character
             Camera = UnityEngine.Camera.main.GetComponent<PlayerCamera>();
             Camera.Initialize(this);
 
+            _uiFollowCharacter.Initialize(this);
             _controller.Initialize();
         }
 

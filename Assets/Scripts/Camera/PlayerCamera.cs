@@ -9,11 +9,11 @@ using Sequence = DG.Tweening.Sequence;
 
 public class PlayerCamera : MonoBehaviour
 {
-    private CharacterPlayer _player;
-    private Camera _mainCamera;
-
     [SerializeField]
     private Vector3 _offset;
+
+    private CharacterPlayer _player;
+    public Camera MainCamera { get; private set; }
 
     public float RoatateX { get; private set; } =  45f;
     public float RoatateY { get; private set; } = -45f;
@@ -32,16 +32,16 @@ public class PlayerCamera : MonoBehaviour
     public void Initialize(CharacterPlayer player)
     {
         _player = player;
-        _mainCamera = Camera.main;
+        MainCamera = Camera.main;
 
         if (_player != null)
             playerBeforePos = _player.transform.position;
 
         Quaternion rotation = Quaternion.Euler(RoatateX, RoatateY, 0f);
-        _mainCamera.transform.rotation = rotation;
+        MainCamera.transform.rotation = rotation;
 
         Vector3 offset = rotation * _offset;
-        _mainCamera.transform.position = playerBeforePos + offset;
+        MainCamera.transform.position = playerBeforePos + offset;
     }
 
     private void FollowPlayer()
@@ -60,13 +60,13 @@ public class PlayerCamera : MonoBehaviour
 
     public IEnumerator MoveToTarget(Transform target, float moveDuration = 1.5f)
     {
-        float fixedY = _mainCamera.transform.position.y;
+        float fixedY = MainCamera.transform.position.y;
 
         Vector3 offset = transform.rotation * _offset;
         Vector3 targetPos = target.position + offset;
         targetPos.y = fixedY;
 
-        float dist = Vector3.Distance(_mainCamera.transform.position, targetPos);
+        float dist = Vector3.Distance(MainCamera.transform.position, targetPos);
         Debug.Log($"[MoveToTarget] target: {target.name}, 거리: {dist}, duration: {moveDuration}");
 
         if (dist < 0.01f)
@@ -76,7 +76,7 @@ public class PlayerCamera : MonoBehaviour
         }
 
         Debug.Log("두트윈 Start");
-        yield return _mainCamera.transform.DOMove(targetPos, moveDuration).WaitForCompletion();
+        yield return MainCamera.transform.DOMove(targetPos, moveDuration).WaitForCompletion();
         Debug.Log("두트윈 End");
     }
 
@@ -84,20 +84,20 @@ public class PlayerCamera : MonoBehaviour
     {
         IsZooming = true;
 
-        var originFOV = _mainCamera.fieldOfView;
-        var cameraOriginPos = _mainCamera.transform.position;
+        var originFOV = MainCamera.fieldOfView;
+        var cameraOriginPos = MainCamera.transform.position;
         var zoomFOV = 30F;
         var zoomOutDuration = 1f;
 
         Sequence seq = DOTween.Sequence();
 
-        Vector3 targetPos = new Vector3(target.position.x, target.position.y, _mainCamera.transform.position.z);
+        Vector3 targetPos = new Vector3(target.position.x, target.position.y, MainCamera.transform.position.z);
 
-        seq.Append(_mainCamera.transform.DOMove(targetPos, moveDuration));
-        seq.Join(_mainCamera.DOFieldOfView(zoomFOV, moveDuration));
+        seq.Append(MainCamera.transform.DOMove(targetPos, moveDuration));
+        seq.Join(MainCamera.DOFieldOfView(zoomFOV, moveDuration));
         seq.AppendInterval(waitDuration);
-        seq.Append(_mainCamera.transform.DOMove(cameraOriginPos, moveDuration));
-        seq.Join(_mainCamera.DOFieldOfView(originFOV, zoomOutDuration));
+        seq.Append(MainCamera.transform.DOMove(cameraOriginPos, moveDuration));
+        seq.Join(MainCamera.DOFieldOfView(originFOV, zoomOutDuration));
 
         seq.OnComplete(() =>
         {

@@ -16,6 +16,8 @@ namespace DonutPlease.Game.Character
         private void Awake()
         {
             Stock = new CharacterStockComponent();
+
+            _uiFollowCharacter.Initialize(this);
         }
 
         #region Tray

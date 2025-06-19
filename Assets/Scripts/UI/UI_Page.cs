@@ -38,7 +38,7 @@ namespace DonutPlease.UI
 
             _pageData = pageData;
             _titleText.text = pageData.title;
-            _image.sprite = gameMng.Resource.GetSprite(gameMng.Resource.GetUIResourcePath(pageData.imageName));
+            _image.sprite = gameMng.Resource.GetSprite(gameMng.Resource.GetImagePath(pageData.imageName));
             for (int i = 0; i < pageData.upgradeLevel; i++)
             {
                 _upgradeLevelIcons[i].gameObject.SetActive(true);

@@ -14,6 +14,8 @@ namespace DonutPlease.Game.Character
         private void Awake()
         {
             Stock = new CharacterStockComponent();
+
+            _uiFollowCharacter.Initialize(this);
         }
 
         public void Pay(int getDonutCount, CashPile cashPile)
