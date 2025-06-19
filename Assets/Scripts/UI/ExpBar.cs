@@ -5,11 +5,14 @@ using UnityEngine.UI;
 
 public class ExpBar : UIBehaviour
 {
+    [SerializeField] private GameObject _level;
     [SerializeField] private TextMeshProUGUI _levelText;
 
     [SerializeField] private Image _expBar;
     [SerializeField] private Button _expImgButton;
     [SerializeField] private TextMeshProUGUI _expText;
+
+    public GameObject Level => _level;
 
     private void Awake()
     {

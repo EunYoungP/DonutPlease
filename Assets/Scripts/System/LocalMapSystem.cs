@@ -96,6 +96,7 @@ public class LocalMapSystem : MonoBehaviour
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(prop.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
+
         PropsInStore.Add(id, propObj.GetComponent<PropBase>());
 
         propRoot.transform.localPosition = prop.Pos;
@@ -122,6 +123,7 @@ public class LocalMapSystem : MonoBehaviour
         GameObject propPrefab = GameManager.GetGameManager.Resource.GetPropByType(propData.Type);
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
+
         PropsInStore.Add(id, propObj.GetComponent<PropBase>());
 
         // UIInteaction 가져오기

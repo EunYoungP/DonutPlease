@@ -42,8 +42,6 @@ namespace DonutPlease.System
         {
             IsTutorial = true;
 
-            // 캐릭터 움직임 제한
-
             // 문으로 카메라 이동
             Transform door = GameObject.Find("FrontDoor(Clone)").gameObject.transform.parent;
             yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(door));
@@ -51,6 +49,7 @@ namespace DonutPlease.System
             // 컨페티 생성
 
             // 아이콘 출력
+            
 
             IsTutorial = false;
         }
@@ -68,8 +67,22 @@ namespace DonutPlease.System
             var propData = GameManager.GetGameManager.LocalMap.GetInteractionPropData(id);
             foreach (int nextId in propData.NextIds)
             {
-                var connectProp = GameManager.GetGameManager.LocalMap.GetProp(nextId);
-                yield return GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(connectProp?.transform);
+                Transform nextPorpTransform;
+                var nextPropData = GameManager.GetGameManager.LocalMap.GetInteractionPropData(id);
+                if (nextPropData.Type == InteractionType.OpenHR)
+                {
+                    nextPorpTransform = GameManager.GetGameManager.LocalMap.OfficeHRProps.transform;
+                }
+                else if (nextPropData.Type == InteractionType.OpenUpgrade)
+                {
+                    nextPorpTransform = GameManager.GetGameManager.LocalMap.OfficeUpgradeProps.transform;
+                }
+                else
+                {
+                    nextPorpTransform = GameManager.GetGameManager.LocalMap.GetProp(nextId).transform;
+                }
+
+                yield return GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(nextPorpTransform);
             }
 
             var player = GameManager.GetGameManager.Player.Character;

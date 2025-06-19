@@ -19,6 +19,11 @@ public class GameManager : MonoBehaviour
         public GameObject BalloonRoot;
     }
 
+    [Serializable]
+    public class UIEffectRoot : UIRoot
+    {
+    }
+
     private static GameManager _gameManager;
     public static GameManager GetGameManager
     {
@@ -38,7 +43,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIRoot _uiRoot;
                      
     [SerializeField] private UIFollowCharacterRoot _uiFollowCharacterRoot;
-                     
+
+    [SerializeField] private UIEffectRoot _uiEffectRoot;
+
     [SerializeField] public Canvas _canvas;
                      
     [SerializeField] public Panel_HUD _HUD;
@@ -53,6 +60,7 @@ public class GameManager : MonoBehaviour
 
     public UIRoot GetUIRoot => _uiRoot;
     public UIFollowCharacterRoot GetUIFollowCharacterRoot => _uiFollowCharacterRoot;
+    public UIEffectRoot GetUIEffectRoot => _uiEffectRoot;
 
     public DataManager Data;
     public GamePlayer Player { get; private set; }
