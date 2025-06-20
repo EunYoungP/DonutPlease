@@ -97,11 +97,11 @@ public class UIInteraction : PropBase
         if (IsPaidComplete)
         {
             // 경험치 받기
-            FluxSystem.Dispatch(new FxOnUpdatePlayerGrowth(_rewardExp));
+            GameManager.GetGameManager.Player.Growth.AddExp(_rewardExp);
 
             _callbacks?.Invoke();
 
-            FluxSystem.Dispatch(new FxOnCompleteUIInteraction(Id));
+            FluxSystem.Dispatch(new FxOnCompleteUIInteraction(Id, this.transform));
         }
     }
 

@@ -51,8 +51,6 @@ public class StoreSystem : MonoBehaviour
     {
         if (_stores.TryGetValue(storeId, out Store store))
         {
-            // Store found
-            Debug.Log($"Store found: {store}");
             return store;
         }
         else

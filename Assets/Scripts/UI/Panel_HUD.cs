@@ -4,6 +4,11 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine.TextCore.Text;
+using static UnityEngine.GraphicsBuffer;
+using System.Collections;
+using System.Xml.Linq;
+using System.Runtime.CompilerServices;
+using UniRx.Triggers;
 
 public class Panel_HUD : UIBehaviour
 {
@@ -12,6 +17,7 @@ public class Panel_HUD : UIBehaviour
     [SerializeField] private TextImage _textImageGem;
     [SerializeField] private GameObject _expEffect;
 
+    private GameManager _gameMng => GameManager.GetGameManager;
     private Canvas _canvas;
     private RectTransform _rectCanvas;
 
@@ -23,8 +29,24 @@ public class Panel_HUD : UIBehaviour
         GameManager.GetGameManager.Player.Currency.Cash.Subscribe(cash => OnUpdateCash(cash));
         GameManager.GetGameManager.Player.Currency.Gem.Subscribe(gem => OnUpdateGem(gem));
 
-        GameManager.GetGameManager.Player.Growth.Exp.Subscribe(exp => OnUpdateExp(exp));
+        //GameManager.GetGameManager.Player.Growth.Exp.Subscribe(exp => OnUpdateExp(exp));
         //GameManager.GetGameManager.Player.Growth.Level.Subscribe(level => OnUpdateLevel(level));
+
+        FluxSystem.ActionStream.Subscribe(data =>
+        {
+            if (data is FxOnCompleteUIInteraction action)
+            {
+                OnCompleteUIInteraction(action.interactionId, action.uiInteractionTransform);
+            }
+        });
+
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        UpdateLevel();
+        UpdateExp();
     }
 
 
@@ -38,33 +60,80 @@ public class Panel_HUD : UIBehaviour
         _textImageGem.SetText(gem);
     }
 
-    private void OnUpdateExp(int exp)
+    private void UpdateLevel()
     {
+        var level = _gameMng.Player.Growth.Level.Value;
+        _expBar.SetLevel(level);
+    }
+
+    private void UpdateExp()
+    {
+        var curExp = GameManager.GetGameManager.Player.Growth.Exp.Value;
         var maxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(GameManager.GetGameManager.Player.Growth.Level.Value);
         var prevMaxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(GameManager.GetGameManager.Player.Growth.Level.Value - 1);
 
-        PlayGetExpEffect();
+        _expBar.SetExp(curExp - prevMaxExp, maxExp - prevMaxExp);
     }
 
-    private void PlayGetExpEffect()
+    private void OnCompleteUIInteraction(int interactionId, Transform startTransform)
     {
         var followCamera = GameManager.GetGameManager.Player.Character.Camera.MainCamera;
         var characterPos = GameManager.GetGameManager.Player.Character.gameObject.transform.position;
         var cameraPos = GameManager.GetGameManager.Player.Character.Camera.transform.position;
 
-        // 캐릭터 중간 위치 World -> Local 
-        var midPos = followCamera.WorldToScreenPoint(characterPos + new Vector3(0, 1f));
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_rectCanvas, midPos, _canvas.worldCamera, localPoint: out var midLocalPos);
-        _expEffect.transform.position = _rectCanvas.TransformPoint(midLocalPos);
+        var startPos = followCamera.WorldToScreenPoint(startTransform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(_rectCanvas, startPos, _canvas.worldCamera, localPoint: out var midLocalPos);
+
+        _expEffect.transform.position = startPos;
         _expEffect.SetActive(true);
 
-        // 별 모양 이동시키고 완료 시점에서 업데이트
-        _expEffect.transform.DOMove(_expBar.Level.transform.position, 2.0f)
+        _expEffect.transform.localScale = Vector3.one * 0.7f;
+
+        DG.Tweening.Sequence seq = DOTween.Sequence();
+        seq.Append(_expEffect.transform.DOScale(1.3f, 0.3f).SetEase(Ease.OutBack))   // 0.5 → 1.3
+           .Append(_expEffect.transform.DOScale(1.0f, 0.2f).SetEase(Ease.InQuad))    // 1.3 → 1.0
+           .Play().SetAutoKill();
+
+        _expEffect.transform
+            .DOMove(_expBar.LevelObj.transform.position, 1.0f)
             .SetEase(Ease.InCubic)
             .OnComplete(() =>
         {
+            StartCoroutine(CoLerpExpCount());
+
             _expEffect.SetActive(false);
-            _expEffect.transform.position = _expBar.Level.transform.position;
+            _expEffect.transform.position = _expBar.LevelObj.transform.position;
         });
+    }
+
+    private IEnumerator CoLerpExpCount()
+    {
+        int targetLevel = GameManager.GetGameManager.Player.Growth.Level.Value;
+        int targetExp = GameManager.GetGameManager.Player.Growth.Exp.Value;
+
+        int barExp = _expBar.Exp;
+        int barLevel = _expBar.Level;
+
+        while (barLevel <= targetLevel)
+        {
+            var maxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel);
+            targetExp = barLevel != targetLevel ? GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel) : targetExp;
+
+            yield return DOTween.To(() => barExp, x =>
+            {
+                barExp = x;
+                _expBar.SetExp(barExp, maxExp);
+            }, targetExp, 1f).SetEase(Ease.OutCubic)
+            .OnComplete(() => 
+            {
+                if (barLevel == targetLevel) 
+                    return; 
+
+                _expBar.SetLevel(barLevel++); 
+            }).WaitForCompletion();
+
+            if (barLevel == targetLevel)
+                yield break;
+        }
     }
 }

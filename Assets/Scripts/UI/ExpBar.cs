@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,7 +13,10 @@ public class ExpBar : UIBehaviour
     [SerializeField] private Button _expImgButton;
     [SerializeField] private TextMeshProUGUI _expText;
 
-    public GameObject Level => _level;
+    public GameObject LevelObj => _level;
+
+    public int Level => int.Parse(_levelText.text);
+    public int Exp => int.Parse(_expText.text);
 
     private void Awake()
     {

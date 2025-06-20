@@ -143,9 +143,9 @@ public class GameManager : MonoBehaviour
     {
         CreateActors();
 
-        Debug.Log($"Application.persistentDataPath : {Application.persistentDataPath}");
-        Debug.Log($"Application.dataPath : {Application.dataPath}");
-        Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
+        //Debug.Log($"Application.persistentDataPath : {Application.persistentDataPath}");
+        //Debug.Log($"Application.dataPath : {Application.dataPath}");
+        //Debug.Log($"Directory.GetParent(Application.dataPath) : {Directory.GetParent(Application.dataPath)}");
 
         Resource.Initialize();
 

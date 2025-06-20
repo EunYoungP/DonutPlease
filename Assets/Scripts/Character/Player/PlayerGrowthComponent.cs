@@ -28,14 +28,6 @@ public class PlayerGrowthComponent : ComponentBase
 
     public void Initialize(PlayerData playerData)
     {
-        FluxSystem.ActionStream.Subscribe(data =>
-            {
-                if (data is FxOnUpdatePlayerGrowth updateGrowth)
-                {
-                    AddExp(updateGrowth.addExp);
-                }
-            });
-
         Exp.Value = playerData.exp;
         Level.Value = playerData.level;
     }
@@ -50,6 +42,8 @@ public class PlayerGrowthComponent : ComponentBase
         UpdateLevel();
 
         GameManager.GetGameManager.Data.UpgradePlayerGrowth(Level.Value, Exp.Value);
+
+        FluxSystem.Dispatch(new FxOnUpdatePlayerGrowth(exp));
     }
 
     public void RemoveExp(int exp)
