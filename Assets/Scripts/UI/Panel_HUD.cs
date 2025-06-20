@@ -89,8 +89,8 @@ public class Panel_HUD : UIBehaviour
 
         _expEffect.transform.localScale = Vector3.one * 0.7f;
 
-        DOTween.Sequence().Append(_expEffect.transform.DOScale(1.3f, 0.3f).SetEase(Ease.OutBack))   // 0.5 ¡æ 1.3
-           .Append(_expEffect.transform.DOScale(1.0f, 0.2f).SetEase(Ease.InQuad))    // 1.3 ¡æ 1.0
+        DOTween.Sequence().Append(_expEffect.transform.DOScale(1.3f, 0.3f).SetEase(Ease.OutBack))
+           .Append(_expEffect.transform.DOScale(1.0f, 0.2f).SetEase(Ease.InQuad))
            .Play().SetAutoKill();
 
         _expEffect.transform
@@ -107,34 +107,34 @@ public class Panel_HUD : UIBehaviour
 
     private IEnumerator CoLerpExpCount()
     {
-        int targetLevel = GameManager.GetGameManager.Player.Growth.Level.Value;
-        int targetExp = GameManager.GetGameManager.Player.Growth.Exp.Value;
+        int curLevel = GameManager.GetGameManager.Player.Growth.Level.Value;
+        int curExp = GameManager.GetGameManager.Player.Growth.Exp.Value;
 
         int barExp = _expBar.Exp;
         int barLevel = _expBar.Level;
 
-        while (barLevel <= targetLevel)
+        while (barLevel <= curLevel)
         {
-            barLevel = _expBar.Level;
-
-            var maxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel);
-            targetExp = barLevel != targetLevel ? GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel) : targetExp;
+            var curMaxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel);
+            var prevMaxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel - 1);
+            var maxExp = curMaxExp - prevMaxExp;
+            var targetExp = barLevel != curLevel? maxExp : curExp - prevMaxExp;
 
             yield return DOTween.To(() => barExp, x =>
             {
-                barExp = x;
-                _expBar.SetExp(barExp, maxExp);
+                _expBar.SetExp(x, maxExp);
             }, targetExp, 1f).SetEase(Ease.OutCubic)
             .OnComplete(() => 
             {
-                if (barLevel == targetLevel) 
+                barExp = 0;
+
+                if (++barLevel > curLevel)
                     return;
 
-                barExp = 0;
-                _expBar.SetLevel(++barLevel); 
+                _expBar.SetLevel(barLevel);
             }).WaitForCompletion();
 
-            if (barLevel == targetLevel)
+            if (barLevel > curLevel)
                 yield break;
         }
     }
