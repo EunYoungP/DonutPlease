@@ -19,6 +19,7 @@ public class Store : MonoBehaviour
     [SerializeField] private Transform WorkerStartPos;
 
     public Counter MainCounter { get; private set; }
+    public DriveThru DriveThru { get; private set; }
     public List<Machine> Machines { get; private set; } = new List<Machine>();
     public List<Table> Tables { get; private set; } = new List<Table>();
     public List<CharacterWorker> Workers { get; private set; } = new List<CharacterWorker>();
@@ -54,7 +55,6 @@ public class Store : MonoBehaviour
 
     private IEnumerator CoWorkerDo(CharacterWorker worker)
     {
-        // test
         TrashCan trashCan = GameManager.GetGameManager.Store.TrashCan;
 
         while (true)
@@ -105,7 +105,7 @@ public class Store : MonoBehaviour
                 AddJob(EJob.Cashier, targetCounter);
 
                 // 2. 작업할 카운터로 이동
-                worker.Controller.MoveTo(targetCounter.CasherPlace);
+                worker.Controller.MoveTo(targetCounter.CashierPlace);
 
                 // 2-1. 이동 대기
                 yield return new WaitUntil(() => !worker.Controller.IsMoving);
@@ -281,6 +281,11 @@ public class Store : MonoBehaviour
     {
         MainCounter = counter;
         AddJob(EJob.Cashier, counter);
+    }
+
+    public void AddDriveThru(DriveThru driveThru)
+    {
+        DriveThru = driveThru;
     }
 
     public void AddMachine(Machine machine)

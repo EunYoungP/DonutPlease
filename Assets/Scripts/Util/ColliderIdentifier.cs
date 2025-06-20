@@ -7,7 +7,7 @@ public enum EColliderIdentifier : int
     GetDonut,
     TakeDonut,
     Cash,
-    CasherPlace,
+    CashierPlace,
     GetTrash,
     TakeTrash,
     InHR,

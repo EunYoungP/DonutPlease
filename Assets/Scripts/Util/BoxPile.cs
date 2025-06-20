@@ -2,7 +2,7 @@ using DonutPlease.Game.Character;
 using System.Collections;
 using UnityEngine;
 
-public class DonutPile : PileBase
+public class BoxPile : PileBase
 {
     [SerializeField] private GameObject _prefab;
 
@@ -19,13 +19,11 @@ public class DonutPile : PileBase
         ResetCoroutine();
     }
 
-    // 플레이어 전용
     public void OnTriggerEnterGetDonut(CharacterBase character)
     {
         LoopGetDonutFromPile(character);
     }
 
-    // 플레이어 전용
     public void OnTriggerEnterTakeDonut(CharacterBase character)
     {
         LoopMoveDonutToPile(character);
@@ -97,7 +95,7 @@ public class DonutPile : PileBase
             yield return _curCoroutine;
         }
 
-        ResetCoroutine(); 
+        ResetCoroutine();
     }
 
     private IEnumerator CoLoopEnterTakeCoroutine()

@@ -67,7 +67,7 @@ public class PlayerCamera : MonoBehaviour
         targetPos.y = fixedY;
 
         float dist = Vector3.Distance(MainCamera.transform.position, targetPos);
-        Debug.Log($"[MoveToTarget] target: {target.name}, 거리: {dist}, duration: {moveDuration}");
+        Debug.Log($"[MoveToTarget] target: {target.name}, pos : {targetPos}, 거리: {dist}, duration: {moveDuration}");
 
         if (dist < 0.01f)
         {

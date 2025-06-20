@@ -16,8 +16,10 @@ namespace DonutPlease.System
         {
             _tutlrialDatas = new Dictionary<int, Func<IEnumerator>>()
             {
-                { 1, () => OpenStore()}, // 예시: 튜토리얼 ID 1 실행
-
+                { 0, () => OpenStore()},
+                { 1, () => OpenHR()},
+                { 2, () => OpenUpgrade()},
+                { 3, () => OpenDriveThru()},
             };
 
             FluxSystem.ActionStream.Subscribe(data =>
@@ -42,14 +44,42 @@ namespace DonutPlease.System
         {
             IsTutorial = true;
 
-            // 문으로 카메라 이동
-            Transform door = GameObject.Find("FrontDoor(Clone)").gameObject.transform.parent;
-            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(door));
+            Transform officeHR = GameManager.GetGameManager.LocalMap.OfficeHRProps.transform;
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(officeHR));
 
             // 컨페티 생성
 
             // 아이콘 출력
-            
+
+            IsTutorial = false;
+        }
+
+        private IEnumerator OpenHR()
+        {
+            IsTutorial = true;
+
+            Transform HROffice = GameManager.GetGameManager.LocalMap.OfficeHRProps.transform;
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(HROffice));
+
+            IsTutorial = false;
+        }
+
+        private IEnumerator OpenUpgrade()
+        {
+            IsTutorial = true;
+
+            Transform upgradeOffice = GameManager.GetGameManager.LocalMap.OfficeUpgradeProps.transform;
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(upgradeOffice));
+
+            IsTutorial = false;
+        }
+
+        private IEnumerator OpenDriveThru()
+        {
+            IsTutorial = true;
+
+            Transform driveThru = GameManager.GetGameManager.Store.GetStore(1).DriveThru.transform;
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(driveThru));
 
             IsTutorial = false;
         }

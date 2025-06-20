@@ -93,14 +93,19 @@ public class InteractionSystem : MonoBehaviour
         }
         else if (interactionType == InteractionType.OpenHR)
         {
-            GameManager.LocalMap.OfficeHRProps.SetActive(true);
+            SetActiveProp(interactionId);
         }
         else if (interactionType == InteractionType.OpenUpgrade)
         {
-            GameManager.LocalMap.OfficeUpgradeProps.SetActive(true);
+            SetActiveProp(interactionId);
         }
         else if (interactionType == InteractionType.OpenDriveThru)
         {
+            SetActiveProp(interactionId);
+        }
+        else if (interactionType == InteractionType.TrashCan)
+        {
+            SetActiveProp(interactionId);
         }
     }
 
@@ -114,6 +119,11 @@ public class InteractionSystem : MonoBehaviour
         GameManager.LocalMap.CreateInteractionUI(id);
 
         UpdateInteractionInStore(id, false);
+    }
+
+    private void SetActiveProp(int id)
+    {
+        GameManager.LocalMap.SetActiveProp(id);
     }
 
     public UIInteractionData GetUIInteractionDataInStore(int id)

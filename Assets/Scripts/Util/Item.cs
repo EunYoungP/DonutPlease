@@ -5,6 +5,7 @@ public enum EItemType : int
     Donut = 0,
     Trash,
     Cash,
+    DonutBox,
 }
 
 public class Item : MonoBehaviour

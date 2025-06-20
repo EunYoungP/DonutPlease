@@ -12,6 +12,10 @@ public class PlayerGrowthComponent : ComponentBase
         { 3, 60 },
         { 4, 80 },
         { 5, 100 },
+        { 6, 120 },
+        { 7, 140 },
+        { 8, 160 },
+        { 9, 180 },
     };
 
     public ReactiveProperty<int> Level { get; private set; } = new();

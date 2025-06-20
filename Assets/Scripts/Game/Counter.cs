@@ -1,12 +1,9 @@
-using UnityEngine;
 using DonutPlease.Game.Character;
-using System.Collections.Generic;
-using UniRx;
 using System.Collections;
-using Unity.VisualScripting;
-using DG.Tweening;
-using System;
+using System.Collections.Generic;
 using System.Linq;
+using UniRx;
+using UnityEngine;
 
 public class Counter : PropBase
 {
@@ -20,7 +17,7 @@ public class Counter : PropBase
     private Transform _donutPileFrontPos;
 
     [SerializeField]
-    private Transform _casherPlace;
+    private Transform _cashierPlace;
 
     [Header("Customer")]
     [SerializeField] GameObject Customer;
@@ -38,9 +35,8 @@ public class Counter : PropBase
     public int InLineCustomerCount => _customersInLine.Count;
     public bool HaveCashier => _cashier != null;
     public DonutPile DonutPile => _donutPile;
-
     public Transform DonutPileFrontPosition => _donutPileFrontPos;
-    public Transform CasherPlace => _casherPlace;
+    public Transform CashierPlace => _cashierPlace;
 
     private void OnEnable()
     {
@@ -80,8 +76,8 @@ public class Counter : PropBase
             if (_inLineCustomerMax > InLineCustomerCount)
             {
                 AddCustomer();
-                Debug.Log("은영 1. 손님 생성");
 
+                // 은영 1. 손님 생성;
                 var customer = _customers[CustomerCount - 1];
 
                 StartCoroutine(CoCustomerDo(customer));
@@ -285,7 +281,7 @@ public class Counter : PropBase
             case EColliderIdentifier.Cash:
                 // TakeCash
                 break;
-            case EColliderIdentifier.CasherPlace:
+            case EColliderIdentifier.CashierPlace:
                 // Payment
                 break;
         }
@@ -301,7 +297,7 @@ public class Counter : PropBase
             case EColliderIdentifier.Cash:
                 // TakeCash
                 break;
-            case EColliderIdentifier.CasherPlace:
+            case EColliderIdentifier.CashierPlace:
                 // Payment
                 break;
         }

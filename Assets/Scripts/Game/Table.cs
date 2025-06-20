@@ -72,7 +72,6 @@ public class Table : PropBase
         }
     }
 
-
     public void MakeTrash(int seatIndex)
     {
         var seat = _seats[seatIndex];

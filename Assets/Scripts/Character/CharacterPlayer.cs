@@ -40,7 +40,6 @@ namespace DonutPlease.Game.Character
             {
                 Stock.AddItem(item);
                 _trayController.PlayAddToTray(item);
-                
             }
         }
 

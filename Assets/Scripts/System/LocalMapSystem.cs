@@ -1,9 +1,13 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
 using DonutPlease.UI;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
+using UnityEditor.iOS;
 using UnityEngine;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 [System.Serializable]
 public struct InteractionProp
@@ -43,7 +47,7 @@ public class LocalMapSystem : MonoBehaviour
     public GameObject Map => _map;
     public GameObject OfficeHRProps => _officeHRProps;
     public GameObject OfficeUpgradeProps => _officeUpgradeProps;
-    public Dictionary<int, PropBase> PropsInStore { get; private set; } = new();
+    public Dictionary<int, GameObject> PropsInStore { get; private set; } = new();  // 생성된 프롭 (프롭 + UIIntercation)
 
     public void Initialize()
     {
@@ -97,14 +101,14 @@ public class LocalMapSystem : MonoBehaviour
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
 
-        PropsInStore.Add(id, propObj.GetComponent<PropBase>());
+        PropsInStore.Add(id, propObj);
 
         propRoot.transform.localPosition = prop.Pos;
         propRoot.transform.localRotation = Quaternion.Euler(prop.Rot);
 
         // 프랍 생성 스케일 효과
         Vector3 originScale = propObj.transform.localScale;
-        propObj.transform.localScale = originScale * 0.7f;
+        propObj.transform.localScale = originScale * 0.6f;
         propObj.transform.DOScale(originScale, 0.25f).SetEase(Ease.OutBack);
 
         SetStore(propObj, prop);
@@ -124,7 +128,7 @@ public class LocalMapSystem : MonoBehaviour
         GameObject propObj = Instantiate(propPrefab, Vector3.zero, Quaternion.identity);
         propObj.transform.SetParent(propRoot.transform);
 
-        PropsInStore.Add(id, propObj.GetComponent<PropBase>());
+        PropsInStore.Add(id, propObj);
 
         // UIInteaction 가져오기
         UIInteraction uIInteraction = propObj.GetComponent<UIInteraction>();
@@ -139,9 +143,45 @@ public class LocalMapSystem : MonoBehaviour
         propRoot.transform.localRotation = Quaternion.Euler(propData.Rot);
     }
 
-    public PropBase GetProp(int id)
+    public void SetActiveProp(int id)
     {
-        return PropsInStore.TryGetValue(id, out PropBase prop) ? prop : null;
+        InteractionProp propData = GetInteractionPropData(id);
+
+        if (propData.Type == InteractionType.OpenHR)
+        {
+            PropsInStore.Add(id, OfficeHRProps);
+
+            Vector3 originScale = OfficeHRProps.transform.localScale;
+            OfficeHRProps.transform.localScale = originScale * 0.6f;
+            OfficeHRProps.SetActive(true);
+            OfficeHRProps.transform.DOScale(originScale, 0.25f).SetEase(Ease.OutBack);
+        }
+        else if (propData.Type == InteractionType.OpenUpgrade)
+        {
+            PropsInStore.Add(id, OfficeUpgradeProps);
+
+            Vector3 originScale = OfficeUpgradeProps.transform.localScale;
+            OfficeUpgradeProps.transform.localScale = originScale * 0.6f;
+            OfficeUpgradeProps.SetActive(true);
+            OfficeUpgradeProps.transform.DOScale(originScale, 0.25f).SetEase(Ease.OutBack);
+        }
+        else if (propData.Type == InteractionType.OpenDriveThru)
+        {
+            var driveThruObj = Resources.FindObjectsOfTypeAll<DriveThru>().First().gameObject;
+            PropsInStore.Add(id, driveThruObj);
+
+            Vector3 originScale = driveThruObj.transform.localScale;
+            driveThruObj.transform.localScale = originScale * 0.6f;
+            driveThruObj.SetActive(true);
+            driveThruObj.transform.DOScale(originScale, 0.25f).SetEase(Ease.OutBack);
+
+            SetStore(driveThruObj, propData);
+        }
+    }
+
+    public GameObject GetProp(int id)
+    {
+        return PropsInStore.TryGetValue(id, out GameObject prop) ? prop : null;
     }
 
     private void SetStore(GameObject propObj, InteractionProp prop)
@@ -165,8 +205,8 @@ public class LocalMapSystem : MonoBehaviour
                 store.AddMainCouter(counter);
                 break;
             case InteractionType.OpenDriveThru:
-                break;
-            case InteractionType.OpenHR:
+                DriveThru driveThru = propObj.GetComponent<DriveThru>();
+                store.AddDriveThru(driveThru);
                 break;
         }
     }
@@ -178,10 +218,16 @@ public class LocalMapSystem : MonoBehaviour
         if (identifier == EColliderIdentifier.InHR)
         {
             //  HR 팝업 출력
+            if (_officeHRProps.activeSelf == false)
+                return;
+
             GameManager.GetGameManager.Popup.Show<Popup_HR>();
         }
         else if (identifier == EColliderIdentifier.InUpgrade)
         {
+            if (_officeUpgradeProps.activeSelf == false)
+                return;
+
             // Upgrad 팝업 출력
             GameManager.GetGameManager.Popup.Show<Popup_PlayerUpgrade>();
         }
@@ -191,11 +237,16 @@ public class LocalMapSystem : MonoBehaviour
     {
         if (identifier == EColliderIdentifier.InHR)
         {
-            //  HR 팝업 출력
+            if (_officeHRProps.activeSelf == false)
+                return;
+
             GameManager.GetGameManager.Popup.Hide<Popup_HR>();
         }
         else if (identifier == EColliderIdentifier.InUpgrade)
         {
+            if (_officeUpgradeProps.activeSelf == false)
+                return;
+
             // Upgrad 팝업 출력
             GameManager.GetGameManager.Popup.Hide<Popup_PlayerUpgrade>();
         }

@@ -15,15 +15,14 @@ public static class ContentLockSystem
             if (level == 2)
             {
                 TryUnlock("HRInteraction");
-                TryUnlock("HR");
             }
             else if (level == 3)
             {
-                TryUnlock("Upgrade");
+                TryUnlock("UpgradeInteraction");
             }
             else if (level == 4)
             {
-                TryUnlock("DriveThru");
+                TryUnlock("DriveThruInteraction");
             }
         });
 
@@ -32,9 +31,11 @@ public static class ContentLockSystem
             if (data is FxOnCompleteUIInteraction fxOnCompleteUIInteraction)
             {
                 if (fxOnCompleteUIInteraction.interactionId == 100) // HR Interaction
-                {
                     TryUnlock("HR");
-                }
+                else if (fxOnCompleteUIInteraction.interactionId == 200)
+                    TryUnlock("Upgrade");
+                else if (fxOnCompleteUIInteraction.interactionId == 300)
+                    TryUnlock("DriveThru");
             }
         });
     }
@@ -43,7 +44,9 @@ public static class ContentLockSystem
     {
         { "HRInteraction", UnlockHRInteractionCallback },
         { "HR", UnlockHRCallback },
+        { "UpgradeInteraction", UnlockUpgradeInteractionCallback },
         { "Upgrade", UnlockUpgradeCallback },
+        { "DriveThruInteraction", UnlockDriveThruInteractionCallback },
         { "DriveThru", UnlockDriveThruCallback },
     };
 
@@ -51,8 +54,10 @@ public static class ContentLockSystem
     {
         { "HRInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 2 },
         { "HR", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(100).isComplete},
-        { "Upgrade", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
-        { "DriveThru", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
+        { "UpgradeInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
+        { "Upgrade", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(200).isComplete },
+        { "DriveThruInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
+        { "DriveThru", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(300).isComplete},
     };
 
     public static List<string> Contents => contentUnlockCallbacks.Keys.ToList();
@@ -61,36 +66,36 @@ public static class ContentLockSystem
 
     private static void UnlockHRInteractionCallback()
     {
-        // HR UIIntercation »ı¼º
         GameManager.GetGameManager.Intercation.CreateInteractionUI(100);
-
-        // ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
     }
 
     private static void UnlockHRCallback()
     {
-        //// Á÷¿ø »ı¼º
         GameManager.GetGameManager.Store.CreateWorker();
 
         GameManager.GetGameManager.Tutorial.StartTutorial(1);
-
-        //// ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
     }
 
+    private static void UnlockUpgradeInteractionCallback()
+    {
+        GameManager.GetGameManager.Intercation.CreateInteractionUI(200);
+    }
+    
     private static void UnlockUpgradeCallback()
     {
         // Upgrade UIInteraction »ı¼º
-        GameManager.GetGameManager.Intercation.CreateInteractionUI(200);
+        GameManager.GetGameManager.Tutorial.StartTutorial(2);
+    }
 
-        // ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
+    private static void UnlockDriveThruInteractionCallback()
+    {
+        GameManager.GetGameManager.Intercation.CreateInteractionUI(300);
     }
 
     private static void UnlockDriveThruCallback()
     {
         // DriveThru UIInteraction »ı¼º
-        GameManager.GetGameManager.Intercation.CreateInteractionUI(300);
-
-        // ÄÁÅÙÃ÷ ¿ÀÇÂ ÆË¾÷ Ãâ·Â
+        GameManager.GetGameManager.Tutorial.StartTutorial(3);
     }
 
     #endregion

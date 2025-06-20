@@ -89,8 +89,7 @@ public class Panel_HUD : UIBehaviour
 
         _expEffect.transform.localScale = Vector3.one * 0.7f;
 
-        DG.Tweening.Sequence seq = DOTween.Sequence();
-        seq.Append(_expEffect.transform.DOScale(1.3f, 0.3f).SetEase(Ease.OutBack))   // 0.5 ¡æ 1.3
+        DOTween.Sequence().Append(_expEffect.transform.DOScale(1.3f, 0.3f).SetEase(Ease.OutBack))   // 0.5 ¡æ 1.3
            .Append(_expEffect.transform.DOScale(1.0f, 0.2f).SetEase(Ease.InQuad))    // 1.3 ¡æ 1.0
            .Play().SetAutoKill();
 
@@ -116,6 +115,8 @@ public class Panel_HUD : UIBehaviour
 
         while (barLevel <= targetLevel)
         {
+            barLevel = _expBar.Level;
+
             var maxExp = GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel);
             targetExp = barLevel != targetLevel ? GameManager.GetGameManager.Player.Growth.GetMaxExpByLevel(barLevel) : targetExp;
 
@@ -127,9 +128,10 @@ public class Panel_HUD : UIBehaviour
             .OnComplete(() => 
             {
                 if (barLevel == targetLevel) 
-                    return; 
+                    return;
 
-                _expBar.SetLevel(barLevel++); 
+                barExp = 0;
+                _expBar.SetLevel(++barLevel); 
             }).WaitForCompletion();
 
             if (barLevel == targetLevel)
