@@ -27,7 +27,7 @@ public class TrayController : MonoBehaviour
 
     private void Awake()
     {
-        _joystick = GameManager.GetGameManager.JoyStick;
+        _joystick = GameManager.GetGameManager.Joystick;
         _cameraRot = FindAnyObjectByType<PlayerCamera>().RoatateY;
     }
 

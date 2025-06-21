@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
 
     public DataManager Data;
     public GamePlayer Player { get; private set; }
-    public bl_Joystick JoyStick;
+    public bl_Joystick Joystick;
 
     [Header("System")]
     public LocalMapSystem LocalMap;
@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
 
         ContentLockSystem.Initialize();
         _HUD.gameObject.SetActive(true);
-        JoyStick.gameObject.SetActive(true);
+        Joystick.gameObject.SetActive(true);
     }
 
     private void CreateActors()

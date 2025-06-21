@@ -19,9 +19,9 @@ namespace DonutPlease.UI
     {
         private readonly List<PageData> _pageDataList = new List<PageData>
         {
-            new PageData { dataFieldName = "capacityGrade", title = "Capacity Upgrade", imageName = "HR_capacity", needGem = 3, needCash = 50 },
-            new PageData { dataFieldName = "moveSpeedGrade", title = "MoveSpeed Upgrade", imageName = "HR_moveSpeed", needGem = 3, needCash = 100 },
-            new PageData { dataFieldName = "hiredCountGrade", title = "HiredCount Upgrade", imageName = "HR_hiredCount", needGem = 3, needCash = 100 },
+            new PageData { dataFieldName = "capacityGrade", title = "용량", imageName = "HR_capacity", needGem = 3, needCash = 50 },
+            new PageData { dataFieldName = "moveSpeedGrade", title = "이동속도", imageName = "HR_moveSpeed", needGem = 3, needCash = 100 },
+            new PageData { dataFieldName = "hiredCountGrade", title = "고용", imageName = "HR_hiredCount", needGem = 3, needCash = 100 },
         };
 
         [SerializeField] private Button _closeBtn;

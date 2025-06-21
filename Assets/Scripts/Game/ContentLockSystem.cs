@@ -16,11 +16,11 @@ public static class ContentLockSystem
             {
                 TryUnlock("HRInteraction");
             }
-            else if (level == 3)
+            else if (level == 4)
             {
                 TryUnlock("UpgradeInteraction");
             }
-            else if (level == 4)
+            else if (level == 6)
             {
                 TryUnlock("DriveThruInteraction");
             }
@@ -38,6 +38,13 @@ public static class ContentLockSystem
                     TryUnlock("DriveThru");
             }
         });
+
+        TryUnlock("HRInteraction");
+        TryUnlock("UpgradeInteraction");
+        TryUnlock("DriveThruInteraction");
+        TryUnlock("HR");
+        TryUnlock("Upgrade");
+        TryUnlock("DriveThru");
     }
 
     private static Dictionary<string, Action> contentUnlockCallbacks = new Dictionary<string, Action>()
@@ -53,11 +60,11 @@ public static class ContentLockSystem
     private static Dictionary<string, Func<bool>> conditions = new Dictionary<string, Func<bool>>()
     {
         { "HRInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 2 },
-        { "HR", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(100).isComplete},
-        { "UpgradeInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 3 },
-        { "Upgrade", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(200).isComplete },
-        { "DriveThruInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
-        { "DriveThru", () => GameManager.GetGameManager.Intercation.GetUIInteractionDataInStore(300).isComplete},
+        { "HR", () => GameManager.GetGameManager.Intercation.IsCompleteUIInteractionDataInStore(100)},
+        { "UpgradeInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 4 },
+        { "Upgrade", () => GameManager.GetGameManager.Intercation.IsCompleteUIInteractionDataInStore(200) },
+        { "DriveThruInteraction", () => GameManager.GetGameManager.Player.Growth.Level.Value >= 6 },
+        { "DriveThru", () => GameManager.GetGameManager.Intercation.IsCompleteUIInteractionDataInStore(300)},
     };
 
     public static List<string> Contents => contentUnlockCallbacks.Keys.ToList();
@@ -71,7 +78,9 @@ public static class ContentLockSystem
 
     private static void UnlockHRCallback()
     {
-        GameManager.GetGameManager.Store.CreateWorker();
+        var store = GameManager.GetGameManager.Store.GetStore(1);
+        for(int i = 0; i < store.Stat.HiredCount.Value; i++)
+            GameManager.GetGameManager.Store.CreateWorker(1);
 
         GameManager.GetGameManager.Tutorial.StartTutorial(1);
     }

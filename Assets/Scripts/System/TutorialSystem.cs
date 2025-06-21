@@ -59,7 +59,7 @@ namespace DonutPlease.System
             IsTutorial = true;
 
             Transform HROffice = GameManager.GetGameManager.LocalMap.OfficeHRProps.transform;
-            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(HROffice));
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(HROffice, 1.5f));
 
             IsTutorial = false;
         }
@@ -69,7 +69,7 @@ namespace DonutPlease.System
             IsTutorial = true;
 
             Transform upgradeOffice = GameManager.GetGameManager.LocalMap.OfficeUpgradeProps.transform;
-            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(upgradeOffice));
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(upgradeOffice, 1.5f));
 
             IsTutorial = false;
         }
@@ -79,7 +79,7 @@ namespace DonutPlease.System
             IsTutorial = true;
 
             Transform driveThru = GameManager.GetGameManager.Store.GetStore(1).DriveThru.transform;
-            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(driveThru));
+            yield return StartCoroutine(GameManager.GetGameManager.Player.Character.Camera.MoveToTarget(driveThru, 1.5f));
 
             IsTutorial = false;
         }

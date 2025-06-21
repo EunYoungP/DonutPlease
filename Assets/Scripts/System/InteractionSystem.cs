@@ -126,13 +126,13 @@ public class InteractionSystem : MonoBehaviour
         GameManager.LocalMap.SetActiveProp(id);
     }
 
-    public UIInteractionData GetUIInteractionDataInStore(int id)
+    public bool IsCompleteUIInteractionDataInStore(int id)
     {
         if (UIInteractionsInStore.TryGetValue(id, out var uiInteractionData))
         {
-            return uiInteractionData;
+            return uiInteractionData.isComplete;
         }
-        return null;
+        return false;
     }
 
     public void UpdateInteractionInStore(int id, bool isComplete, int paidCash = 0)

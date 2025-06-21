@@ -4,12 +4,12 @@ using UniRx;
 public class StoreStatComponent : ComponentBase
 {
     private const float MoveSpeedFactor = 0.2f;
-    public ReactiveProperty<int> MoveSpeedGrade { get; private set; } = new();
-    public ReactiveProperty<int> DonutCapacityGrade { get; private set; } = new();
-    public ReactiveProperty<int> HiredCountGrade { get; private set; } = new();
-    public float MoveSpeed { get; private set; }
-    public int DonutCapacity { get; private set; }
-    public int HiredCount { get; private set; }
+    public int MoveSpeedGrade { get; private set; }
+    public int DonutCapacityGrade { get; private set; }
+    public int HiredCountGrade { get; private set; }
+    public ReactiveProperty<float> MoveSpeed { get; private set; } = new();
+    public ReactiveProperty<int> DonutCapacity { get; private set; } = new();
+    public ReactiveProperty<int> HiredCount { get; private set; } = new();
 
     public void Initialize()
     {
@@ -22,9 +22,9 @@ public class StoreStatComponent : ComponentBase
         });
 
         var storeDtat = GameManager.GetGameManager.Data.SaveData.storeData;
-        MoveSpeedGrade.Value = storeDtat.hrData.moveSpeedGrade;
-        DonutCapacityGrade.Value = storeDtat.hrData.capacityGrade;
-        HiredCountGrade.Value = storeDtat.hrData.hiredCountGrade;
+        MoveSpeedGrade = storeDtat.hrData.moveSpeedGrade;
+        DonutCapacityGrade = storeDtat.hrData.capacityGrade;
+        HiredCountGrade = storeDtat.hrData.hiredCountGrade;
 
         CalculateStatValue();
     }
@@ -34,13 +34,13 @@ public class StoreStatComponent : ComponentBase
         switch (fieldName)
         {
             case "moveSpeedGrade":
-                MoveSpeedGrade.Value += increment;
+                MoveSpeedGrade += increment;
                 break;
             case "capacityGrade":
-                DonutCapacityGrade.Value += increment;
+                DonutCapacityGrade += increment;
                 break;
             case "hiredCountGrade":
-                HiredCountGrade.Value += increment;
+                HiredCountGrade += increment;
                 break;
             default:
                 Debug.LogWarning($"[DataManager] Unknown HR field: {fieldName}");
@@ -48,9 +48,9 @@ public class StoreStatComponent : ComponentBase
         }
 
         GameManager.GetGameManager.Data.SaveHRData(
-            MoveSpeedGrade.Value,
-            DonutCapacityGrade.Value,
-            HiredCountGrade.Value
+            MoveSpeedGrade,
+            DonutCapacityGrade,
+            HiredCountGrade
         );
 
         CalculateStatValue();
@@ -58,8 +58,8 @@ public class StoreStatComponent : ComponentBase
 
     private void CalculateStatValue()
     {
-        MoveSpeed = 1 + (MoveSpeedFactor * MoveSpeedGrade.Value);
-        DonutCapacity = 1 + DonutCapacityGrade.Value;
-        HiredCount = 1 + HiredCountGrade.Value;
+        MoveSpeed.Value = 1 + (MoveSpeedFactor * MoveSpeedGrade);
+        DonutCapacity.Value = 1 + DonutCapacityGrade;
+        HiredCount.Value = HiredCountGrade;
     }
 }

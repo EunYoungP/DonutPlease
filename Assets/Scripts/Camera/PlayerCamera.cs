@@ -58,7 +58,7 @@ public class PlayerCamera : MonoBehaviour
         playerBeforePos = playerCurPos;
     }
 
-    public IEnumerator MoveToTarget(Transform target, float moveDuration = 1.5f)
+    public IEnumerator MoveToTarget(Transform target, float moveDuration = 1.0f)
     {
         float fixedY = MainCamera.transform.position.y;
 
@@ -67,7 +67,6 @@ public class PlayerCamera : MonoBehaviour
         targetPos.y = fixedY;
 
         float dist = Vector3.Distance(MainCamera.transform.position, targetPos);
-        Debug.Log($"[MoveToTarget] target: {target.name}, pos : {targetPos}, 거리: {dist}, duration: {moveDuration}");
 
         if (dist < 0.01f)
         {
@@ -75,9 +74,7 @@ public class PlayerCamera : MonoBehaviour
             yield break;
         }
 
-        Debug.Log("두트윈 Start");
         yield return MainCamera.transform.DOMove(targetPos, moveDuration).WaitForCompletion();
-        Debug.Log("두트윈 End");
     }
 
     public void ZoomToTarget(Transform target, float moveDuration = 1.5f, float waitDuration = 2f)

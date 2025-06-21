@@ -2,6 +2,7 @@ using DonutPlease.Game.Character;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 public class StoreSystem : MonoBehaviour
 {
@@ -16,6 +17,11 @@ public class StoreSystem : MonoBehaviour
     public Store CurStore => GetStore(CurStoreId);
     private static Dictionary<int, Store> _stores = new();
 
+    private void Awake()
+    {
+        
+    }
+
     public void Initialize()
     {
         int storeId = 1;
@@ -23,14 +29,25 @@ public class StoreSystem : MonoBehaviour
         // Store 생성
         AddStore(storeId);
         CurStoreId = storeId;
+
+        foreach (var (id, store) in _stores)
+        {
+            store.Stat.HiredCount.Subscribe(hiredCount =>
+            {
+                // 워커 수가 변경될 때마다 StoreStatComponent의 HiredCount 업데이트
+                for(int i = store.Workers.Count; i < hiredCount; i++) 
+                    CreateWorker(storeId);
+            });
+        }
     }
 
-    public CharacterWorker CreateWorker()
+    public CharacterWorker CreateWorker(int storeId)
     {
         // 워커 생성
         GameObject workerObj = Instantiate(WorkerPrefab, WorkerStartPos, Quaternion.identity);
         var worker = workerObj.GetComponent<CharacterWorker>();
-        CurStore.CreateWorker(worker);
+        var store = GetStore(storeId);
+        store.CreateWorker(worker);
 
         return worker;
     }

@@ -15,12 +15,15 @@ public class CharacterPlayerController : MonoBehaviour
 
     public void Initialize()
     {
-        _joystick = GameManager.GetGameManager.JoyStick;
+        _joystick = GameManager.GetGameManager.Joystick;
         _moveSpeed = GameManager.GetGameManager.Player.Character.Stat.MoveSpeed;
     }
 
     private void Update()
     {
+        if (_joystick.gameObject.activeSelf == false)
+            return;
+
         float v = _joystick.Vertical;
         float h = _joystick.Horizontal;
 
