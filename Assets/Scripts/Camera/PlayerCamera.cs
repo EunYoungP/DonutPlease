@@ -12,7 +12,7 @@ public class PlayerCamera : MonoBehaviour
     private CharacterPlayer _player;
     public Camera MainCamera { get; private set; }
 
-    public float RoatateX { get; private set; } =  45f;
+    public float RoatateX { get; private set; } =  60f;
     public float RoatateY { get; private set; } = -45f;
 
     private Vector3 playerBeforePos;
