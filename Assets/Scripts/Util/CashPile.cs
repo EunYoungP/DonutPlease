@@ -1,7 +1,6 @@
 using DonutPlease.Game.Character;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class CashPile : PileBase
 {

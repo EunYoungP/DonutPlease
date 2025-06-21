@@ -1,14 +1,8 @@
-using UnityEngine;
-using UniRx;
-using UnityEngine.EventSystems;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine.TextCore.Text;
-using static UnityEngine.GraphicsBuffer;
 using System.Collections;
-using System.Xml.Linq;
-using System.Runtime.CompilerServices;
-using UniRx.Triggers;
+using UniRx;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Panel_HUD : UIBehaviour
 {

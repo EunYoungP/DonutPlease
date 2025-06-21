@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
-using System.Collections;
 
 public enum InteractionType
 {

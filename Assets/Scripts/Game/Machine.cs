@@ -1,8 +1,4 @@
 using DonutPlease.Game.Character;
-using System.Collections;
-using UniRx;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class Machine : PropBase

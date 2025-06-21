@@ -1,8 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UniRx;
-using System.Collections;
 
 [System.Serializable]
 public class SaveData

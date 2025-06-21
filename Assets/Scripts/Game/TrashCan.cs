@@ -1,7 +1,6 @@
-using DG.Tweening;
-using UnityEngine;
-using UniRx;
 using DonutPlease.Game.Character;
+using UniRx;
+using UnityEngine;
 
 public class TrashCan : PropBase
 {

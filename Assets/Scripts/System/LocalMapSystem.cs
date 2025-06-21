@@ -1,13 +1,10 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
 using DonutPlease.UI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEditor.iOS;
 using UnityEngine;
-using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 [System.Serializable]
 public struct InteractionProp

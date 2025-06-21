@@ -1,12 +1,7 @@
-using DG.Tweening.Core.Easing;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UniRx;
 using DonutPlease.Game.Character;
-using Unity.VisualScripting;
+using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
 
 public class Table : PropBase
 {

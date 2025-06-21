@@ -1,10 +1,7 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 
 public class TrayController : MonoBehaviour

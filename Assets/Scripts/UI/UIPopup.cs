@@ -1,8 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.LightTransport;
-using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class UIPopup : UIBehaviour
 {

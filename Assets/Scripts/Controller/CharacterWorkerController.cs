@@ -1,8 +1,6 @@
 using DonutPlease.Game.Character;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static CharacterCustomerController;
 
 public class CharacterWorkerController : CharacterBase
 {

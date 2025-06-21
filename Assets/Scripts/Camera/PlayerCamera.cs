@@ -1,10 +1,7 @@
 using DG.Tweening;
 using DonutPlease.Game.Character;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using Sequence = DG.Tweening.Sequence;
 
 public class PlayerCamera : MonoBehaviour

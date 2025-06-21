@@ -1,6 +1,4 @@
-using DonutPlease.Game.Character;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 namespace DonutPlease.Game.Character
 {

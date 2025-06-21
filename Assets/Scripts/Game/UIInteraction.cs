@@ -1,13 +1,9 @@
+using DonutEditor;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DonutEditor;
-using DG.Tweening;
-using UnityEngine.TextCore.Text;
 
 [Serializable]
 public class IntercationData

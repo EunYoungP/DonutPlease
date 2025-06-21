@@ -1,8 +1,5 @@
-using UnityEngine;
 using UniRx;
-using DonutPlease.Game.Character;
-using System;
-using Unity.VisualScripting;
+using UnityEngine;
 
 public enum CurrencyType
 {
