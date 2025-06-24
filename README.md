@@ -23,7 +23,7 @@ Unity 3D 캐주얼 시뮬레이션 모작 게임
 ## 📑 __기술 소개__
 <br>
 
-### 📌 __UML: Main Struct__
+### 📌 __Main Struct__
 <p align="center">
   <img src="https://i.ibb.co/MvzfCFw/Donut-Please-Struct-drawio-3.png">
 </p><br><Br>
