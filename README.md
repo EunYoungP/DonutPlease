@@ -9,7 +9,7 @@ Unity 3D 캐주얼 시뮬레이션 모작 게임
 
 ## __🎥 게임 플레이 영상__
 
-[![🎥 게임 플레이 영상](https://i.ibb.co/WNkbCgHY/Chat-GPT-Image-2025-6-14-05-20-51-removebg-preview.png)](https://youtu.be/PrheckVpzwo)
+[![🎥 게임 플레이 영상](https://i.ibb.co/kggVSbk3/image.png)](https://youtu.be/PrheckVpzwo)
 
 영상 썸네일을 클릭하면 영상 주소로 이동합니다 :)<br><br>
 
