@@ -9,7 +9,7 @@ Unity 3D 캐주얼 시뮬레이션 모작 게임
 
 ## __🎥 게임 플레이 영상__
 
-[![🎥 게임 플레이 영상]([https://img.youtube.com/vi/QTr3YOP5SQI/0.jpg)](https://www.youtube.com/watch?v=QTr3YOP5SQI](https://youtu.be/PrheckVpzwo))
+[![🎥 게임 플레이 영상](https://ibb.co/JWvfZ5cM.jpg)](https://youtu.be/PrheckVpzwo)
 
 영상 썸네일을 클릭하면 영상 주소로 이동합니다 :)<br><br>
 
