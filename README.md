@@ -29,7 +29,7 @@ Unity 3D 캐주얼 시뮬레이션 모작 게임
 
 ### 📌 __UML: Flux System__
 <p align="center">
-  <img src="https://ibb.co/dwpKwpNy"><img src="https://i.ibb.co/39Fh9FxH/Donut-Please-Flux2-drawio-1.png"">
+  <img src="https://i.ibb.co/39Fh9FxH/Donut-Please-Flux2-drawio-1.png">
   <img src="https://ibb.co/KjY04xW1.png">
 </p><br><Br>
 
