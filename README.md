@@ -25,19 +25,23 @@ Unity 3D 캐주얼 시뮬레이션 모작 게임
 
 ### 📌 __UML: Main Struct__
 <p align="center">
-  <img src="\https://i.ibb.co/MvzfCFw/Donut-Please-Struct-drawio-3.png">
+  <img src="https://i.ibb.co/MvzfCFw/Donut-Please-Struct-drawio-3.png">
 </p><br><Br>
 
 ### 📌 __UML: Flux System__
 <p align="center">
   <img src="https://i.ibb.co/39Fh9FxH/Donut-Please-Flux2-drawio-1.png">
+</p><br>
+<p align="center">
   <img src="https://i.ibb.co/JRNB6jHh/Donut-Please-MVVM-drawio.png">
 </p><br><Br>
 
 ### 📌 __UML: Character__
 <p align="center">
   <img src="https://i.ibb.co/35qLHj7r/Donut-Please-Character2-drawio.png">
-   <img src="https://i.ibb.co/pSFsh7Z/Donut-Please-Character-drawio.png">
+</p><br>
+<p align="center">
+  <img src="https://i.ibb.co/pSFsh7Z/Donut-Please-Character-drawio.png">
 </p><br><Br>
 
 ### 📌 __UML: Map, Store__
